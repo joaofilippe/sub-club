@@ -6,6 +6,7 @@ Este projeto segue o layout padrão de projetos Go (Standard Go Project Layout).
 
 - **`/cmd`**: Ponto de entrada das aplicações deste projeto. O código aqui deve conter apenas a função `main` e chamar o código localizado em `/internal` e `/pkg`.
   - Exemplo: `/cmd/subclub/main.go`
+  - **Por que subpastas?**: Ter um diretório separado para cada aplicação (neste caso `subclub`) permite que o projeto evolua para ter múltiplos binários (ex: um worker, um CLI, uma versão webassembly) sem bagunça. Cada diretório gera um binário com o nome da pasta.
 
 - **`/internal`**: Código privado da aplicação e bibliotecas. O código neste diretório não pode ser importado por outros projetos. É aqui que a lógica de negócio específica da aplicação deve residir.
 
