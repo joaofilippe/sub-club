@@ -5,11 +5,8 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
-BINARY_NAME=bin/subclub
+BINARY_NAME=bin/subclub.exe
 MAIN_PATH=./cmd/subclub
-
-# Setup GOPATH and air binary
-AIR_BINARY=$(GOPATH)/bin/air
 
 all: test build
 
@@ -21,13 +18,13 @@ test:
 
 clean:
 	$(GOCLEAN)
-	rm -f $(BINARY_NAME)
+	if exist $(BINARY_NAME) del $(BINARY_NAME)
 
 run:
 	$(GOCMD) run $(MAIN_PATH)/*.go server
 
 dev:
-	$(AIR_BINARY)
+	$(USERPROFILE)/go/bin/air.exe
 
 lint:
 	golangci-lint run
