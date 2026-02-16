@@ -78,3 +78,22 @@ Qunado você clica em "Attach to Docker" no `launch.json`:
 3.  **Delve** sobe a aplicação na porta 8080 e fica ouvindo comandos de debug na 2345.
 4.  Você no **VS Code** se conecta na 2345.
 5.  Você acessa `localhost:8080`, sua requisição entra no Docker, bate na aplicação, o Delve pausa a execução no breakpoint, e o VS Code mostra o estado das variáveis.
+
+---
+
+## 4. Por que Docker? (Justificativa para o PR)
+
+Se alguém perguntar "Por que não rodar apenas `go run main.go` na minha máquina?", aqui estão os motivos técnicos e práticos:
+
+### Praticidade e Onboarding (Developer Experience)
+- **"Funciona na minha máquina"**: O maior pesadelo do desenvolvimento é quando o código roda no PC do João, mas falha no da Maria porque ela tem uma versão diferente do Postgres ou do Go. Com Docker, todo mundo roda **exatamente** o mesmo binário, no mesmo sistema operacional (Linux Alpine), com as mesmas versões de banco de dados.
+- **Setup em 1 comando**: Em vez de instalar Postgres, criar usuário, criar banco, instalar Go, configurar variáveis de ambiente... o novo desenvolvedor apenas roda `docker-compose up`. O ambiente está pronto.
+
+### Paridade com Produção
+- **Linux vs Windows/Mac**: A produção roda em Linux. Desenvolver no Windows pode esconder bugs sutis (como *case sensitivity* em nomes de arquivos, ou diferenças em caminhos de diretórios - como vimos com o `.exe` no Air). Rodar em Docker garante que estamos testando no mesmo OS da produção.
+
+### Performance
+Embora rodar nativamente tenhas um *overhead* menor de CPU/RAM, o Docker traz **performance de tempo de desenvolvimento**:
+- **Menos tempo configurando**: Zero tempo gasto debugando problemas de ambiente.
+- **Reproduzibilidade**: Se o CI/CD falhar, você consegue reproduzir o erro localmente com facilidade.
+- **Limpeza**: Quando você termina, `docker-compose down` remove tudo. Seu sistema operacional não fica cheio de lixo ou serviços rodando em background consumindo memória sem necessidade.
