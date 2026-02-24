@@ -1,5 +1,7 @@
 package user
 
+import "time"
+
 type UserType string
 
 const (
@@ -17,8 +19,11 @@ const (
 )
 
 type User struct {
-	ID    string
-	Email string
-	Type  UserType
-	Role  UserRole
+	ID        string
+	Email     string
+	Type      UserType
+	Role      UserRole
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time
 }
