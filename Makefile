@@ -27,7 +27,7 @@ run:
 	$(GOCMD) run $(MAIN_PATH)/*.go server
 
 dev:
-	$(AIR_BINARY)
+	docker compose up
 
 lint:
 	golangci-lint run
@@ -46,7 +46,7 @@ help:
 	@echo "  test        Run unit tests"
 	@echo "  clean       Clean build artifacts"
 	@echo "  run         Run the application server"
-	@echo "  dev         Run the application server with live reload (uses air)"
+	@echo "  dev         Run the application server with live reload (uses docker compose up)"
 	@echo "  lint        Run golangci-lint"
 	@echo "  tidy        Run go mod tidy"
 	@echo "  deps        Download dependencies"

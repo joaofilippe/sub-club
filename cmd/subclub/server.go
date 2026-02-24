@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/joaofilippe/subclub/internal/config"
-	"github.com/joaofilippe/subclub/internal/database"
+	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/middleware"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
