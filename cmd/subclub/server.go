@@ -4,13 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
-	"github.com/joaofilippe/subclub/internal/middleware"
-	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/joaofilippe/subclub/internal/infra/server"
 	"github.com/spf13/cobra"
 )
 
@@ -43,20 +40,7 @@ func startServer() {
 
 	fmt.Println("Successfully connected to the database!")
 
-	// Initialize Echo
-	e := echo.New()
+	srv := server.NewServer()
 
-	// Middleware
-	e.Use(middleware.ConfigureLogger())
-	e.Use(echoMiddleware.Recover())
-
-	// Routes
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"status": "ok",
-		})
-	})
-
-	// Start server
-	e.Logger.Fatal(e.Start(":8080"))
+	log.Fatal(srv.Start(":8080"))
 }
