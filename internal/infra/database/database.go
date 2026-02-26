@@ -9,8 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func NewConnection(ctx context.Context, connectionString string) (*sqlx.DB, error) {
-	db, err := sqlx.ConnectContext(ctx, "pgx", connectionString)
+func NewConnection(ctx context.Context, driverName, connectionString string) (*sqlx.DB, error) {
+	db, err := sqlx.ConnectContext(ctx, driverName, connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}

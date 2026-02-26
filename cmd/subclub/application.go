@@ -5,26 +5,27 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 	"github.com/spf13/cobra"
 )
 
-var serverCmd = &cobra.Command{
-	Use:   "server",
-	Short: "Start the SubClub API server",
+var applicationCmd = &cobra.Command{
+	Use:   "application",
+	Short: "Start the SubClub application",
 	Run: func(cmd *cobra.Command, args []string) {
-		startServer()
+		startApplication()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(serverCmd)
+	rootCmd.AddCommand(applicationCmd)
 }
 
-func startServer() {
-	fmt.Println("Starting SubClub...")
+func startApplication() {
+	fmt.Println("Starting SubClub Application...")
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -32,7 +33,7 @@ func startServer() {
 	}
 
 	ctx := context.Background()
-	dbConnection, err := database.NewConnection(ctx, cfg.DatabaseURL)
+	dbConnection, err := database.NewConnection(ctx, cfg.DatabaseDriver, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v", err)
 	}
@@ -42,5 +43,7 @@ func startServer() {
 
 	srv := server.NewServer()
 
-	log.Fatal(srv.Start(":8080"))
+	app := application.New(srv, dbConnection)
+
+	log.Fatal(app.Start(cfg.Port))
 }
