@@ -43,7 +43,7 @@ func startApplication() {
 
 	srv := server.NewServer()
 
-	app := application.New(srv, dbConnection)
+	app := application.New(srv, dbConnection.GetDB())
 
 	log.Fatal(app.Start(cfg.Port))
 }
