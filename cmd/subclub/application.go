@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/joaofilippe/subclub/internal/application"
@@ -25,8 +24,6 @@ func init() {
 }
 
 func startApplication() {
-	fmt.Println("Starting SubClub Application...")
-
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -38,8 +35,6 @@ func startApplication() {
 		log.Fatalf("Could not connect to database: %v", err)
 	}
 	defer dbConnection.Close()
-
-	fmt.Println("Successfully connected to the database!")
 
 	srv := server.NewServer()
 
