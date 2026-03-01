@@ -33,6 +33,11 @@ func NewServer() *Server {
 	}
 }
 
+// RegisterUserRoutes registra as rotas de usuário
+func (s *Server) RegisterUserRoutes(userHandler interface{ Create(c echo.Context) error }) {
+	s.echo.POST("/users", userHandler.Create)
+}
+
 // Start inicia o servidor na porta especificada
 func (s *Server) Start(port string) error {
 	return s.echo.Start(port)
