@@ -2,6 +2,7 @@ package application
 
 import (
 	"github.com/jmoiron/sqlx"
+	"github.com/joaofilippe/subclub/internal/domain/user"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 )
 
@@ -9,6 +10,7 @@ import (
 type Application struct {
 	server *server.Server
 	db     *sqlx.DB
+	userService *user.Service
 }
 
 // New inicializa uma nova Application com suas dependências globais
