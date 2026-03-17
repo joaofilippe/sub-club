@@ -38,7 +38,12 @@ func startApplication() {
 
 	srv := server.NewServer()
 
-	app := application.New(srv, dbConnection.GetDB())
+	app := application.New(srv, dbConnection)
+	
+	err = app.InitServices()
+	if err != nil {
+		log.Fatalf("Could not initialize services: %v", err)
+	}
 
 	log.Fatal(app.Start(cfg.Port))
 }

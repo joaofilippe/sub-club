@@ -33,6 +33,10 @@ func NewServer() *Server {
 	}
 }
 
+func (s *Server) GetEcho() *echo.Echo {
+	return s.echo
+}
+
 // Start inicia o servidor na porta especificada
 func (s *Server) Start(port string) error {
 	return s.echo.Start(port)
