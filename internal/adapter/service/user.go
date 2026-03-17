@@ -1,25 +1,26 @@
-package service
+package services
 
 import (
 	"context"
 
 	"github.com/joaofilippe/subclub/internal/domain/user"
-	usecases "github.com/joaofilippe/subclub/internal/usecase/user"
 )
 
 type UserService struct {
 	repo user.Repository
-	createUseCase *usecases.CreateUserUseCase
+	createUseCase *user.CreateUserUseCase
 }
 
-func NewUserService(repo user.Repository, createUseCase *usecases.CreateUserUseCase) *UserService {
+func NewUserService(repo user.Repository) *UserService {
+	createUserUseCase := user.NewCreateUserUseCase(repo)
+
 	return &UserService{
 		repo: repo,
-		createUseCase: createUseCase,
+		createUseCase: createUserUseCase,
 	}
 }
 
-func (s *UserService) Create(ctx context.Context, input usecases.CreateUserInput) (string,error) {
+func (s *UserService) Create(ctx context.Context, input user.CreateUserInput) (string,error) {
 	return s.createUseCase.Execute(ctx, input)
 }
 

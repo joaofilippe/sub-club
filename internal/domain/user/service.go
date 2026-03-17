@@ -1,9 +1,11 @@
 package user
 
-import "context"
+import (
+	"context"
+)
 
 type Service interface {
-	Create(ctx context.Context, user *User) error
+	Create(ctx context.Context, input CreateUserInput) (string, error)
 	GetByID(ctx context.Context, id string) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	GetByRole(ctx context.Context, role UserRole) ([]*User, error)

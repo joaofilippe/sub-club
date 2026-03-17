@@ -5,20 +5,19 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/joaofilippe/subclub/internal/domain/user"
 )
 
 type CreateUserInput struct {
 	Email string        `json:"email"`
-	Type  user.UserType `json:"type"`
-	Role  user.UserRole `json:"role"`
+	Type  UserType `json:"type"`
+	Role  UserRole `json:"role"`
 }
 
 type CreateUserUseCase struct {
-	repo user.Repository
+	repo Repository
 }
 
-func NewCreateUserUseCase(repo user.Repository) *CreateUserUseCase {
+func NewCreateUserUseCase(repo Repository) *CreateUserUseCase {
 	return &CreateUserUseCase{
 		repo: repo,
 	}
@@ -28,7 +27,7 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput)
 	now := time.Now()
 	newID := uuid.New().String()
 
-	u := &user.User{
+	u := &User{
 		ID:        newID,
 		Email:     input.Email,
 		Type:      input.Type,

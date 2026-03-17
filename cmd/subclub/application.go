@@ -4,10 +4,7 @@ import (
 	"context"
 	"log"
 
-	apiUser "github.com/joaofilippe/subclub/internal/adapter/api/user"
-	"github.com/joaofilippe/subclub/internal/adapter/repository"
 	"github.com/joaofilippe/subclub/internal/application"
-	apiUserUseCase "github.com/joaofilippe/subclub/internal/application/usecase/user"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/server"
@@ -41,15 +38,12 @@ func startApplication() {
 
 	srv := server.NewServer()
 
-	// Inicializa dependências
-	userRepo := repository.NewUserPostgresRepository(dbConnection.GetDB())
-	createUserUseCase := apiUserUseCase.NewCreateUserUseCase(userRepo)
-	userHandler := apiUser.NewUserHandler(createUserUseCase)
-
-	// Registra rotas
-	srv.RegisterUserRoutes(userHandler)
-
-	app := application.New(srv, dbConnection.GetDB())
+	app := application.New(srv, dbConnection)
+	
+	err = app.InitServices()
+	if err != nil {
+		log.Fatalf("Could not initialize services: %v", err)
+	}
 
 	log.Fatal(app.Start(cfg.Port))
 }
