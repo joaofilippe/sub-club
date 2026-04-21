@@ -37,6 +37,11 @@ type PlanInputDTO struct {
 	ImageURL      *string `json:"imageUrl,omitempty"`
 }
 
+type PaginatedPlanResponse struct {
+	Items      []PlanDTO `json:"items"`
+	TotalCount int       `json:"totalCount"`
+}
+
 type PlanHandler struct {
 	service *services.PlanService
 }
@@ -169,7 +174,7 @@ func (h *PlanHandler) Delete(c echo.Context) error {
 // @Param        active    query     bool    false  "Filter by active status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {array}   PlanDTO
+// @Success      200       {object}  PaginatedPlanResponse
 // @Failure      500       {object}  common.Response
 // @Router       /plans [get]
 func (h *PlanHandler) List(c echo.Context) error {
@@ -183,20 +188,34 @@ func (h *PlanHandler) List(c echo.Context) error {
 			filter.IsActive = &b
 		}
 	}
+	
+	page := 1
+	if p, err := strconv.Atoi(c.QueryParam("page")); err == nil && p > 0 {
+		page = p
+	}
+	pageSize := 10
+	if ps, err := strconv.Atoi(c.QueryParam("pageSize")); err == nil && ps > 0 {
+		pageSize = ps
+	}
+	filter.Page = page
+	filter.PageSize = pageSize
 
 	list, err := h.service.List(c.Request().Context(), filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
-	var res []PlanDTO
-	for _, p := range list {
-		res = append(res, mapDomainToDTO(p))
+	response := PaginatedPlanResponse{
+		Items:      make([]PlanDTO, 0, len(list.Items)),
+		TotalCount: list.TotalCount,
 	}
-	if res == nil {
-		res = []PlanDTO{}
+	for _, p := range list.Items {
+		response.Items = append(response.Items, mapDomainToDTO(p))
 	}
-	return c.JSON(http.StatusOK, res)
+	if response.Items == nil {
+		response.Items = []PlanDTO{}
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 func mapDomainToDTO(p *domain.Plan) PlanDTO {

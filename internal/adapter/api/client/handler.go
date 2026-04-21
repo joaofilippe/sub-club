@@ -30,7 +30,6 @@ func NewClientHandler(clientService *services.ClientService) *ClientHandler {
 // @Failure      400     {object}  common.Response
 // @Failure      500     {object}  common.Response
 // @Router       /clients [post]
-
 func (h *ClientHandler) Create(c echo.Context) error {
 	var input ClientInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -75,7 +74,6 @@ func (h *ClientHandler) Create(c echo.Context) error {
 // @Success      200     {object}  ClientDTO
 // @Failure      404     {object}  common.Response
 // @Router       /clients/{id} [get]
-
 func (h *ClientHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	client, err := h.service.GetByID(c.Request().Context(), id)
@@ -99,7 +97,6 @@ func (h *ClientHandler) Get(c echo.Context) error {
 // @Failure      404     {object}  common.Response
 // @Failure      500     {object}  common.Response
 // @Router       /clients/{id} [put]
-
 func (h *ClientHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	
@@ -150,7 +147,6 @@ func (h *ClientHandler) Update(c echo.Context) error {
 // @Success      200     {string}  string  "OK"
 // @Failure      500     {object}  common.Response
 // @Router       /clients/{id} [delete]
-
 func (h *ClientHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if err := h.service.Delete(c.Request().Context(), id); err != nil {
@@ -171,7 +167,6 @@ func (h *ClientHandler) Delete(c echo.Context) error {
 // @Success      200       {object}  PaginatedClientResponse
 // @Failure      500       {object}  common.Response
 // @Router       /clients [get]
-
 func (h *ClientHandler) List(c echo.Context) error {
 	search := c.QueryParam("search")
 	activeStr := c.QueryParam("active")

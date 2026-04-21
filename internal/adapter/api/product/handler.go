@@ -185,7 +185,7 @@ func (h *ProductHandler) List(c echo.Context) error {
 	}
 
 	var res []ProductDTO
-	for _, p := range list {
+	for _, p := range list.Items {
 		res = append(res, mapDomainToDTO(p))
 	}
 	if res == nil {
