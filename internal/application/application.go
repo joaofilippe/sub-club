@@ -16,6 +16,8 @@ import (
 	"github.com/joaofilippe/subclub/internal/infra/server"
 
 	entsql "entgo.io/ent/dialect/sql"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "github.com/joaofilippe/subclub/docs" // swagger docs
 )
 
 // Application orquestra os componentes principais do sistema
@@ -67,6 +69,9 @@ func (a *Application) InitServices() error {
 
 	// 5. Register Routes
 	router := a.server.GetEcho()
+
+	// Swagger
+	router.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	clientGroup := router.Group("/clients")
 	clientGroup.POST("", clientHandler.Create)

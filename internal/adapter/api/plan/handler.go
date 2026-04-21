@@ -45,6 +45,17 @@ func NewPlanHandler(s *services.PlanService) *PlanHandler {
 	return &PlanHandler{service: s}
 }
 
+// Create godoc
+// @Summary      Create a plan
+// @Description  Creates a new subscription plan
+// @Tags         plans
+// @Accept       json
+// @Produce      json
+// @Param        plan  body      PlanInputDTO  true  "Plan data"
+// @Success      201   {object}  PlanDTO
+// @Failure      400   {object}  common.Response
+// @Failure      500   {object}  common.Response
+// @Router       /plans [post]
 func (h *PlanHandler) Create(c echo.Context) error {
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -74,6 +85,15 @@ func (h *PlanHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, mapDomainToDTO(plan))
 }
 
+// Get godoc
+// @Summary      Get a plan by ID
+// @Description  Retrieves a plan by its UUID
+// @Tags         plans
+// @Produce      json
+// @Param        id   path      string  true  "Plan ID"
+// @Success      200  {object}  PlanDTO
+// @Failure      404  {object}  common.Response
+// @Router       /plans/{id} [get]
 func (h *PlanHandler) Get(c echo.Context) error {
 	plan, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -82,6 +102,19 @@ func (h *PlanHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, mapDomainToDTO(plan))
 }
 
+// Update godoc
+// @Summary      Update a plan
+// @Description  Updates an existing plan
+// @Tags         plans
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string        true  "Plan ID"
+// @Param        plan  body      PlanInputDTO  true  "Updated plan data"
+// @Success      200   {object}  PlanDTO
+// @Failure      400   {object}  common.Response
+// @Failure      404   {object}  common.Response
+// @Failure      500   {object}  common.Response
+// @Router       /plans/{id} [put]
 func (h *PlanHandler) Update(c echo.Context) error {
 	existing, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -111,6 +144,15 @@ func (h *PlanHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
 }
 
+// Delete godoc
+// @Summary      Delete a plan
+// @Description  Soft deletes a plan by ID
+// @Tags         plans
+// @Produce      json
+// @Param        id   path      string  true  "Plan ID"
+// @Success      200  {string}  string  "OK"
+// @Failure      500  {object}  common.Response
+// @Router       /plans/{id} [delete]
 func (h *PlanHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
@@ -118,6 +160,18 @@ func (h *PlanHandler) Delete(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// List godoc
+// @Summary      List plans
+// @Description  Get a paginated list of plans
+// @Tags         plans
+// @Produce      json
+// @Param        search    query     string  false  "Search by name or code"
+// @Param        active    query     bool    false  "Filter by active status"
+// @Param        page      query     int     false  "Page number"
+// @Param        pageSize  query     int     false  "Page size"
+// @Success      200       {array}   PlanDTO
+// @Failure      500       {object}  common.Response
+// @Router       /plans [get]
 func (h *PlanHandler) List(c echo.Context) error {
 	filter := domain.Filter{}
 	if s := c.QueryParam("search"); s != "" {
