@@ -7,15 +7,14 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
-	"github.com/joaofilippe/subclub/internal/adapter/service"
 	domain "github.com/joaofilippe/subclub/internal/domain/client"
 )
 
 type ClientHandler struct {
-	service *services.ClientService
+	service domain.Service
 }
 
-func NewClientHandler(clientService *services.ClientService) *ClientHandler {
+func NewClientHandler(clientService domain.Service) *ClientHandler {
 	return &ClientHandler{service: clientService}
 }
 
