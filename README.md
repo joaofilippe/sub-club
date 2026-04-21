@@ -63,6 +63,11 @@ The project includes automatically generated OpenAPI documentation using the **S
 
 This application utilizes **Clean Architecture** combined with the **Ent ORM** for standardizing interactions with the PostgreSQL database.
 
+### Automated Database Seeding (Mocks)
+When spinning up the application locally using `make dev` or Docker Compose, the API automatically verifies if the database is running on a pristine state (empty users). If it is, the system automatically injects:
+- **1 Master Administrator**: Login credentials -> `admin@subclub.com` / `root`
+- **Clients, Plans, Products & Subscriptions**: Base mockups to facilitate Angular UI integration and frontend testing.
+
 - **Clean Architecture**: 
   - Business rules lie securely within `/internal/domain`. 
   - Controllers, Services, and Handlers lie in `/internal/adapter`.
