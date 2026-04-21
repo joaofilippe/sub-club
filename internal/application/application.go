@@ -46,6 +46,9 @@ func (a *Application) InitServices() error {
 		log.Printf("Failed creating schema resources: %v", err)
 	}
 
+	// 1.5 Auto-Seeding (Database Mocks)
+	database.SeedAll(ctx, a.entClient)
+
 	// 2. Repositories
 	clientRepo := repository.NewClientEntRepository(a.entClient)
 	planRepo := repository.NewPlanEntRepository(a.entClient)
