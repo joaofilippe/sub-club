@@ -6,9 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/user"
 )
 
@@ -37,6 +39,90 @@ func (_c *UserCreate) SetPassword(v string) *UserCreate {
 	return _c
 }
 
+// SetType sets the "type" field.
+func (_c *UserCreate) SetType(v user.Type) *UserCreate {
+	_c.mutation.SetType(v)
+	return _c
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_c *UserCreate) SetNillableType(v *user.Type) *UserCreate {
+	if v != nil {
+		_c.SetType(*v)
+	}
+	return _c
+}
+
+// SetRole sets the "role" field.
+func (_c *UserCreate) SetRole(v user.Role) *UserCreate {
+	_c.mutation.SetRole(v)
+	return _c
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (_c *UserCreate) SetNillableRole(v *user.Role) *UserCreate {
+	if v != nil {
+		_c.SetRole(*v)
+	}
+	return _c
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (_c *UserCreate) SetCreatedAt(v time.Time) *UserCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableCreatedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *UserCreate) SetUpdatedAt(v time.Time) *UserCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (_c *UserCreate) SetDeletedAt(v time.Time) *UserCreate {
+	_c.mutation.SetDeletedAt(v)
+	return _c
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableDeletedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetDeletedAt(*v)
+	}
+	return _c
+}
+
+// SetID sets the "id" field.
+func (_c *UserCreate) SetID(v uuid.UUID) *UserCreate {
+	_c.mutation.SetID(v)
+	return _c
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableID(v *uuid.UUID) *UserCreate {
+	if v != nil {
+		_c.SetID(*v)
+	}
+	return _c
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_c *UserCreate) Mutation() *UserMutation {
 	return _c.mutation
@@ -44,6 +130,7 @@ func (_c *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -66,6 +153,30 @@ func (_c *UserCreate) Exec(ctx context.Context) error {
 func (_c *UserCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_c *UserCreate) defaults() {
+	if _, ok := _c.mutation.GetType(); !ok {
+		v := user.DefaultType
+		_c.mutation.SetType(v)
+	}
+	if _, ok := _c.mutation.Role(); !ok {
+		v := user.DefaultRole
+		_c.mutation.SetRole(v)
+	}
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		v := user.DefaultCreatedAt()
+		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := user.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := _c.mutation.ID(); !ok {
+		v := user.DefaultID()
+		_c.mutation.SetID(v)
 	}
 }
 
@@ -95,6 +206,28 @@ func (_c *UserCreate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "User.type"`)}
+	}
+	if v, ok := _c.mutation.GetType(); ok {
+		if err := user.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "User.type": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Role(); !ok {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
+	}
+	if v, ok := _c.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
+	}
 	return nil
 }
 
@@ -109,8 +242,13 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -119,8 +257,12 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	)
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -132,6 +274,26 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
+	}
+	if value, ok := _c.mutation.GetType(); ok {
+		_spec.SetField(user.FieldType, field.TypeEnum, value)
+		_node.Type = value
+	}
+	if value, ok := _c.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
+		_node.Role = value
+	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.DeletedAt(); ok {
+		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = &value
 	}
 	return _node, _spec
 }
@@ -154,6 +316,7 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
 				if !ok {
@@ -180,10 +343,6 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

@@ -31,9 +31,7 @@ O `UserRole` define o que o usuário **pode fazer** (permissões).
 - **Acesso:** Gestão logística e estoque.
 - **Responsabilidades:** Processamento de pedidos, envios e controle de café disponível.
 
-### 3. Cliente (`customer`)
-- **Acesso:** Área do cliente e e-commerce.
-- **Responsabilidades:** Gestão da própria assinatura, compras avulsas e histórico pessoal.
+> **Atenção:** Anteriormente existia um papel de `customer` nesta tabela. No entanto, o sistema foi refatorado para ser **exclusivamente administrativo**. Os clientes reais do clube assinaram o serviço externamente e agora são gerenciados por um domínio própio, apartado da lógica de autenticação (`internal/domain/client` e schema `Customer` no Ent).
 
 ## Futuras Expansões (Ideias)
 - **Curador/Barista:** Para gestão técnica de lotes e notas sensoriais.
