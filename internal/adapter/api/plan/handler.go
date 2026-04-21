@@ -7,7 +7,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
-	"github.com/joaofilippe/subclub/internal/adapter/service"
 	domain "github.com/joaofilippe/subclub/internal/domain/plan"
 )
 
@@ -43,10 +42,10 @@ type PaginatedPlanResponse struct {
 }
 
 type PlanHandler struct {
-	service *services.PlanService
+	service domain.Service
 }
 
-func NewPlanHandler(s *services.PlanService) *PlanHandler {
+func NewPlanHandler(s domain.Service) *PlanHandler {
 	return &PlanHandler{service: s}
 }
 

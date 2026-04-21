@@ -7,7 +7,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
-	"github.com/joaofilippe/subclub/internal/adapter/service"
 	domain "github.com/joaofilippe/subclub/internal/domain/product"
 )
 
@@ -34,10 +33,10 @@ type ProductInputDTO struct {
 }
 
 type ProductHandler struct {
-	service *services.ProductService
+	service domain.Service
 }
 
-func NewProductHandler(s *services.ProductService) *ProductHandler {
+func NewProductHandler(s domain.Service) *ProductHandler {
 	return &ProductHandler{service: s}
 }
 
