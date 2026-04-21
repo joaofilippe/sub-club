@@ -50,6 +50,19 @@ We use `air` for hot-reloading during development.
 - **Database**: PostgreSQL on port `5432`.
 - **PgAdmin**: Available at `http://localhost:5050` (Login: `admin@admin.com` / `root`).
 
+## Architecture & Database
+
+This application utilizes **Clean Architecture** combined with the **Ent ORM** for standardizing interactions with the PostgreSQL database.
+
+- **Clean Architecture**: 
+  - Business rules lie securely within `/internal/domain`. 
+  - Controllers, Services, and Handlers lie in `/internal/adapter`.
+  - External adapters and connection establishments (`sqlx`, `echo`) reside in `/internal/infra`.
+
+- **Ent ORM**:
+  - The framework is heavily mapped internally. Schemas are defined at `/ent/schema/`. Run `go generate ./ent` to reflect mapping changes.
+  - *Developer Note*: The internal API entity dealing with Clients is physically stored as **Customer** in the database to prevent naming collisions with the `ent.Client` keyword. The web routes continue to operate under `/clients` smoothly.
+
 ## Project Structure
 
 Este projeto segue o layout padrão de projetos Go (Standard Go Project Layout). Abaixo está a descrição da finalidade de cada diretório:

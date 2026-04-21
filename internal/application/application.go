@@ -11,6 +11,7 @@ import (
 	"github.com/joaofilippe/subclub/internal/adapter/api/subscription"
 	"github.com/joaofilippe/subclub/internal/adapter/repository"
 	services "github.com/joaofilippe/subclub/internal/adapter/service"
+	"github.com/joaofilippe/subclub/internal/domain/user"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 
@@ -22,6 +23,7 @@ type Application struct {
 	dbConnection *database.Connection
 	server       *server.Server
 	entClient    *ent.Client
+	userService  user.Service // Add generic domain user.Service
 }
 
 // New inicializa uma nova Application com suas dependências globais
@@ -47,12 +49,15 @@ func (a *Application) InitServices() error {
 	planRepo := repository.NewPlanEntRepository(a.entClient)
 	productRepo := repository.NewProductEntRepository(a.entClient)
 	subRepo := repository.NewSubscriptionEntRepository(a.entClient)
+	userRepo := repository.NewUserEntRepository(a.entClient)
 
 	// 3. Services
 	clientService := services.NewClientService(clientRepo)
 	planService := services.NewPlanService(planRepo)
 	productService := services.NewProductService(productRepo)
 	subService := services.NewSubscriptionService(subRepo)
+	userService := services.NewUserService(userRepo)
+	a.userService = userService // Stored in application struct just in case
 
 	// 4. Handlers
 	clientHandler := client.NewClientHandler(clientService)
