@@ -44,11 +44,20 @@ We use `air` for hot-reloading during development.
 - **Run Tests**: `make test`
 - **Linting**: `make lint`
 - **Tidy Dependencies**: `make tidy`
+- **Generate API Docs**: `make swagger`
 
 ### Infrastructure
 - **API Server**: Runs on port `8080`.
 - **Database**: PostgreSQL on port `5432`.
 - **PgAdmin**: Available at `http://localhost:5050` (Login: `admin@admin.com` / `root`).
+
+## API Documentation (Swagger)
+
+The project includes automatically generated OpenAPI documentation using the **Swag** generator.
+
+1. Generate the static definitions analyzing code annotations: `make swagger`
+2. Start the application: `make run`
+3. Access the interactive user interface in your browser: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
 
 ## Architecture & Database
 
@@ -76,7 +85,7 @@ Este projeto segue o layout padrão de projetos Go (Standard Go Project Layout).
 - **`/build`**: Configuração e scripts para empacotamento e CI.
 - **`/deployments`**: Configurações de implantação (Docker Compose, Kubernetes).
 - **`/test`**: Apps de teste externos adicionais e dados de teste.
-- **`/docs`**: Documentação de design e do usuário.
+- **`/docs`**: Documentação OpenAPI gerada pelo Swagger, guia arquiteturais de design e manuais do usuário.
 - **`/pkg`**: (Opcional) Código de biblioteca que pode ser utilizado por aplicações externas.
 
 

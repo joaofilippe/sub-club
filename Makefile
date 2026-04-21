@@ -38,6 +38,9 @@ tidy:
 deps:
 	$(GOCMD) mod download
 
+swagger:
+	$(GOCMD) run github.com/swaggo/swag/cmd/swag@latest init -g cmd/subclub/main.go --parseDependency --parseInternal
+
 help:
 	@echo "Usage: make [target]"
 	@echo ""

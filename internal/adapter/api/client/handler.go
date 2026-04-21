@@ -19,6 +19,18 @@ func NewClientHandler(clientService *services.ClientService) *ClientHandler {
 	return &ClientHandler{service: clientService}
 }
 
+// Create godoc
+// @Summary      Create a client
+// @Description  Creates a new client in the system
+// @Tags         clients
+// @Accept       json
+// @Produce      json
+// @Param        client  body      ClientInputDTO  true  "Client data"
+// @Success      201     {object}  ClientDTO
+// @Failure      400     {object}  common.Response
+// @Failure      500     {object}  common.Response
+// @Router       /clients [post]
+
 func (h *ClientHandler) Create(c echo.Context) error {
 	var input ClientInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -54,6 +66,16 @@ func (h *ClientHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, mapDomainToDTO(client))
 }
 
+// Get godoc
+// @Summary      Get a client by ID
+// @Description  Retrieves a client by their UUID
+// @Tags         clients
+// @Produce      json
+// @Param        id      path      string  true  "Client ID"
+// @Success      200     {object}  ClientDTO
+// @Failure      404     {object}  common.Response
+// @Router       /clients/{id} [get]
+
 func (h *ClientHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	client, err := h.service.GetByID(c.Request().Context(), id)
@@ -63,6 +85,20 @@ func (h *ClientHandler) Get(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, mapDomainToDTO(client))
 }
+
+// Update godoc
+// @Summary      Update a client
+// @Description  Updates an existing client
+// @Tags         clients
+// @Accept       json
+// @Produce      json
+// @Param        id      path      string          true  "Client ID"
+// @Param        client  body      ClientInputDTO  true  "Updated client data"
+// @Success      200     {object}  ClientDTO
+// @Failure      400     {object}  common.Response
+// @Failure      404     {object}  common.Response
+// @Failure      500     {object}  common.Response
+// @Router       /clients/{id} [put]
 
 func (h *ClientHandler) Update(c echo.Context) error {
 	id := c.Param("id")
@@ -105,6 +141,16 @@ func (h *ClientHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
 }
 
+// Delete godoc
+// @Summary      Delete a client
+// @Description  Soft deletes a client by ID
+// @Tags         clients
+// @Produce      json
+// @Param        id      path      string  true  "Client ID"
+// @Success      200     {string}  string  "OK"
+// @Failure      500     {object}  common.Response
+// @Router       /clients/{id} [delete]
+
 func (h *ClientHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if err := h.service.Delete(c.Request().Context(), id); err != nil {
@@ -112,6 +158,19 @@ func (h *ClientHandler) Delete(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusOK) // or http.StatusNoContent
 }
+
+// List godoc
+// @Summary      List clients
+// @Description  Get a paginated list of clients
+// @Tags         clients
+// @Produce      json
+// @Param        search    query     string  false  "Search by name or email"
+// @Param        active    query     bool    false  "Filter by active status"
+// @Param        page      query     int     false  "Page number"
+// @Param        pageSize  query     int     false  "Page size"
+// @Success      200       {object}  PaginatedClientResponse
+// @Failure      500       {object}  common.Response
+// @Router       /clients [get]
 
 func (h *ClientHandler) List(c echo.Context) error {
 	search := c.QueryParam("search")

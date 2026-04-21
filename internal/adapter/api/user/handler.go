@@ -18,6 +18,17 @@ func NewUserHandler(createUserUseCase *user.CreateUserUseCase) *UserHandler {
 	}
 }
 
+// Create godoc
+// @Summary      Create a user
+// @Description  Creates a new administrative user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user  body      user.CreateUserInput  true  "User input"
+// @Success      201   {object}  map[string]interface{}
+// @Failure      400   {object}  map[string]string
+// @Failure      500   {object}  map[string]string
+// @Router       /users [post]
 func (h *UserHandler) Create(c echo.Context) error {
 	var input user.CreateUserInput
 	if err := c.Bind(&input); err != nil {

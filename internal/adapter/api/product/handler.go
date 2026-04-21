@@ -41,6 +41,17 @@ func NewProductHandler(s *services.ProductService) *ProductHandler {
 	return &ProductHandler{service: s}
 }
 
+// Create godoc
+// @Summary      Create a product
+// @Description  Creates a new product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        product  body      ProductInputDTO  true  "Product data"
+// @Success      201      {object}  ProductDTO
+// @Failure      400      {object}  common.Response
+// @Failure      500      {object}  common.Response
+// @Router       /products [post]
 func (h *ProductHandler) Create(c echo.Context) error {
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -68,6 +79,15 @@ func (h *ProductHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, mapDomainToDTO(product))
 }
 
+// Get godoc
+// @Summary      Get a product by ID
+// @Description  Retrieves a product by its UUID
+// @Tags         products
+// @Produce      json
+// @Param        id   path      string  true  "Product ID"
+// @Success      200  {object}  ProductDTO
+// @Failure      404  {object}  common.Response
+// @Router       /products/{id} [get]
 func (h *ProductHandler) Get(c echo.Context) error {
 	product, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -76,6 +96,19 @@ func (h *ProductHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, mapDomainToDTO(product))
 }
 
+// Update godoc
+// @Summary      Update a product
+// @Description  Updates an existing product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        id       path      string           true  "Product ID"
+// @Param        product  body      ProductInputDTO  true  "Updated product data"
+// @Success      200      {object}  ProductDTO
+// @Failure      400      {object}  common.Response
+// @Failure      404      {object}  common.Response
+// @Failure      500      {object}  common.Response
+// @Router       /products/{id} [put]
 func (h *ProductHandler) Update(c echo.Context) error {
 	existing, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -103,6 +136,15 @@ func (h *ProductHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
 }
 
+// Delete godoc
+// @Summary      Delete a product
+// @Description  Soft deletes a product by ID
+// @Tags         products
+// @Produce      json
+// @Param        id   path      string  true  "Product ID"
+// @Success      200  {string}  string  "OK"
+// @Failure      500  {object}  common.Response
+// @Router       /products/{id} [delete]
 func (h *ProductHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
@@ -110,6 +152,18 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// List godoc
+// @Summary      List products
+// @Description  Get a paginated list of products
+// @Tags         products
+// @Produce      json
+// @Param        search    query     string  false  "Search by name or code"
+// @Param        active    query     bool    false  "Filter by active status"
+// @Param        page      query     int     false  "Page number"
+// @Param        pageSize  query     int     false  "Page size"
+// @Success      200       {array}   ProductDTO
+// @Failure      500       {object}  common.Response
+// @Router       /products [get]
 func (h *ProductHandler) List(c echo.Context) error {
 	filter := domain.Filter{}
 	if s := c.QueryParam("search"); s != "" {
