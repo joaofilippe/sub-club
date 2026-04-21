@@ -9,6 +9,54 @@ import (
 	"github.com/joaofilippe/subclub/ent"
 )
 
+// The CustomerFunc type is an adapter to allow the use of ordinary
+// function as Customer mutator.
+type CustomerFunc func(context.Context, *ent.CustomerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CustomerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CustomerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerMutation", m)
+}
+
+// The PlanFunc type is an adapter to allow the use of ordinary
+// function as Plan mutator.
+type PlanFunc func(context.Context, *ent.PlanMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlanMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanMutation", m)
+}
+
+// The ProductFunc type is an adapter to allow the use of ordinary
+// function as Product mutator.
+type ProductFunc func(context.Context, *ent.ProductMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductMutation", m)
+}
+
+// The SubscriptionFunc type is an adapter to allow the use of ordinary
+// function as Subscription mutator.
+type SubscriptionFunc func(context.Context, *ent.SubscriptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubscriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SubscriptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscriptionMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

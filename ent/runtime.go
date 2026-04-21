@@ -3,7 +3,14 @@
 package ent
 
 import (
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/joaofilippe/subclub/ent/customer"
+	"github.com/joaofilippe/subclub/ent/plan"
+	"github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/ent/schema"
+	"github.com/joaofilippe/subclub/ent/subscription"
 	"github.com/joaofilippe/subclub/ent/user"
 )
 
@@ -11,6 +18,114 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	customerFields := schema.Customer{}.Fields()
+	_ = customerFields
+	// customerDescName is the schema descriptor for name field.
+	customerDescName := customerFields[1].Descriptor()
+	// customer.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	customer.NameValidator = customerDescName.Validators[0].(func(string) error)
+	// customerDescEmail is the schema descriptor for email field.
+	customerDescEmail := customerFields[2].Descriptor()
+	// customer.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	customer.EmailValidator = customerDescEmail.Validators[0].(func(string) error)
+	// customerDescActive is the schema descriptor for active field.
+	customerDescActive := customerFields[5].Descriptor()
+	// customer.DefaultActive holds the default value on creation for the active field.
+	customer.DefaultActive = customerDescActive.Default.(bool)
+	// customerDescCreatedAt is the schema descriptor for created_at field.
+	customerDescCreatedAt := customerFields[7].Descriptor()
+	// customer.DefaultCreatedAt holds the default value on creation for the created_at field.
+	customer.DefaultCreatedAt = customerDescCreatedAt.Default.(func() time.Time)
+	// customerDescID is the schema descriptor for id field.
+	customerDescID := customerFields[0].Descriptor()
+	// customer.DefaultID holds the default value on creation for the id field.
+	customer.DefaultID = customerDescID.Default.(func() uuid.UUID)
+	planFields := schema.Plan{}.Fields()
+	_ = planFields
+	// planDescCode is the schema descriptor for code field.
+	planDescCode := planFields[1].Descriptor()
+	// plan.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	plan.CodeValidator = planDescCode.Validators[0].(func(string) error)
+	// planDescName is the schema descriptor for name field.
+	planDescName := planFields[2].Descriptor()
+	// plan.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	plan.NameValidator = planDescName.Validators[0].(func(string) error)
+	// planDescProductValue is the schema descriptor for product_value field.
+	planDescProductValue := planFields[4].Descriptor()
+	// plan.DefaultProductValue holds the default value on creation for the product_value field.
+	plan.DefaultProductValue = planDescProductValue.Default.(float64)
+	// planDescDiscountValue is the schema descriptor for discount_value field.
+	planDescDiscountValue := planFields[5].Descriptor()
+	// plan.DefaultDiscountValue holds the default value on creation for the discount_value field.
+	plan.DefaultDiscountValue = planDescDiscountValue.Default.(float64)
+	// planDescPrice is the schema descriptor for price field.
+	planDescPrice := planFields[6].Descriptor()
+	// plan.DefaultPrice holds the default value on creation for the price field.
+	plan.DefaultPrice = planDescPrice.Default.(float64)
+	// planDescIntervalDays is the schema descriptor for interval_days field.
+	planDescIntervalDays := planFields[7].Descriptor()
+	// plan.DefaultIntervalDays holds the default value on creation for the interval_days field.
+	plan.DefaultIntervalDays = planDescIntervalDays.Default.(int)
+	// planDescActive is the schema descriptor for active field.
+	planDescActive := planFields[8].Descriptor()
+	// plan.DefaultActive holds the default value on creation for the active field.
+	plan.DefaultActive = planDescActive.Default.(bool)
+	// planDescCreatedAt is the schema descriptor for created_at field.
+	planDescCreatedAt := planFields[10].Descriptor()
+	// plan.DefaultCreatedAt holds the default value on creation for the created_at field.
+	plan.DefaultCreatedAt = planDescCreatedAt.Default.(func() time.Time)
+	// planDescID is the schema descriptor for id field.
+	planDescID := planFields[0].Descriptor()
+	// plan.DefaultID holds the default value on creation for the id field.
+	plan.DefaultID = planDescID.Default.(func() uuid.UUID)
+	productFields := schema.Product{}.Fields()
+	_ = productFields
+	// productDescCode is the schema descriptor for code field.
+	productDescCode := productFields[1].Descriptor()
+	// product.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	product.CodeValidator = productDescCode.Validators[0].(func(string) error)
+	// productDescName is the schema descriptor for name field.
+	productDescName := productFields[2].Descriptor()
+	// product.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	product.NameValidator = productDescName.Validators[0].(func(string) error)
+	// productDescCostPrice is the schema descriptor for cost_price field.
+	productDescCostPrice := productFields[4].Descriptor()
+	// product.DefaultCostPrice holds the default value on creation for the cost_price field.
+	product.DefaultCostPrice = productDescCostPrice.Default.(float64)
+	// productDescActive is the schema descriptor for active field.
+	productDescActive := productFields[7].Descriptor()
+	// product.DefaultActive holds the default value on creation for the active field.
+	product.DefaultActive = productDescActive.Default.(bool)
+	// productDescCreatedAt is the schema descriptor for created_at field.
+	productDescCreatedAt := productFields[8].Descriptor()
+	// product.DefaultCreatedAt holds the default value on creation for the created_at field.
+	product.DefaultCreatedAt = productDescCreatedAt.Default.(func() time.Time)
+	// productDescID is the schema descriptor for id field.
+	productDescID := productFields[0].Descriptor()
+	// product.DefaultID holds the default value on creation for the id field.
+	product.DefaultID = productDescID.Default.(func() uuid.UUID)
+	subscriptionFields := schema.Subscription{}.Fields()
+	_ = subscriptionFields
+	// subscriptionDescStatus is the schema descriptor for status field.
+	subscriptionDescStatus := subscriptionFields[3].Descriptor()
+	// subscription.DefaultStatus holds the default value on creation for the status field.
+	subscription.DefaultStatus = subscriptionDescStatus.Default.(string)
+	// subscriptionDescShipmentStatus is the schema descriptor for shipment_status field.
+	subscriptionDescShipmentStatus := subscriptionFields[4].Descriptor()
+	// subscription.DefaultShipmentStatus holds the default value on creation for the shipment_status field.
+	subscription.DefaultShipmentStatus = subscriptionDescShipmentStatus.Default.(string)
+	// subscriptionDescStartDate is the schema descriptor for start_date field.
+	subscriptionDescStartDate := subscriptionFields[5].Descriptor()
+	// subscription.DefaultStartDate holds the default value on creation for the start_date field.
+	subscription.DefaultStartDate = subscriptionDescStartDate.Default.(func() time.Time)
+	// subscriptionDescCreatedAt is the schema descriptor for created_at field.
+	subscriptionDescCreatedAt := subscriptionFields[8].Descriptor()
+	// subscription.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscription.DefaultCreatedAt = subscriptionDescCreatedAt.Default.(func() time.Time)
+	// subscriptionDescID is the schema descriptor for id field.
+	subscriptionDescID := subscriptionFields[0].Descriptor()
+	// subscription.DefaultID holds the default value on creation for the id field.
+	subscription.DefaultID = subscriptionDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

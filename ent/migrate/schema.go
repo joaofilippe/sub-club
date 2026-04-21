@@ -8,6 +8,93 @@ import (
 )
 
 var (
+	// CustomersColumns holds the columns for the "customers" table.
+	CustomersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString, Nullable: true},
+		{Name: "document", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "address", Type: field.TypeJSON, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// CustomersTable holds the schema information for the "customers" table.
+	CustomersTable = &schema.Table{
+		Name:       "customers",
+		Columns:    CustomersColumns,
+		PrimaryKey: []*schema.Column{CustomersColumns[0]},
+	}
+	// PlansColumns holds the columns for the "plans" table.
+	PlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "product_value", Type: field.TypeFloat64, Default: 0},
+		{Name: "discount_value", Type: field.TypeFloat64, Default: 0},
+		{Name: "price", Type: field.TypeFloat64, Default: 0},
+		{Name: "interval_days", Type: field.TypeInt, Default: 30},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PlansTable holds the schema information for the "plans" table.
+	PlansTable = &schema.Table{
+		Name:       "plans",
+		Columns:    PlansColumns,
+		PrimaryKey: []*schema.Column{PlansColumns[0]},
+	}
+	// ProductsColumns holds the columns for the "products" table.
+	ProductsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "cost_price", Type: field.TypeFloat64, Default: 0},
+		{Name: "category", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ProductsTable holds the schema information for the "products" table.
+	ProductsTable = &schema.Table{
+		Name:       "products",
+		Columns:    ProductsColumns,
+		PrimaryKey: []*schema.Column{ProductsColumns[0]},
+	}
+	// SubscriptionsColumns holds the columns for the "subscriptions" table.
+	SubscriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "status", Type: field.TypeString, Default: "active"},
+		{Name: "shipment_status", Type: field.TypeString, Default: "pending"},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "next_billing_date", Type: field.TypeTime, Nullable: true},
+		{Name: "next_shipment_date", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "client_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// SubscriptionsTable holds the schema information for the "subscriptions" table.
+	SubscriptionsTable = &schema.Table{
+		Name:       "subscriptions",
+		Columns:    SubscriptionsColumns,
+		PrimaryKey: []*schema.Column{SubscriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscriptions_customers_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[7]},
+				RefColumns: []*schema.Column{CustomersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscriptions_plans_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[8]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -23,9 +110,15 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CustomersTable,
+		PlansTable,
+		ProductsTable,
+		SubscriptionsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	SubscriptionsTable.ForeignKeys[0].RefTable = CustomersTable
+	SubscriptionsTable.ForeignKeys[1].RefTable = PlansTable
 }

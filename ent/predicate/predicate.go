@@ -6,5 +6,17 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Customer is the predicate function for customer builders.
+type Customer func(*sql.Selector)
+
+// Plan is the predicate function for plan builders.
+type Plan func(*sql.Selector)
+
+// Product is the predicate function for product builders.
+type Product func(*sql.Selector)
+
+// Subscription is the predicate function for subscription builders.
+type Subscription func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
