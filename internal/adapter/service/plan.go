@@ -30,6 +30,6 @@ func (s *PlanService) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 
-func (s *PlanService) List(ctx context.Context, filter domain.Filter) ([]*domain.Plan, error) {
+func (s *PlanService) List(ctx context.Context, filter domain.Filter) (*domain.PaginatedList, error) {
 	return s.repo.List(ctx, filter)
 }

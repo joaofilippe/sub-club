@@ -30,6 +30,6 @@ func (s *ProductService) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 
-func (s *ProductService) List(ctx context.Context, filter domain.Filter) ([]*domain.Product, error) {
+func (s *ProductService) List(ctx context.Context, filter domain.Filter) (*domain.PaginatedList, error) {
 	return s.repo.List(ctx, filter)
 }

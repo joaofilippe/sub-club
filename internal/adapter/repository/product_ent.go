@@ -76,7 +76,7 @@ func (r *ProductEntRepository) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *ProductEntRepository) List(ctx context.Context, filter domain.Filter) ([]*domain.Product, error) {
+func (r *ProductEntRepository) List(ctx context.Context, filter domain.Filter) (*domain.PaginatedList, error) {
 	q := r.client.Product.Query()
 
 	if filter.IsActive != nil {
@@ -89,6 +89,16 @@ func (r *ProductEntRepository) List(ctx context.Context, filter domain.Filter) (
 		q = q.Where(product.CategoryEQ(*filter.Category))
 	}
 
+	totalCount, err := q.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if filter.Page > 0 && filter.PageSize > 0 {
+		offset := (filter.Page - 1) * filter.PageSize
+		q = q.Offset(offset).Limit(filter.PageSize)
+	}
+
 	entProducts, err := q.All(ctx)
 	if err != nil {
 		return nil, err
@@ -98,7 +108,14 @@ func (r *ProductEntRepository) List(ctx context.Context, filter domain.Filter) (
 	for _, ep := range entProducts {
 		results = append(results, mapEntProductToDomain(ep))
 	}
-	return results, nil
+	if results == nil {
+		results = []*domain.Product{}
+	}
+
+	return &domain.PaginatedList{
+		Items:      results,
+		TotalCount: totalCount,
+	}, nil
 }
 
 func mapEntProductToDomain(ep *ent.Product) *domain.Product {

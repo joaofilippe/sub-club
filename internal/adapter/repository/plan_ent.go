@@ -78,7 +78,7 @@ func (r *PlanEntRepository) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *PlanEntRepository) List(ctx context.Context, filter domain.Filter) ([]*domain.Plan, error) {
+func (r *PlanEntRepository) List(ctx context.Context, filter domain.Filter) (*domain.PaginatedList, error) {
 	q := r.client.Plan.Query()
 
 	if filter.IsActive != nil {
@@ -86,6 +86,16 @@ func (r *PlanEntRepository) List(ctx context.Context, filter domain.Filter) ([]*
 	}
 	if filter.Search != nil && *filter.Search != "" {
 		q = q.Where(plan.NameContainsFold(*filter.Search))
+	}
+
+	totalCount, err := q.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if filter.Page > 0 && filter.PageSize > 0 {
+		offset := (filter.Page - 1) * filter.PageSize
+		q = q.Offset(offset).Limit(filter.PageSize)
 	}
 
 	entPlans, err := q.All(ctx)
@@ -97,7 +107,14 @@ func (r *PlanEntRepository) List(ctx context.Context, filter domain.Filter) ([]*
 	for _, ep := range entPlans {
 		results = append(results, mapEntPlanToDomain(ep))
 	}
-	return results, nil
+	if results == nil {
+		results = []*domain.Plan{}
+	}
+
+	return &domain.PaginatedList{
+		Items:      results,
+		TotalCount: totalCount,
+	}, nil
 }
 
 func mapEntPlanToDomain(ep *ent.Plan) *domain.Plan {
