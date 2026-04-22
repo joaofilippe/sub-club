@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/joaofilippe/subclub/internal/adapter/api"
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
@@ -36,14 +37,14 @@ func startApplication() {
 	}
 	defer dbConnection.Close()
 
-	srv := server.NewServer()
-
-	app := application.New(srv, dbConnection)
-	
-	err = app.InitServices()
-	if err != nil {
-		log.Fatalf("Could not initialize services: %v", err)
+	app := application.New(dbConnection)
+	if err := app.Init(ctx); err != nil {
+		log.Fatalf("Could not initialize application: %v", err)
 	}
 
-	log.Fatal(app.Start(cfg.Port))
+	srv := server.NewServer()
+	a := api.New(srv, app)
+	a.RegisterRoutes()
+
+	log.Fatal(a.Start(cfg.Port))
 }
