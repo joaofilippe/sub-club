@@ -1,0 +1,63 @@
+package api_test
+
+import (
+	"testing"
+
+	"github.com/joaofilippe/subclub/internal/adapter/api"
+	services "github.com/joaofilippe/subclub/internal/adapter/service"
+	"github.com/joaofilippe/subclub/internal/application"
+	"github.com/joaofilippe/subclub/internal/infra/server"
+)
+
+// stubApp builds an Application with nil-repo services — sufficient for route
+// registration since handlers are never invoked during this test.
+func stubApp() *application.Application {
+	return &application.Application{
+		UserService:         services.NewUserService(nil),
+		ClientService:       services.NewClientService(nil),
+		PlanService:         services.NewPlanService(nil),
+		ProductService:      services.NewProductService(nil),
+		SubscriptionService: services.NewSubscriptionService(nil),
+	}
+}
+
+func TestAPI_RegisterRoutes_AllRoutesPresent(t *testing.T) {
+	srv := server.NewServer()
+	a := api.New(srv, stubApp())
+	a.RegisterRoutes()
+
+	registered := map[string]bool{}
+	for _, r := range srv.GetEcho().Routes() {
+		registered[r.Method+":"+r.Path] = true
+	}
+
+	want := []struct{ method, path string }{
+		{"POST", "/clients"},
+		{"GET", "/clients"},
+		{"GET", "/clients/:id"},
+		{"PUT", "/clients/:id"},
+		{"DELETE", "/clients/:id"},
+		{"POST", "/plans"},
+		{"GET", "/plans"},
+		{"GET", "/plans/:id"},
+		{"PUT", "/plans/:id"},
+		{"DELETE", "/plans/:id"},
+		{"POST", "/subscriptions"},
+		{"GET", "/subscriptions"},
+		{"GET", "/subscriptions/:id"},
+		{"PUT", "/subscriptions/:id"},
+		{"DELETE", "/subscriptions/:id"},
+		{"POST", "/products"},
+		{"GET", "/products"},
+		{"GET", "/products/:id"},
+		{"PUT", "/products/:id"},
+		{"DELETE", "/products/:id"},
+		{"POST", "/users"},
+	}
+
+	for _, w := range want {
+		if !registered[w.method+":"+w.path] {
+			t.Errorf("route %s %s not registered", w.method, w.path)
+		}
+	}
+}

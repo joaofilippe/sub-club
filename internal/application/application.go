@@ -28,7 +28,12 @@ func New(db *database.Connection) *Application {
 
 func (a *Application) Init(ctx context.Context) error {
 	drv := entsql.OpenDB("postgres", a.dbConnection.GetDB().DB)
-	a.entClient = ent.NewClient(ent.Driver(drv))
+	client := ent.NewClient(ent.Driver(drv))
+	return a.initServices(ctx, client)
+}
+
+func (a *Application) initServices(ctx context.Context, client *ent.Client) error {
+	a.entClient = client
 	if err := a.entClient.Schema.Create(ctx); err != nil {
 		log.Printf("Failed creating schema resources: %v", err)
 	}
