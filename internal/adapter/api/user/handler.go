@@ -9,12 +9,12 @@ import (
 )
 
 type UserHandler struct {
-	createUserUseCase *user.CreateUserUseCase
+	service user.Service
 }
 
-func NewUserHandler(createUserUseCase *user.CreateUserUseCase) *UserHandler {
+func NewUserHandler(service user.Service) *UserHandler {
 	return &UserHandler{
-		createUserUseCase: createUserUseCase,
+		service: service,
 	}
 }
 
@@ -40,7 +40,7 @@ func (h *UserHandler) Create(c echo.Context) error {
 		return common.Error(c, http.StatusBadRequest, "Missing required fields")
 	}
 
-	id, err := h.createUserUseCase.Execute(c.Request().Context(), input)
+	id, err := h.service.Create(c.Request().Context(), input)
 	if err != nil {
 		return common.Error(c, http.StatusInternalServerError, "Failed to create user")
 	}
