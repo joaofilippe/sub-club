@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/joaofilippe/subclub/ent/enttest"
-	"github.com/joaofilippe/subclub/internal/adapter/repository"
+	"github.com/joaofilippe/subclub/internal/application/repository"
 	domain "github.com/joaofilippe/subclub/internal/domain/user"
 	_ "modernc.org/sqlite" // registers "sqlite" driver; "sqlite3" alias set in testsetup_test.go
 )

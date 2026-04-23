@@ -114,7 +114,6 @@ func (r *SubscriptionEntRepository) List(ctx context.Context, filter domain.Filt
 			q = q.Where(subscription.ClientID(cID))
 		}
 	}
-	// Note: Search by clientName can be implemented with HasCustomerWith if needed
 
 	totalCount, err := q.Count(ctx)
 	if err != nil {
@@ -165,7 +164,6 @@ func mapEntSubscriptionToDomain(es *ent.Subscription) *domain.Subscription {
 		nsd = &es.NextShipmentDate
 	}
 
-	// Calculate days until renewal roughly based on next billing date
 	daysUntil := 0
 	if nbd != nil {
 		// Just returning a dummy or you can use time.Until(*nbd)
