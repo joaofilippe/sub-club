@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
-	"github.com/joaofilippe/subclub/internal/adapter/service"
+	services "github.com/joaofilippe/subclub/internal/application/service"
 	domain "github.com/joaofilippe/subclub/internal/domain/subscription"
 )
 

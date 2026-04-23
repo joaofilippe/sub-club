@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/joaofilippe/subclub/ent"
-	"github.com/joaofilippe/subclub/internal/adapter/repository"
-	services "github.com/joaofilippe/subclub/internal/adapter/service"
+	"github.com/joaofilippe/subclub/internal/application/repository"
+	services "github.com/joaofilippe/subclub/internal/application/service"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 
 	entsql "entgo.io/ent/dialect/sql"

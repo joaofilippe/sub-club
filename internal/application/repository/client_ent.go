@@ -117,7 +117,6 @@ func (r *ClientEntRepository) List(ctx context.Context, filter domain.Filter) (*
 		q = q.Where(customer.ActiveEQ(*filter.IsActive))
 	}
 	if filter.Search != nil && *filter.Search != "" {
-		// Use Or to search name or email
 		q = q.Where(
 			customer.Or(
 				customer.NameContainsFold(*filter.Search),

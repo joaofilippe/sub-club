@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/joaofilippe/subclub/internal/adapter/api"
-	services "github.com/joaofilippe/subclub/internal/adapter/service"
+	services "github.com/joaofilippe/subclub/internal/application/service"
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 )
