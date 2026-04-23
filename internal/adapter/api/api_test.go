@@ -4,8 +4,12 @@ import (
 	"testing"
 
 	"github.com/joaofilippe/subclub/internal/adapter/api"
-	services "github.com/joaofilippe/subclub/internal/application/service"
 	"github.com/joaofilippe/subclub/internal/application"
+	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
+	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
+	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
+	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
+	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 )
 
@@ -13,11 +17,11 @@ import (
 // registration since handlers are never invoked during this test.
 func stubApp() *application.Application {
 	return &application.Application{
-		UserService:         services.NewUserService(nil),
-		ClientService:       services.NewClientService(nil),
-		PlanService:         services.NewPlanService(nil),
-		ProductService:      services.NewProductService(nil),
-		SubscriptionService: services.NewSubscriptionService(nil),
+		UserService:         usersvc.NewUserService(nil),
+		ClientService:       clientsvc.NewClientService(nil),
+		PlanService:         plansvc.NewPlanService(nil),
+		ProductService:      productsvc.NewProductService(nil),
+		SubscriptionService: subsvc.NewSubscriptionService(nil),
 	}
 }
 

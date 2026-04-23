@@ -9,33 +9,34 @@ import (
 	"testing"
 
 	userhandler "github.com/joaofilippe/subclub/internal/adapter/api/user"
-	"github.com/joaofilippe/subclub/internal/domain/user"
+	"github.com/joaofilippe/subclub/internal/domain/user/model"
 	"github.com/labstack/echo/v4"
 )
 
-// mockUserService implements user.Service for unit testing.
 type mockUserService struct {
-	createFn func(ctx context.Context, input user.CreateUserInput) (string, error)
+	createFn func(ctx context.Context, input model.CreateUserInput) (string, error)
 }
 
-func (m *mockUserService) Create(ctx context.Context, input user.CreateUserInput) (string, error) {
+func (m *mockUserService) Create(ctx context.Context, input model.CreateUserInput) (string, error) {
 	return m.createFn(ctx, input)
 }
-func (m *mockUserService) GetByID(ctx context.Context, id string) (*user.User, error) {
+func (m *mockUserService) GetByID(ctx context.Context, id string) (*model.User, error) {
 	return nil, nil
 }
-func (m *mockUserService) GetByEmail(ctx context.Context, email string) (*user.User, error) {
+func (m *mockUserService) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	return nil, nil
 }
-func (m *mockUserService) GetByRole(ctx context.Context, role user.UserRole) ([]*user.User, error) {
+func (m *mockUserService) GetByRole(ctx context.Context, role model.UserRole) ([]*model.User, error) {
 	return nil, nil
 }
-func (m *mockUserService) GetByType(ctx context.Context, userType user.UserType) ([]*user.User, error) {
+func (m *mockUserService) GetByType(ctx context.Context, userType model.UserType) ([]*model.User, error) {
 	return nil, nil
 }
-func (m *mockUserService) Update(ctx context.Context, u *user.User) error  { return nil }
-func (m *mockUserService) Delete(ctx context.Context, id string) error     { return nil }
-func (m *mockUserService) List(ctx context.Context) ([]*user.User, error)  { return nil, nil }
+func (m *mockUserService) Update(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
+	return nil, nil
+}
+func (m *mockUserService) Delete(ctx context.Context, id string) error    { return nil }
+func (m *mockUserService) List(ctx context.Context) ([]*model.User, error) { return nil, nil }
 
 func newEchoContext(method, body string) (echo.Context, *httptest.ResponseRecorder) {
 	e := echo.New()
@@ -52,7 +53,7 @@ func newEchoContext(method, body string) (echo.Context, *httptest.ResponseRecord
 
 func TestUserHandler_Create_Success(t *testing.T) {
 	svc := &mockUserService{
-		createFn: func(_ context.Context, _ user.CreateUserInput) (string, error) {
+		createFn: func(_ context.Context, _ model.CreateUserInput) (string, error) {
 			return "generated-uuid", nil
 		},
 	}
@@ -65,8 +66,6 @@ func TestUserHandler_Create_Success(t *testing.T) {
 	if rec.Code != http.StatusCreated {
 		t.Errorf("expected status 201, got %d — body: %s", rec.Code, rec.Body.String())
 	}
-
-
 }
 
 func TestUserHandler_Create_MissingFields(t *testing.T) {
@@ -83,7 +82,7 @@ func TestUserHandler_Create_MissingFields(t *testing.T) {
 
 func TestUserHandler_Create_ServiceError(t *testing.T) {
 	svc := &mockUserService{
-		createFn: func(_ context.Context, _ user.CreateUserInput) (string, error) {
+		createFn: func(_ context.Context, _ model.CreateUserInput) (string, error) {
 			return "", errors.New("db error")
 		},
 	}

@@ -5,8 +5,16 @@ import (
 	"log"
 
 	"github.com/joaofilippe/subclub/ent"
-	"github.com/joaofilippe/subclub/internal/application/repository"
-	services "github.com/joaofilippe/subclub/internal/application/service"
+	clientrepo "github.com/joaofilippe/subclub/internal/application/repository/client"
+	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
+	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
+	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
+	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
+	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
+	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
+	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
+	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
+	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 
 	entsql "entgo.io/ent/dialect/sql"
@@ -15,11 +23,11 @@ import (
 type Application struct {
 	dbConnection        *database.Connection
 	entClient           *ent.Client
-	UserService         *services.UserService
-	ClientService       *services.ClientService
-	PlanService         *services.PlanService
-	ProductService      *services.ProductService
-	SubscriptionService *services.SubscriptionService
+	UserService         *usersvc.UserService
+	ClientService       *clientsvc.ClientService
+	PlanService         *plansvc.PlanService
+	ProductService      *productsvc.ProductService
+	SubscriptionService *subsvc.SubscriptionService
 }
 
 func New(db *database.Connection) *Application {
@@ -40,17 +48,17 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client) erro
 
 	database.SeedAll(ctx, a.entClient)
 
-	clientRepo := repository.NewClientEntRepository(a.entClient)
-	planRepo := repository.NewPlanEntRepository(a.entClient)
-	productRepo := repository.NewProductEntRepository(a.entClient)
-	subRepo := repository.NewSubscriptionEntRepository(a.entClient)
-	userRepo := repository.NewUserEntRepository(a.entClient)
+	cr := clientrepo.NewClientEntRepository(a.entClient)
+	pr := planrepo.NewPlanEntRepository(a.entClient)
+	prodr := productrepo.NewProductEntRepository(a.entClient)
+	subr := subrepo.NewSubscriptionEntRepository(a.entClient)
+	ur := userrepo.NewUserEntRepository(a.entClient)
 
-	a.ClientService = services.NewClientService(clientRepo)
-	a.PlanService = services.NewPlanService(planRepo)
-	a.ProductService = services.NewProductService(productRepo)
-	a.SubscriptionService = services.NewSubscriptionService(subRepo)
-	a.UserService = services.NewUserService(userRepo)
+	a.ClientService = clientsvc.NewClientService(cr)
+	a.PlanService = plansvc.NewPlanService(pr)
+	a.ProductService = productsvc.NewProductService(prodr)
+	a.SubscriptionService = subsvc.NewSubscriptionService(subr)
+	a.UserService = usersvc.NewUserService(ur)
 
 	return nil
 }
