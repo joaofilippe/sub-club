@@ -1,13 +1,15 @@
 package product
 
 import (
-	"strconv"
+	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
 	domain "github.com/joaofilippe/subclub/internal/domain/product"
+	"github.com/joaofilippe/subclub/internal/domain/product/model"
 )
 
 type ProductDTO struct {
@@ -30,6 +32,11 @@ type ProductInputDTO struct {
 	Category    string  `json:"category"`
 	ImageURL    *string `json:"imageUrl,omitempty"`
 	Active      bool    `json:"active"`
+}
+
+type PaginatedProductResponse struct {
+	Items      []ProductDTO `json:"items"`
+	TotalCount int          `json:"totalCount"`
 }
 
 type ProductHandler struct {
@@ -62,7 +69,7 @@ func (h *ProductHandler) Create(c echo.Context) error {
 		img = *input.ImageURL
 	}
 
-	product := &domain.Product{
+	product, err := h.service.Create(c.Request().Context(), model.CreateProductInput{
 		Code:        input.Code,
 		Name:        input.Name,
 		Description: input.Description,
@@ -70,9 +77,8 @@ func (h *ProductHandler) Create(c echo.Context) error {
 		Category:    input.Category,
 		ImageURL:    img,
 		Active:      input.Active,
-	}
-
-	if err := h.service.Create(c.Request().Context(), product); err != nil {
+	})
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 	return c.JSON(http.StatusCreated, mapDomainToDTO(product))
@@ -109,30 +115,33 @@ func (h *ProductHandler) Get(c echo.Context) error {
 // @Failure      500      {object}  common.Response
 // @Router       /products/{id} [put]
 func (h *ProductHandler) Update(c echo.Context) error {
-	existing, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
-	}
-
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
 	}
 
-	existing.Code = input.Code
-	existing.Name = input.Name
-	existing.Description = input.Description
-	existing.CostPrice = input.CostPrice
-	existing.Category = input.Category
+	img := ""
 	if input.ImageURL != nil {
-		existing.ImageURL = *input.ImageURL
+		img = *input.ImageURL
 	}
-	existing.Active = input.Active
 
-	if err := h.service.Update(c.Request().Context(), existing); err != nil {
+	product, err := h.service.Update(c.Request().Context(), model.UpdateProductInput{
+		ID:          c.Param("id"),
+		Code:        input.Code,
+		Name:        input.Name,
+		Description: input.Description,
+		CostPrice:   input.CostPrice,
+		Category:    input.Category,
+		ImageURL:    img,
+		Active:      input.Active,
+	})
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+		}
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
+	return c.JSON(http.StatusOK, mapDomainToDTO(product))
 }
 
 // Delete godoc
@@ -157,14 +166,15 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 // @Tags         products
 // @Produce      json
 // @Param        search    query     string  false  "Search by name or code"
+// @Param        category  query     string  false  "Filter by category"
 // @Param        active    query     bool    false  "Filter by active status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {array}   ProductDTO
+// @Success      200       {object}  PaginatedProductResponse
 // @Failure      500       {object}  common.Response
 // @Router       /products [get]
 func (h *ProductHandler) List(c echo.Context) error {
-	filter := domain.Filter{}
+	filter := model.Filter{}
 	if s := c.QueryParam("search"); s != "" {
 		filter.Search = &s
 	}
@@ -178,22 +188,33 @@ func (h *ProductHandler) List(c echo.Context) error {
 		}
 	}
 
+	page := 1
+	if p, err := strconv.Atoi(c.QueryParam("page")); err == nil && p > 0 {
+		page = p
+	}
+	pageSize := 10
+	if ps, err := strconv.Atoi(c.QueryParam("pageSize")); err == nil && ps > 0 {
+		pageSize = ps
+	}
+	filter.Page = page
+	filter.PageSize = pageSize
+
 	list, err := h.service.List(c.Request().Context(), filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
-	var res []ProductDTO
+	response := PaginatedProductResponse{
+		Items:      make([]ProductDTO, 0, len(list.Items)),
+		TotalCount: list.TotalCount,
+	}
 	for _, p := range list.Items {
-		res = append(res, mapDomainToDTO(p))
+		response.Items = append(response.Items, mapDomainToDTO(p))
 	}
-	if res == nil {
-		res = []ProductDTO{}
-	}
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, response)
 }
 
-func mapDomainToDTO(p *domain.Product) ProductDTO {
+func mapDomainToDTO(p *model.Product) ProductDTO {
 	var img *string
 	if p.ImageURL != "" {
 		img = &p.ImageURL

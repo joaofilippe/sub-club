@@ -2,15 +2,17 @@ package user
 
 import (
 	"context"
+
+	"github.com/joaofilippe/subclub/internal/domain/user/model"
 )
 
 type Service interface {
-	Create(ctx context.Context, input CreateUserInput) (string, error)
-	GetByID(ctx context.Context, id string) (*User, error)
-	GetByEmail(ctx context.Context, email string) (*User, error)
-	GetByRole(ctx context.Context, role UserRole) ([]*User, error)
-	GetByType(ctx context.Context, userType UserType) ([]*User, error)
-	Update(ctx context.Context, user *User) error
+	Create(ctx context.Context, input model.CreateUserInput) (string, error)
+	GetByID(ctx context.Context, id string) (*model.User, error)
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
+	GetByRole(ctx context.Context, role model.UserRole) ([]*model.User, error)
+	GetByType(ctx context.Context, userType model.UserType) ([]*model.User, error)
+	Update(ctx context.Context, input model.UpdateUserInput) (*model.User, error)
 	Delete(ctx context.Context, id string) error
-	List(ctx context.Context) ([]*User, error)
-}	
+	List(ctx context.Context) ([]*model.User, error)
+}

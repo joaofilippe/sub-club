@@ -1,13 +1,15 @@
 package plan
 
 import (
-	"strconv"
+	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
 	domain "github.com/joaofilippe/subclub/internal/domain/plan"
+	"github.com/joaofilippe/subclub/internal/domain/plan/model"
 )
 
 type PlanDTO struct {
@@ -71,7 +73,7 @@ func (h *PlanHandler) Create(c echo.Context) error {
 		img = *input.ImageURL
 	}
 
-	plan := &domain.Plan{
+	p, err := h.service.Create(c.Request().Context(), model.CreatePlanInput{
 		Code:          input.Code,
 		Name:          input.Name,
 		Description:   input.Description,
@@ -81,12 +83,11 @@ func (h *PlanHandler) Create(c echo.Context) error {
 		IntervalDays:  input.IntervalDays,
 		Active:        input.Active,
 		ImageURL:      img,
-	}
-
-	if err := h.service.Create(c.Request().Context(), plan); err != nil {
+	})
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(plan))
+	return c.JSON(http.StatusCreated, mapDomainToDTO(p))
 }
 
 // Get godoc
@@ -99,11 +100,11 @@ func (h *PlanHandler) Create(c echo.Context) error {
 // @Failure      404  {object}  common.Response
 // @Router       /plans/{id} [get]
 func (h *PlanHandler) Get(c echo.Context) error {
-	plan, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
+	p, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(plan))
+	return c.JSON(http.StatusOK, mapDomainToDTO(p))
 }
 
 // Update godoc
@@ -120,32 +121,35 @@ func (h *PlanHandler) Get(c echo.Context) error {
 // @Failure      500   {object}  common.Response
 // @Router       /plans/{id} [put]
 func (h *PlanHandler) Update(c echo.Context) error {
-	existing, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
-	}
-
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
 	}
 
-	existing.Code = input.Code
-	existing.Name = input.Name
-	existing.Description = input.Description
-	existing.ProductValue = input.ProductValue
-	existing.DiscountValue = input.DiscountValue
-	existing.Price = input.Price
-	existing.IntervalDays = input.IntervalDays
-	existing.Active = input.Active
+	img := ""
 	if input.ImageURL != nil {
-		existing.ImageURL = *input.ImageURL
+		img = *input.ImageURL
 	}
 
-	if err := h.service.Update(c.Request().Context(), existing); err != nil {
+	p, err := h.service.Update(c.Request().Context(), model.UpdatePlanInput{
+		ID:            c.Param("id"),
+		Code:          input.Code,
+		Name:          input.Name,
+		Description:   input.Description,
+		ProductValue:  input.ProductValue,
+		DiscountValue: input.DiscountValue,
+		Price:         input.Price,
+		IntervalDays:  input.IntervalDays,
+		Active:        input.Active,
+		ImageURL:      img,
+	})
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+		}
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
+	return c.JSON(http.StatusOK, mapDomainToDTO(p))
 }
 
 // Delete godoc
@@ -177,7 +181,7 @@ func (h *PlanHandler) Delete(c echo.Context) error {
 // @Failure      500       {object}  common.Response
 // @Router       /plans [get]
 func (h *PlanHandler) List(c echo.Context) error {
-	filter := domain.Filter{}
+	filter := model.Filter{}
 	if s := c.QueryParam("search"); s != "" {
 		filter.Search = &s
 	}
@@ -187,7 +191,7 @@ func (h *PlanHandler) List(c echo.Context) error {
 			filter.IsActive = &b
 		}
 	}
-	
+
 	page := 1
 	if p, err := strconv.Atoi(c.QueryParam("page")); err == nil && p > 0 {
 		page = p
@@ -211,13 +215,10 @@ func (h *PlanHandler) List(c echo.Context) error {
 	for _, p := range list.Items {
 		response.Items = append(response.Items, mapDomainToDTO(p))
 	}
-	if response.Items == nil {
-		response.Items = []PlanDTO{}
-	}
 	return c.JSON(http.StatusOK, response)
 }
 
-func mapDomainToDTO(p *domain.Plan) PlanDTO {
+func mapDomainToDTO(p *model.Plan) PlanDTO {
 	var img *string
 	if p.ImageURL != "" {
 		img = &p.ImageURL

@@ -1,0 +1,29 @@
+package model
+
+import "time"
+
+type Plan struct {
+	ID            string
+	Code          string
+	Name          string
+	Description   string
+	ProductValue  float64
+	DiscountValue float64
+	Price         float64
+	IntervalDays  int
+	Active        bool
+	ImageURL      string
+	CreatedAt     time.Time
+}
+
+type Filter struct {
+	Search   *string
+	IsActive *bool
+	Page     int
+	PageSize int
+}
+
+type PaginatedList struct {
+	Items      []*Plan
+	TotalCount int
+}

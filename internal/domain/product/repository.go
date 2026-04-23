@@ -2,26 +2,14 @@ package product
 
 import (
 	"context"
+
+	"github.com/joaofilippe/subclub/internal/domain/product/model"
 )
 
-type Filter struct {
-	Search   *string
-	Category *string
-	IsActive *bool
-	Page     int
-	PageSize int
-}
-
-type PaginatedList struct {
-	Items      []*Product
-	TotalCount int
-}
-
-// Repository defines the interface for interacting with product storage
 type Repository interface {
-	Create(ctx context.Context, product *Product) error
-	GetByID(ctx context.Context, id string) (*Product, error)
-	Update(ctx context.Context, product *Product) error
+	Create(ctx context.Context, product *model.Product) error
+	GetByID(ctx context.Context, id string) (*model.Product, error)
+	Update(ctx context.Context, product *model.Product) error
 	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, filter Filter) (*PaginatedList, error)
+	List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error)
 }

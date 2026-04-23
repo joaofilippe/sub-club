@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/adapter/api/common"
 	domain "github.com/joaofilippe/subclub/internal/domain/client"
+	"github.com/joaofilippe/subclub/internal/domain/client/model"
 )
 
 type ClientHandler struct {
@@ -35,29 +37,17 @@ func (h *ClientHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
 
-	var address *domain.Address
-	if input.Address != nil {
-		address = &domain.Address{
-			ZipCode:      input.Address.ZipCode,
-			Street:       input.Address.Street,
-			Number:       input.Address.Number,
-			Complement:   input.Address.Complement,
-			Neighborhood: input.Address.Neighborhood,
-			City:         input.Address.City,
-			State:        input.Address.State,
-		}
-	}
-
-	client := &domain.Client{
+	ucInput := model.CreateClientInput{
 		Name:     input.Name,
 		Email:    input.Email,
 		Phone:    input.Phone,
 		Document: input.Document,
 		Active:   input.Active,
-		Address:  address,
+		Address:  mapAddressDTOToDomain(input.Address),
 	}
 
-	if err := h.service.Create(c.Request().Context(), client); err != nil {
+	client, err := h.service.Create(c.Request().Context(), ucInput)
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
@@ -74,12 +64,10 @@ func (h *ClientHandler) Create(c echo.Context) error {
 // @Failure      404     {object}  common.Response
 // @Router       /clients/{id} [get]
 func (h *ClientHandler) Get(c echo.Context) error {
-	id := c.Param("id")
-	client, err := h.service.GetByID(c.Request().Context(), id)
+	client, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, common.Response{Message: "client not found"})
 	}
-
 	return c.JSON(http.StatusOK, mapDomainToDTO(client))
 }
 
@@ -97,44 +85,30 @@ func (h *ClientHandler) Get(c echo.Context) error {
 // @Failure      500     {object}  common.Response
 // @Router       /clients/{id} [put]
 func (h *ClientHandler) Update(c echo.Context) error {
-	id := c.Param("id")
-	
-	// Ensure exists
-	existing, err := h.service.GetByID(c.Request().Context(), id)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "client not found"})
-	}
-
 	var input ClientInputDTO
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
 
-	var address *domain.Address
-	if input.Address != nil {
-		address = &domain.Address{
-			ZipCode:      input.Address.ZipCode,
-			Street:       input.Address.Street,
-			Number:       input.Address.Number,
-			Complement:   input.Address.Complement,
-			Neighborhood: input.Address.Neighborhood,
-			City:         input.Address.City,
-			State:        input.Address.State,
-		}
+	ucInput := model.UpdateClientInput{
+		ID:       c.Param("id"),
+		Name:     input.Name,
+		Email:    input.Email,
+		Phone:    input.Phone,
+		Document: input.Document,
+		Active:   input.Active,
+		Address:  mapAddressDTOToDomain(input.Address),
 	}
 
-	existing.Name = input.Name
-	existing.Email = input.Email
-	existing.Phone = input.Phone
-	existing.Document = input.Document
-	existing.Active = input.Active
-	existing.Address = address
-
-	if err := h.service.Update(c.Request().Context(), existing); err != nil {
+	result, err := h.service.Update(c.Request().Context(), ucInput)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.JSON(http.StatusNotFound, common.Response{Message: "client not found"})
+		}
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, mapDomainToDTO(existing))
+	return c.JSON(http.StatusOK, mapDomainToDTO(result))
 }
 
 // Delete godoc
@@ -147,11 +121,10 @@ func (h *ClientHandler) Update(c echo.Context) error {
 // @Failure      500     {object}  common.Response
 // @Router       /clients/{id} [delete]
 func (h *ClientHandler) Delete(c echo.Context) error {
-	id := c.Param("id")
-	if err := h.service.Delete(c.Request().Context(), id); err != nil {
+	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
-	return c.NoContent(http.StatusOK) // or http.StatusNoContent
+	return c.NoContent(http.StatusOK)
 }
 
 // List godoc
@@ -167,26 +140,22 @@ func (h *ClientHandler) Delete(c echo.Context) error {
 // @Failure      500       {object}  common.Response
 // @Router       /clients [get]
 func (h *ClientHandler) List(c echo.Context) error {
-	search := c.QueryParam("search")
-	activeStr := c.QueryParam("active")
-	pageStr := c.QueryParam("page")
-	pageSizeStr := c.QueryParam("pageSize")
+	filter := model.Filter{}
 
-	filter := domain.Filter{}
-	if search != "" {
-		filter.Search = &search
+	if s := c.QueryParam("search"); s != "" {
+		filter.Search = &s
 	}
-	if activeStr != "" {
-		active := activeStr == "true"
+	if act := c.QueryParam("active"); act != "" {
+		active := act == "true"
 		filter.IsActive = &active
 	}
-	
+
 	page := 1
-	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+	if p, err := strconv.Atoi(c.QueryParam("page")); err == nil && p > 0 {
 		page = p
 	}
 	pageSize := 10
-	if ps, err := strconv.Atoi(pageSizeStr); err == nil && ps > 0 {
+	if ps, err := strconv.Atoi(c.QueryParam("pageSize")); err == nil && ps > 0 {
 		pageSize = ps
 	}
 	filter.Page = page
@@ -201,15 +170,28 @@ func (h *ClientHandler) List(c echo.Context) error {
 		Items:      make([]ClientDTO, 0, len(paginatedList.Items)),
 		TotalCount: paginatedList.TotalCount,
 	}
-
 	for _, item := range paginatedList.Items {
 		response.Items = append(response.Items, mapDomainToDTO(item))
 	}
-
 	return c.JSON(http.StatusOK, response)
 }
 
-func mapDomainToDTO(c *domain.Client) ClientDTO {
+func mapAddressDTOToDomain(a *AddressDTO) *model.Address {
+	if a == nil {
+		return nil
+	}
+	return &model.Address{
+		ZipCode:      a.ZipCode,
+		Street:       a.Street,
+		Number:       a.Number,
+		Complement:   a.Complement,
+		Neighborhood: a.Neighborhood,
+		City:         a.City,
+		State:        a.State,
+	}
+}
+
+func mapDomainToDTO(c *model.Client) ClientDTO {
 	var addressDTO *AddressDTO
 	if c.Address != nil {
 		addressDTO = &AddressDTO{
@@ -222,7 +204,6 @@ func mapDomainToDTO(c *domain.Client) ClientDTO {
 			State:        c.Address.State,
 		}
 	}
-
 	return ClientDTO{
 		ID:        c.ID,
 		Name:      c.Name,
