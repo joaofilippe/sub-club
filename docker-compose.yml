@@ -12,6 +12,7 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=postgres://user:password@db:5432/subclub?sslmode=disable
+      - APP_ENV=development
     depends_on:
       - db
 

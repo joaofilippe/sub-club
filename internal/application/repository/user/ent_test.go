@@ -9,6 +9,7 @@ import (
 	repository "github.com/joaofilippe/subclub/internal/application/repository/user"
 	userdomain "github.com/joaofilippe/subclub/internal/domain/user"
 	"github.com/joaofilippe/subclub/internal/domain/user/model"
+	"github.com/joaofilippe/subclub/internal/test/faker"
 	_ "modernc.org/sqlite"
 )
 
@@ -22,17 +23,11 @@ func newTestRepo(t *testing.T) userdomain.Repository {
 }
 
 func makeUser(email string) *model.User {
-	now := time.Now()
-	return &model.User{
-		ID:        "00000000-0000-0000-0000-000000000001",
-		Name:      "Test User",
-		Email:     email,
-		Password:  "hashed_password",
-		Type:      model.UserTypeIndividual,
-		Role:      model.UserRoleAdmin,
-		CreatedAt: now,
-		UpdatedAt: now,
+	u := faker.FakeUser()
+	if email != "" {
+		u.Email = email
 	}
+	return u
 }
 
 func TestUserRepository_Create_Success(t *testing.T) {
