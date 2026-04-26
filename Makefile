@@ -24,7 +24,7 @@ clean:
 	rm -f $(BINARY_NAME)
 
 run:
-	$(GOCMD) run $(MAIN_PATH)/*.go server
+	APP_ENV=development $(GOCMD) run $(MAIN_PATH)/*.go server
 
 dev:
 	docker compose up
