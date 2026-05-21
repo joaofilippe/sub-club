@@ -76,8 +76,9 @@ When triggered, the system injects:
 This data is generated using the `gofakeit` library via a central utility in `internal/test/faker`.
 
 - **Clean Architecture**: 
-  - Business rules lie securely within `/internal/domain`. 
-  - Controllers, Services, and Handlers lie in `/internal/adapter`.
+  - Business rules lie securely within `/internal/domain`.
+  - Services and repository implementations lie in `/internal/application`.
+  - HTTP handlers and DTOs lie in `/internal/web`.
   - External adapters and connection establishments (`sqlx`, `echo`) reside in `/internal/infra`.
 
 - **Ent ORM**:

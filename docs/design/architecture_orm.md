@@ -1,11 +1,12 @@
 # Architecture & ORM Design
 
 ## Visão Geral
-O SubClub adere ao padrão de **Clean Architecture** (Arquitetura Limpa), dividindo o sistema em três camadas muito bem definidas que garantem o isolamento entre regras de negócio centralizadas e adaptadores externos (como bancos de dados e requisições HTTP):
+O SubClub adere ao padrão de **Clean Architecture** (Arquitetura Limpa), dividindo o sistema em quatro camadas bem definidas que garantem o isolamento entre regras de negócio centralizadas e adaptadores externos (como bancos de dados e requisições HTTP):
 
 1. **Domain (`internal/domain`)**: O coração da aplicação. Define os modelos brutos (`structs`), as interfaces dos Repositórios e regras comuns. Essa camada não conhece SQL, JSON, ou qualquer banco de dados de terceiros.
-2. **Adapter (`internal/adapter`)**: Contém os _Services_ (orquestradores de fluxo de entrada/saída), os _Handlers_ da interface Web (rotas e DTOs) e os metódos de _Repositories_ (as implementações concretas que traduzem o código Domain das Queries no BD).
-3. **Infrastructure (`internal/infra`)**: Ferramentas terceirizadas. É onde está a inicialização do Servidor HTTP (`echo`), middlewares, configuração de arquivos `.env` e a conexão pesada com o banco de dados.
+2. **Application (`internal/application`)**: Contém os _Services_ (orquestradores de fluxo de entrada/saída) e os _Repositories_ (implementações concretas que traduzem o Domain em queries no BD via Ent ORM).
+3. **Web (`internal/web`)**: Camada de apresentação HTTP. Contém os _Handlers_ (controladores de rotas REST), os _DTOs_ (contratos de entrada e saída em JSON) e a struct `Handlers`, que agrega e inicializa todos os handlers a partir dos services da camada Application.
+4. **Infrastructure (`internal/infra`)**: Ferramentas e serviços de suporte. Contém o `Server` (inicialização do Echo, middlewares e registro de rotas), a conexão com o banco de dados e o logger.
 
 ---
 
