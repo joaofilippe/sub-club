@@ -1,4 +1,4 @@
-package router_test
+package server_test
 
 import (
 	"testing"
@@ -9,7 +9,6 @@ import (
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
-	"github.com/joaofilippe/subclub/internal/infra/router"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 	"github.com/joaofilippe/subclub/internal/web"
 )
@@ -24,10 +23,8 @@ func stubApp() *application.Application {
 	}
 }
 
-func TestRouter_RegisterRoutes_AllRoutesPresent(t *testing.T) {
-	srv := server.NewServer()
-	r := router.NewRouter(srv, web.NewHandlers(stubApp()))
-	r.RegisterRoutes()
+func TestServer_AllRoutesPresent(t *testing.T) {
+	srv := server.NewServer(web.NewHandlers(stubApp()))
 
 	registered := map[string]bool{}
 	for _, r := range srv.GetEcho().Routes() {
