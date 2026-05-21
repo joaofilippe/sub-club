@@ -1,20 +1,19 @@
-package web_test
+package router_test
 
 import (
 	"testing"
 
-	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/joaofilippe/subclub/internal/application"
 	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
+	"github.com/joaofilippe/subclub/internal/infra/router"
 	"github.com/joaofilippe/subclub/internal/infra/server"
+	"github.com/joaofilippe/subclub/internal/web"
 )
 
-// stubApp builds an Application with nil-repo services — sufficient for route
-// registration since handlers are never invoked during this test.
 func stubApp() *application.Application {
 	return &application.Application{
 		UserService:         usersvc.NewUserService(nil),
@@ -25,10 +24,10 @@ func stubApp() *application.Application {
 	}
 }
 
-func TestAPI_RegisterRoutes_AllRoutesPresent(t *testing.T) {
+func TestRouter_RegisterRoutes_AllRoutesPresent(t *testing.T) {
 	srv := server.NewServer()
-	a := web.New(srv, stubApp())
-	a.RegisterRoutes()
+	r := router.NewRouter(srv, web.NewHandlers(stubApp()))
+	r.RegisterRoutes()
 
 	registered := map[string]bool{}
 	for _, r := range srv.GetEcho().Routes() {
