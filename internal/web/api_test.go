@@ -1,9 +1,9 @@
-package api_test
+package web_test
 
 import (
 	"testing"
 
-	"github.com/joaofilippe/subclub/internal/adapter/api"
+	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/joaofilippe/subclub/internal/application"
 	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
@@ -27,7 +27,7 @@ func stubApp() *application.Application {
 
 func TestAPI_RegisterRoutes_AllRoutesPresent(t *testing.T) {
 	srv := server.NewServer()
-	a := api.New(srv, stubApp())
+	a := web.New(srv, stubApp())
 	a.RegisterRoutes()
 
 	registered := map[string]bool{}
