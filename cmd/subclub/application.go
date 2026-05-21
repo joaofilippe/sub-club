@@ -7,7 +7,6 @@ import (
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
-	"github.com/joaofilippe/subclub/internal/infra/router"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/spf13/cobra"
@@ -43,10 +42,8 @@ func startApplication() {
 		log.Fatalf("Could not initialize application: %v", err)
 	}
 
-	srv := server.NewServer()
 	h := web.NewHandlers(app)
-	a := router.NewRouter(srv, h)
-	a.RegisterRoutes()
+	srv := server.NewServer(h)
 
-	log.Fatal(a.Start(cfg.Port))
+	log.Fatal(srv.Start(cfg.Port))
 }
