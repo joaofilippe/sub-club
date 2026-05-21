@@ -4,17 +4,26 @@ import (
 	"os"
 )
 
+type Environment string
+
+const (
+	Development Environment = "development"
+	Dev         Environment = "dev"
+	Local       Environment = "local"
+	Production  Environment = "production"
+)
+
 type Config struct {
-	AppEnv         string
+	AppEnv         Environment
 	Port           string
 	DatabaseURL    string
 	DatabaseDriver string
 }
 
 func Load() (*Config, error) {
-	env := os.Getenv("APP_ENV")
+	env := Environment(os.Getenv("APP_ENV"))
 	if env == "" {
-		env = "development"
+		env = Development
 	}
 
 	port := os.Getenv("PORT")
@@ -38,4 +47,12 @@ func Load() (*Config, error) {
 		DatabaseURL:    dbURL,
 		DatabaseDriver: dbDriver,
 	}, nil
+}
+
+func (c *Config) IsDevelopment() bool {
+	return c.AppEnv == Development || c.AppEnv == Dev || c.AppEnv == Local
+}
+
+func (c *Config) IsProduction() bool {
+	return c.AppEnv == Production
 }
