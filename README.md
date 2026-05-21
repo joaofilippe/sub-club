@@ -63,10 +63,17 @@ The project includes automatically generated OpenAPI documentation using the **S
 
 This application utilizes **Clean Architecture** combined with the **Ent ORM** for standardizing interactions with the PostgreSQL database.
 
-### Automated Database Seeding (Mocks)
-When spinning up the application locally using `make dev` or Docker Compose, the API automatically verifies if the database is running on a pristine state (empty users). If it is, the system automatically injects:
-- **1 Master Administrator**: Login credentials -> `admin@subclub.com` / `root`
-- **Clients, Plans, Products & Subscriptions**: Base mockups to facilitate Angular UI integration and frontend testing.
+### Automated Database Seeding (Fake Data)
+When starting the application locally (e.g., using `make dev` or `make run`), the system can automatically populate the database with fake data if it is empty. This only happens if the environment variable `APP_ENV` is set to `development`, `dev`, or `local`.
+
+When triggered, the system injects:
+- **1 Administrator**: `adm@adm.com` / `12345678`
+- **10 Products**: Varied coffee products.
+- **50 Customers**: With fake names, documents, and contacts.
+- **4 Plans**: Different subscription tiers.
+- **25 Subscriptions**: Active subscriptions linked to the generated customers.
+
+This data is generated using the `gofakeit` library via a central utility in `internal/test/faker`.
 
 - **Clean Architecture**: 
   - Business rules lie securely within `/internal/domain`. 

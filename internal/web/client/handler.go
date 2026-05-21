@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/joaofilippe/subclub/internal/adapter/api/common"
+	"github.com/joaofilippe/subclub/internal/web/common"
 	domain "github.com/joaofilippe/subclub/internal/domain/client"
 	"github.com/joaofilippe/subclub/internal/domain/client/model"
 )

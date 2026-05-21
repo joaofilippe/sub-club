@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	userhandler "github.com/joaofilippe/subclub/internal/adapter/api/user"
+	userhandler "github.com/joaofilippe/subclub/internal/web/user"
 	"github.com/joaofilippe/subclub/internal/domain/user/model"
 	"github.com/labstack/echo/v4"
 )

@@ -1,31 +1,31 @@
-package api
+package web
 
 import (
 	_ "github.com/joaofilippe/subclub/docs"
-	"github.com/joaofilippe/subclub/internal/adapter/api/client"
-	"github.com/joaofilippe/subclub/internal/adapter/api/plan"
-	"github.com/joaofilippe/subclub/internal/adapter/api/product"
-	"github.com/joaofilippe/subclub/internal/adapter/api/subscription"
-	userhandler "github.com/joaofilippe/subclub/internal/adapter/api/user"
+	"github.com/joaofilippe/subclub/internal/web/client"
+	"github.com/joaofilippe/subclub/internal/web/plan"
+	"github.com/joaofilippe/subclub/internal/web/product"
+	"github.com/joaofilippe/subclub/internal/web/subscription"
+	userhandler "github.com/joaofilippe/subclub/internal/web/user"
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/infra/server"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-type API struct {
+type Web struct {
 	server      *server.Server
 	application *application.Application
 }
 
-func New(server *server.Server, app *application.Application) *API {
-	return &API{
+func New(server *server.Server, app *application.Application) *Web {
+	return &Web{
 		server:      server,
 		application: app,
 	}
 }
 
-func (a *API) RegisterRoutes() {
+func (a *Web) RegisterRoutes() {
 	clientHandler := client.NewClientHandler(a.application.ClientService)
 	planHandler := plan.NewPlanHandler(a.application.PlanService)
 	productHandler := product.NewProductHandler(a.application.ProductService)
@@ -68,6 +68,6 @@ func (a *API) RegisterRoutes() {
 	userGroup.POST("", userHandler.Create)
 }
 
-func (a *API) Start(port string) error {
+func (a *Web) Start(port string) error {
 	return a.server.Start(port)
 }

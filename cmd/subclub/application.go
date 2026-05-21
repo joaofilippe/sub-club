@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/joaofilippe/subclub/internal/adapter/api"
+	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
@@ -43,7 +43,7 @@ func startApplication() {
 	}
 
 	srv := server.NewServer()
-	a := api.New(srv, app)
+	a := web.New(srv, app)
 	a.RegisterRoutes()
 
 	log.Fatal(a.Start(cfg.Port))
