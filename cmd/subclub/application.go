@@ -4,11 +4,12 @@ import (
 	"context"
 	"log"
 
-	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/joaofilippe/subclub/internal/application"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
+	"github.com/joaofilippe/subclub/internal/infra/router"
 	"github.com/joaofilippe/subclub/internal/infra/server"
+	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/spf13/cobra"
 )
 
@@ -43,7 +44,8 @@ func startApplication() {
 	}
 
 	srv := server.NewServer()
-	a := web.New(srv, app)
+	h := web.NewHandlers(app)
+	a := router.NewRouter(srv, h)
 	a.RegisterRoutes()
 
 	log.Fatal(a.Start(cfg.Port))
