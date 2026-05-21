@@ -3,20 +3,18 @@ package database
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent"
 	"github.com/joaofilippe/subclub/ent/user"
+	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/test/faker"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// SeedAll populates the database with initial mock data if the database is empty.
-func SeedAll(ctx context.Context, client *ent.Client) {
-	env := os.Getenv("APP_ENV")
-	if env != "development" && env != "local" && env != "dev" {
-		log.Printf("[Seeder] Skipping: current environment is %q (expected development, dev or local)\n", env)
+func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
+	if !cfg.IsDevelopment() {
+		log.Printf("[Seeder] Skipping: current environment is %q\n", cfg.AppEnv)
 		return
 	}
 

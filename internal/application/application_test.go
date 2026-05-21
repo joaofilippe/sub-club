@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/joaofilippe/subclub/ent/enttest"
+	"github.com/joaofilippe/subclub/internal/config"
 	_ "modernc.org/sqlite"
 )
 
@@ -15,7 +16,8 @@ func TestApplication_InitServices_PopulatesAllServices(t *testing.T) {
 	t.Cleanup(func() { client.Close() })
 
 	app := New(nil)
-	if err := app.initServices(context.Background(), client); err != nil {
+	cfg := &config.Config{AppEnv: config.Development}
+	if err := app.initServices(context.Background(), client, cfg); err != nil {
 		t.Fatalf("initServices returned error: %v", err)
 	}
 

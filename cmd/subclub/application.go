@@ -38,7 +38,7 @@ func startApplication() {
 	defer dbConnection.Close()
 
 	app := application.New(dbConnection)
-	if err := app.Init(ctx); err != nil {
+	if err := app.Init(ctx, cfg); err != nil {
 		log.Fatalf("Could not initialize application: %v", err)
 	}
 
