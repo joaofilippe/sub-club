@@ -56,9 +56,9 @@ func IDLTE(id uuid.UUID) predicate.Subscription {
 	return predicate.Subscription(sql.FieldLTE(FieldID, id))
 }
 
-// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v uuid.UUID) predicate.Subscription {
-	return predicate.Subscription(sql.FieldEQ(FieldClientID, v))
+// CustomerID applies equality check predicate on the "customer_id" field. It's identical to CustomerIDEQ.
+func CustomerID(v uuid.UUID) predicate.Subscription {
+	return predicate.Subscription(sql.FieldEQ(FieldCustomerID, v))
 }
 
 // PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
@@ -96,34 +96,34 @@ func CreatedAt(v time.Time) predicate.Subscription {
 	return predicate.Subscription(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v uuid.UUID) predicate.Subscription {
-	return predicate.Subscription(sql.FieldEQ(FieldClientID, v))
+// CustomerIDEQ applies the EQ predicate on the "customer_id" field.
+func CustomerIDEQ(v uuid.UUID) predicate.Subscription {
+	return predicate.Subscription(sql.FieldEQ(FieldCustomerID, v))
 }
 
-// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v uuid.UUID) predicate.Subscription {
-	return predicate.Subscription(sql.FieldNEQ(FieldClientID, v))
+// CustomerIDNEQ applies the NEQ predicate on the "customer_id" field.
+func CustomerIDNEQ(v uuid.UUID) predicate.Subscription {
+	return predicate.Subscription(sql.FieldNEQ(FieldCustomerID, v))
 }
 
-// ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...uuid.UUID) predicate.Subscription {
-	return predicate.Subscription(sql.FieldIn(FieldClientID, vs...))
+// CustomerIDIn applies the In predicate on the "customer_id" field.
+func CustomerIDIn(vs ...uuid.UUID) predicate.Subscription {
+	return predicate.Subscription(sql.FieldIn(FieldCustomerID, vs...))
 }
 
-// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...uuid.UUID) predicate.Subscription {
-	return predicate.Subscription(sql.FieldNotIn(FieldClientID, vs...))
+// CustomerIDNotIn applies the NotIn predicate on the "customer_id" field.
+func CustomerIDNotIn(vs ...uuid.UUID) predicate.Subscription {
+	return predicate.Subscription(sql.FieldNotIn(FieldCustomerID, vs...))
 }
 
-// ClientIDIsNil applies the IsNil predicate on the "client_id" field.
-func ClientIDIsNil() predicate.Subscription {
-	return predicate.Subscription(sql.FieldIsNull(FieldClientID))
+// CustomerIDIsNil applies the IsNil predicate on the "customer_id" field.
+func CustomerIDIsNil() predicate.Subscription {
+	return predicate.Subscription(sql.FieldIsNull(FieldCustomerID))
 }
 
-// ClientIDNotNil applies the NotNil predicate on the "client_id" field.
-func ClientIDNotNil() predicate.Subscription {
-	return predicate.Subscription(sql.FieldNotNull(FieldClientID))
+// CustomerIDNotNil applies the NotNil predicate on the "customer_id" field.
+func CustomerIDNotNil() predicate.Subscription {
+	return predicate.Subscription(sql.FieldNotNull(FieldCustomerID))
 }
 
 // PlanIDEQ applies the EQ predicate on the "plan_id" field.

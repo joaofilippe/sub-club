@@ -1,6 +1,6 @@
 package model
 
-type CreateClientInput struct {
+type CreateCustomerInput struct {
 	Name     string
 	Email    string
 	Phone    string
@@ -9,7 +9,7 @@ type CreateClientInput struct {
 	Address  *Address
 }
 
-type UpdateClientInput struct {
+type UpdateCustomerInput struct {
 	ID       string
 	Name     string
 	Email    string

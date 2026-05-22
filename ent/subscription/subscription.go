@@ -15,8 +15,8 @@ const (
 	Label = "subscription"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldClientID holds the string denoting the client_id field in the database.
-	FieldClientID = "client_id"
+	// FieldCustomerID holds the string denoting the customer_id field in the database.
+	FieldCustomerID = "customer_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -43,7 +43,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "customer" package.
 	CustomerInverseTable = "customers"
 	// CustomerColumn is the table column denoting the customer relation/edge.
-	CustomerColumn = "client_id"
+	CustomerColumn = "customer_id"
 	// PlanTable is the table that holds the plan relation/edge.
 	PlanTable = "subscriptions"
 	// PlanInverseTable is the table name for the Plan entity.
@@ -56,7 +56,7 @@ const (
 // Columns holds all SQL columns for subscription fields.
 var Columns = []string{
 	FieldID,
-	FieldClientID,
+	FieldCustomerID,
 	FieldPlanID,
 	FieldStatus,
 	FieldShipmentStatus,
@@ -97,9 +97,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByClientID orders the results by the client_id field.
-func ByClientID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientID, opts...).ToFunc()
+// ByCustomerID orders the results by the customer_id field.
+func ByCustomerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCustomerID, opts...).ToFunc()
 }
 
 // ByPlanID orders the results by the plan_id field.

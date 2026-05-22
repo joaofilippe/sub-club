@@ -5,7 +5,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
-	clientmodel "github.com/joaofilippe/subclub/internal/domain/client/model"
+	customermodel "github.com/joaofilippe/subclub/internal/domain/customer/model"
 	planmodel "github.com/joaofilippe/subclub/internal/domain/plan/model"
 	productmodel "github.com/joaofilippe/subclub/internal/domain/product/model"
 	usermodel "github.com/joaofilippe/subclub/internal/domain/user/model"
@@ -25,16 +25,16 @@ func FakeUser() *usermodel.User {
 	}
 }
 
-// FakeClient generates a fake client (customer) model
-func FakeClient() *clientmodel.Client {
-	return &clientmodel.Client{
+// FakeCustomer generates a fake customer model
+func FakeCustomer() *customermodel.Customer {
+	return &customermodel.Customer{
 		ID:       uuid.New().String(),
 		Name:     gofakeit.Name(),
 		Email:    gofakeit.Email(),
 		Phone:    gofakeit.Phone(),
-		Document: gofakeit.DigitN(11), // Simple CPF-like
+		Document: gofakeit.DigitN(11),
 		Active:   true,
-		Address: &clientmodel.Address{
+		Address: &customermodel.Address{
 			ZipCode:      gofakeit.Zip(),
 			Street:       gofakeit.Street(),
 			Number:       gofakeit.DigitN(3),
@@ -64,7 +64,7 @@ func FakeProduct() *productmodel.Product {
 func FakePlan() *planmodel.Plan {
 	productValue := gofakeit.Price(50, 300)
 	discount := gofakeit.Price(5, 50)
-	
+
 	return &planmodel.Plan{
 		ID:            uuid.New().String(),
 		Code:          gofakeit.UUID(),

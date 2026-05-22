@@ -22,8 +22,8 @@ const (
 
 type Subscription struct {
 	ID               string
-	ClientID         string
-	ClientName       string
+	CustomerID       string
+	CustomerName     string
 	PlanID           string
 	PlanName         string
 	Status           Status
@@ -38,7 +38,7 @@ type Subscription struct {
 type Filter struct {
 	Search   *string
 	Status   *Status
-	ClientID *string
+	CustomerID *string
 	Page     int
 	PageSize int
 }

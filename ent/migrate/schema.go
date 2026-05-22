@@ -72,7 +72,7 @@ var (
 		{Name: "next_billing_date", Type: field.TypeTime, Nullable: true},
 		{Name: "next_shipment_date", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "client_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "customer_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SubscriptionsTable holds the schema information for the "subscriptions" table.

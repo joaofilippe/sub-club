@@ -1,6 +1,6 @@
-package client
+package customer
 
-type ClientDTO struct {
+type CustomerDTO struct {
 	ID        string      `json:"id"`
 	Name      string      `json:"name"`
 	Email     string      `json:"email"`
@@ -21,13 +21,12 @@ type AddressDTO struct {
 	State        string `json:"state"`
 }
 
-type PaginatedClientResponse struct {
-	Items      []ClientDTO `json:"items"`
-	TotalCount int         `json:"totalCount"`
+type PaginatedCustomerResponse struct {
+	Items      []CustomerDTO `json:"items"`
+	TotalCount int           `json:"totalCount"`
 }
 
-// Input for both Create and Update
-type ClientInputDTO struct {
+type CustomerInputDTO struct {
 	Name     string      `json:"name"`
 	Email    string      `json:"email"`
 	Phone    string      `json:"phone"`

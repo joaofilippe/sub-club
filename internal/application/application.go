@@ -5,12 +5,12 @@ import (
 	"log"
 
 	"github.com/joaofilippe/subclub/ent"
-	clientrepo "github.com/joaofilippe/subclub/internal/application/repository/client"
+	customerrepo "github.com/joaofilippe/subclub/internal/application/repository/customer"
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
 	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
-	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
+	customersvc "github.com/joaofilippe/subclub/internal/application/service/customer"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
@@ -25,7 +25,7 @@ type Application struct {
 	dbConnection        *database.Connection
 	entClient           *ent.Client
 	UserService         *usersvc.UserService
-	ClientService       *clientsvc.ClientService
+	CustomerService     *customersvc.CustomerService
 	PlanService         *plansvc.PlanService
 	ProductService      *productsvc.ProductService
 	SubscriptionService *subsvc.SubscriptionService
@@ -49,13 +49,13 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 
 	database.SeedAll(ctx, a.entClient, cfg)
 
-	cr := clientrepo.NewClientEntRepository(a.entClient)
+	cr := customerrepo.NewCustomerEntRepository(a.entClient)
 	pr := planrepo.NewPlanEntRepository(a.entClient)
 	prodr := productrepo.NewProductEntRepository(a.entClient)
 	subr := subrepo.NewSubscriptionEntRepository(a.entClient)
 	ur := userrepo.NewUserEntRepository(a.entClient)
 
-	a.ClientService = clientsvc.NewClientService(cr)
+	a.CustomerService = customersvc.NewCustomerService(cr)
 	a.PlanService = plansvc.NewPlanService(pr)
 	a.ProductService = productsvc.NewProductService(prodr)
 	a.SubscriptionService = subsvc.NewSubscriptionService(subr)

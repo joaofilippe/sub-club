@@ -2865,13 +2865,13 @@ func (m *SubscriptionMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	}
 }
 
-// SetClientID sets the "client_id" field.
-func (m *SubscriptionMutation) SetClientID(u uuid.UUID) {
+// SetCustomerID sets the "customer_id" field.
+func (m *SubscriptionMutation) SetCustomerID(u uuid.UUID) {
 	m.customer = &u
 }
 
-// ClientID returns the value of the "client_id" field in the mutation.
-func (m *SubscriptionMutation) ClientID() (r uuid.UUID, exists bool) {
+// CustomerID returns the value of the "customer_id" field in the mutation.
+func (m *SubscriptionMutation) CustomerID() (r uuid.UUID, exists bool) {
 	v := m.customer
 	if v == nil {
 		return
@@ -2879,39 +2879,39 @@ func (m *SubscriptionMutation) ClientID() (r uuid.UUID, exists bool) {
 	return *v, true
 }
 
-// OldClientID returns the old "client_id" field's value of the Subscription entity.
+// OldCustomerID returns the old "customer_id" field's value of the Subscription entity.
 // If the Subscription object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscriptionMutation) OldClientID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *SubscriptionMutation) OldCustomerID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
+		return v, errors.New("OldCustomerID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldClientID requires an ID field in the mutation")
+		return v, errors.New("OldCustomerID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
+		return v, fmt.Errorf("querying old value for OldCustomerID: %w", err)
 	}
-	return oldValue.ClientID, nil
+	return oldValue.CustomerID, nil
 }
 
-// ClearClientID clears the value of the "client_id" field.
-func (m *SubscriptionMutation) ClearClientID() {
+// ClearCustomerID clears the value of the "customer_id" field.
+func (m *SubscriptionMutation) ClearCustomerID() {
 	m.customer = nil
-	m.clearedFields[subscription.FieldClientID] = struct{}{}
+	m.clearedFields[subscription.FieldCustomerID] = struct{}{}
 }
 
-// ClientIDCleared returns if the "client_id" field was cleared in this mutation.
-func (m *SubscriptionMutation) ClientIDCleared() bool {
-	_, ok := m.clearedFields[subscription.FieldClientID]
+// CustomerIDCleared returns if the "customer_id" field was cleared in this mutation.
+func (m *SubscriptionMutation) CustomerIDCleared() bool {
+	_, ok := m.clearedFields[subscription.FieldCustomerID]
 	return ok
 }
 
-// ResetClientID resets all changes to the "client_id" field.
-func (m *SubscriptionMutation) ResetClientID() {
+// ResetCustomerID resets all changes to the "customer_id" field.
+func (m *SubscriptionMutation) ResetCustomerID() {
 	m.customer = nil
-	delete(m.clearedFields, subscription.FieldClientID)
+	delete(m.clearedFields, subscription.FieldCustomerID)
 }
 
 // SetPlanID sets the "plan_id" field.
@@ -3205,28 +3205,15 @@ func (m *SubscriptionMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// SetCustomerID sets the "customer" edge to the Customer entity by id.
-func (m *SubscriptionMutation) SetCustomerID(id uuid.UUID) {
-	m.customer = &id
-}
-
 // ClearCustomer clears the "customer" edge to the Customer entity.
 func (m *SubscriptionMutation) ClearCustomer() {
 	m.clearedcustomer = true
-	m.clearedFields[subscription.FieldClientID] = struct{}{}
+	m.clearedFields[subscription.FieldCustomerID] = struct{}{}
 }
 
 // CustomerCleared reports if the "customer" edge to the Customer entity was cleared.
 func (m *SubscriptionMutation) CustomerCleared() bool {
-	return m.ClientIDCleared() || m.clearedcustomer
-}
-
-// CustomerID returns the "customer" edge ID in the mutation.
-func (m *SubscriptionMutation) CustomerID() (id uuid.UUID, exists bool) {
-	if m.customer != nil {
-		return *m.customer, true
-	}
-	return
+	return m.CustomerIDCleared() || m.clearedcustomer
 }
 
 // CustomerIDs returns the "customer" edge IDs in the mutation.
@@ -3308,7 +3295,7 @@ func (m *SubscriptionMutation) Type() string {
 func (m *SubscriptionMutation) Fields() []string {
 	fields := make([]string, 0, 8)
 	if m.customer != nil {
-		fields = append(fields, subscription.FieldClientID)
+		fields = append(fields, subscription.FieldCustomerID)
 	}
 	if m.plan != nil {
 		fields = append(fields, subscription.FieldPlanID)
@@ -3339,8 +3326,8 @@ func (m *SubscriptionMutation) Fields() []string {
 // schema.
 func (m *SubscriptionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case subscription.FieldClientID:
-		return m.ClientID()
+	case subscription.FieldCustomerID:
+		return m.CustomerID()
 	case subscription.FieldPlanID:
 		return m.PlanID()
 	case subscription.FieldStatus:
@@ -3364,8 +3351,8 @@ func (m *SubscriptionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SubscriptionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case subscription.FieldClientID:
-		return m.OldClientID(ctx)
+	case subscription.FieldCustomerID:
+		return m.OldCustomerID(ctx)
 	case subscription.FieldPlanID:
 		return m.OldPlanID(ctx)
 	case subscription.FieldStatus:
@@ -3389,12 +3376,12 @@ func (m *SubscriptionMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *SubscriptionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case subscription.FieldClientID:
+	case subscription.FieldCustomerID:
 		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetClientID(v)
+		m.SetCustomerID(v)
 		return nil
 	case subscription.FieldPlanID:
 		v, ok := value.(uuid.UUID)
@@ -3475,8 +3462,8 @@ func (m *SubscriptionMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *SubscriptionMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(subscription.FieldClientID) {
-		fields = append(fields, subscription.FieldClientID)
+	if m.FieldCleared(subscription.FieldCustomerID) {
+		fields = append(fields, subscription.FieldCustomerID)
 	}
 	if m.FieldCleared(subscription.FieldPlanID) {
 		fields = append(fields, subscription.FieldPlanID)
@@ -3501,8 +3488,8 @@ func (m *SubscriptionMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *SubscriptionMutation) ClearField(name string) error {
 	switch name {
-	case subscription.FieldClientID:
-		m.ClearClientID()
+	case subscription.FieldCustomerID:
+		m.ClearCustomerID()
 		return nil
 	case subscription.FieldPlanID:
 		m.ClearPlanID()
@@ -3521,8 +3508,8 @@ func (m *SubscriptionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SubscriptionMutation) ResetField(name string) error {
 	switch name {
-	case subscription.FieldClientID:
-		m.ResetClientID()
+	case subscription.FieldCustomerID:
+		m.ResetCustomerID()
 		return nil
 	case subscription.FieldPlanID:
 		m.ResetPlanID()

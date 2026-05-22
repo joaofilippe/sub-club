@@ -3,7 +3,7 @@ package model
 import "time"
 
 type CreateSubscriptionInput struct {
-	ClientID         string
+	CustomerID       string
 	PlanID           string
 	Status           Status
 	ShipmentStatus   ShipmentStatus

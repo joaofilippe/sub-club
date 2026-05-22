@@ -24,7 +24,7 @@ func TestApplication_InitServices_PopulatesAllServices(t *testing.T) {
 	if app.UserService == nil {
 		t.Error("UserService is nil after initServices")
 	}
-	if app.ClientService == nil {
+	if app.CustomerService == nil {
 		t.Error("ClientService is nil after initServices")
 	}
 	if app.PlanService == nil {

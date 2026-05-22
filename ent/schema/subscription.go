@@ -20,7 +20,7 @@ func (Subscription) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			Unique(),
-		field.UUID("client_id", uuid.UUID{}).Optional(),
+		field.UUID("customer_id", uuid.UUID{}).Optional(),
 		field.UUID("plan_id", uuid.UUID{}).Optional(),
 		field.String("status").Default("active"),            // active, paused, cancelled, expired
 		field.String("shipment_status").Default("pending"), // pending, preparing, shipped, delivered
@@ -37,7 +37,7 @@ func (Subscription) Edges() []ent.Edge {
 		edge.From("customer", Customer.Type).
 			Ref("subscriptions").
 			Unique().
-			Field("client_id"),
+			Field("customer_id"),
 		edge.From("plan", Plan.Type).
 			Ref("subscriptions").
 			Unique().

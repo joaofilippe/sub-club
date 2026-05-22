@@ -31,23 +31,23 @@ func (_u *SubscriptionUpdate) Where(ps ...predicate.Subscription) *SubscriptionU
 	return _u
 }
 
-// SetClientID sets the "client_id" field.
-func (_u *SubscriptionUpdate) SetClientID(v uuid.UUID) *SubscriptionUpdate {
-	_u.mutation.SetClientID(v)
+// SetCustomerID sets the "customer_id" field.
+func (_u *SubscriptionUpdate) SetCustomerID(v uuid.UUID) *SubscriptionUpdate {
+	_u.mutation.SetCustomerID(v)
 	return _u
 }
 
-// SetNillableClientID sets the "client_id" field if the given value is not nil.
-func (_u *SubscriptionUpdate) SetNillableClientID(v *uuid.UUID) *SubscriptionUpdate {
+// SetNillableCustomerID sets the "customer_id" field if the given value is not nil.
+func (_u *SubscriptionUpdate) SetNillableCustomerID(v *uuid.UUID) *SubscriptionUpdate {
 	if v != nil {
-		_u.SetClientID(*v)
+		_u.SetCustomerID(*v)
 	}
 	return _u
 }
 
-// ClearClientID clears the value of the "client_id" field.
-func (_u *SubscriptionUpdate) ClearClientID() *SubscriptionUpdate {
-	_u.mutation.ClearClientID()
+// ClearCustomerID clears the value of the "customer_id" field.
+func (_u *SubscriptionUpdate) ClearCustomerID() *SubscriptionUpdate {
+	_u.mutation.ClearCustomerID()
 	return _u
 }
 
@@ -150,20 +150,6 @@ func (_u *SubscriptionUpdate) SetNillableNextShipmentDate(v *time.Time) *Subscri
 // ClearNextShipmentDate clears the value of the "next_shipment_date" field.
 func (_u *SubscriptionUpdate) ClearNextShipmentDate() *SubscriptionUpdate {
 	_u.mutation.ClearNextShipmentDate()
-	return _u
-}
-
-// SetCustomerID sets the "customer" edge to the Customer entity by ID.
-func (_u *SubscriptionUpdate) SetCustomerID(id uuid.UUID) *SubscriptionUpdate {
-	_u.mutation.SetCustomerID(id)
-	return _u
-}
-
-// SetNillableCustomerID sets the "customer" edge to the Customer entity by ID if the given value is not nil.
-func (_u *SubscriptionUpdate) SetNillableCustomerID(id *uuid.UUID) *SubscriptionUpdate {
-	if id != nil {
-		_u = _u.SetCustomerID(*id)
-	}
 	return _u
 }
 
@@ -329,23 +315,23 @@ type SubscriptionUpdateOne struct {
 	mutation *SubscriptionMutation
 }
 
-// SetClientID sets the "client_id" field.
-func (_u *SubscriptionUpdateOne) SetClientID(v uuid.UUID) *SubscriptionUpdateOne {
-	_u.mutation.SetClientID(v)
+// SetCustomerID sets the "customer_id" field.
+func (_u *SubscriptionUpdateOne) SetCustomerID(v uuid.UUID) *SubscriptionUpdateOne {
+	_u.mutation.SetCustomerID(v)
 	return _u
 }
 
-// SetNillableClientID sets the "client_id" field if the given value is not nil.
-func (_u *SubscriptionUpdateOne) SetNillableClientID(v *uuid.UUID) *SubscriptionUpdateOne {
+// SetNillableCustomerID sets the "customer_id" field if the given value is not nil.
+func (_u *SubscriptionUpdateOne) SetNillableCustomerID(v *uuid.UUID) *SubscriptionUpdateOne {
 	if v != nil {
-		_u.SetClientID(*v)
+		_u.SetCustomerID(*v)
 	}
 	return _u
 }
 
-// ClearClientID clears the value of the "client_id" field.
-func (_u *SubscriptionUpdateOne) ClearClientID() *SubscriptionUpdateOne {
-	_u.mutation.ClearClientID()
+// ClearCustomerID clears the value of the "customer_id" field.
+func (_u *SubscriptionUpdateOne) ClearCustomerID() *SubscriptionUpdateOne {
+	_u.mutation.ClearCustomerID()
 	return _u
 }
 
@@ -448,20 +434,6 @@ func (_u *SubscriptionUpdateOne) SetNillableNextShipmentDate(v *time.Time) *Subs
 // ClearNextShipmentDate clears the value of the "next_shipment_date" field.
 func (_u *SubscriptionUpdateOne) ClearNextShipmentDate() *SubscriptionUpdateOne {
 	_u.mutation.ClearNextShipmentDate()
-	return _u
-}
-
-// SetCustomerID sets the "customer" edge to the Customer entity by ID.
-func (_u *SubscriptionUpdateOne) SetCustomerID(id uuid.UUID) *SubscriptionUpdateOne {
-	_u.mutation.SetCustomerID(id)
-	return _u
-}
-
-// SetNillableCustomerID sets the "customer" edge to the Customer entity by ID if the given value is not nil.
-func (_u *SubscriptionUpdateOne) SetNillableCustomerID(id *uuid.UUID) *SubscriptionUpdateOne {
-	if id != nil {
-		_u = _u.SetCustomerID(*id)
-	}
 	return _u
 }
 

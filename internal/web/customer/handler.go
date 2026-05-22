@@ -1,4 +1,4 @@
-package client
+package customer
 
 import (
 	"errors"
@@ -7,37 +7,37 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	domain "github.com/joaofilippe/subclub/internal/domain/customer"
+	"github.com/joaofilippe/subclub/internal/domain/customer/model"
 	"github.com/joaofilippe/subclub/internal/web/common"
-	domain "github.com/joaofilippe/subclub/internal/domain/client"
-	"github.com/joaofilippe/subclub/internal/domain/client/model"
 )
 
-type ClientHandler struct {
+type CustomerHandler struct {
 	service domain.Service
 }
 
-func NewClientHandler(clientService domain.Service) *ClientHandler {
-	return &ClientHandler{service: clientService}
+func NewCustomerHandler(customerService domain.Service) *CustomerHandler {
+	return &CustomerHandler{service: customerService}
 }
 
 // Create godoc
-// @Summary      Create a client
-// @Description  Creates a new client in the system
-// @Tags         clients
+// @Summary      Create a customer
+// @Description  Creates a new customer in the system
+// @Tags         customers
 // @Accept       json
 // @Produce      json
-// @Param        client  body      ClientInputDTO  true  "Client data"
-// @Success      201     {object}  ClientDTO
-// @Failure      400     {object}  common.Response
-// @Failure      500     {object}  common.Response
-// @Router       /clients [post]
-func (h *ClientHandler) Create(c echo.Context) error {
-	var input ClientInputDTO
+// @Param        customer  body      CustomerInputDTO  true  "Customer data"
+// @Success      201       {object}  CustomerDTO
+// @Failure      400       {object}  common.Response
+// @Failure      500       {object}  common.Response
+// @Router       /customers [post]
+func (h *CustomerHandler) Create(c echo.Context) error {
+	var input CustomerInputDTO
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
 
-	ucInput := model.CreateClientInput{
+	ucInput := model.CreateCustomerInput{
 		Name:     input.Name,
 		Email:    input.Email,
 		Phone:    input.Phone,
@@ -46,51 +46,51 @@ func (h *ClientHandler) Create(c echo.Context) error {
 		Address:  mapAddressDTOToDomain(input.Address),
 	}
 
-	client, err := h.service.Create(c.Request().Context(), ucInput)
+	cust, err := h.service.Create(c.Request().Context(), ucInput)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, mapDomainToDTO(client))
+	return c.JSON(http.StatusCreated, mapDomainToDTO(cust))
 }
 
 // Get godoc
-// @Summary      Get a client by ID
-// @Description  Retrieves a client by their UUID
-// @Tags         clients
+// @Summary      Get a customer by ID
+// @Description  Retrieves a customer by their UUID
+// @Tags         customers
 // @Produce      json
-// @Param        id      path      string  true  "Client ID"
-// @Success      200     {object}  ClientDTO
+// @Param        id      path      string  true  "Customer ID"
+// @Success      200     {object}  CustomerDTO
 // @Failure      404     {object}  common.Response
-// @Router       /clients/{id} [get]
-func (h *ClientHandler) Get(c echo.Context) error {
-	client, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
+// @Router       /customers/{id} [get]
+func (h *CustomerHandler) Get(c echo.Context) error {
+	cust, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "client not found"})
+		return c.JSON(http.StatusNotFound, common.Response{Message: "customer not found"})
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(client))
+	return c.JSON(http.StatusOK, mapDomainToDTO(cust))
 }
 
 // Update godoc
-// @Summary      Update a client
-// @Description  Updates an existing client
-// @Tags         clients
+// @Summary      Update a customer
+// @Description  Updates an existing customer
+// @Tags         customers
 // @Accept       json
 // @Produce      json
-// @Param        id      path      string          true  "Client ID"
-// @Param        client  body      ClientInputDTO  true  "Updated client data"
-// @Success      200     {object}  ClientDTO
-// @Failure      400     {object}  common.Response
-// @Failure      404     {object}  common.Response
-// @Failure      500     {object}  common.Response
-// @Router       /clients/{id} [put]
-func (h *ClientHandler) Update(c echo.Context) error {
-	var input ClientInputDTO
+// @Param        id        path      string            true  "Customer ID"
+// @Param        customer  body      CustomerInputDTO  true  "Updated customer data"
+// @Success      200       {object}  CustomerDTO
+// @Failure      400       {object}  common.Response
+// @Failure      404       {object}  common.Response
+// @Failure      500       {object}  common.Response
+// @Router       /customers/{id} [put]
+func (h *CustomerHandler) Update(c echo.Context) error {
+	var input CustomerInputDTO
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
 
-	ucInput := model.UpdateClientInput{
+	ucInput := model.UpdateCustomerInput{
 		ID:       c.Param("id"),
 		Name:     input.Name,
 		Email:    input.Email,
@@ -103,7 +103,7 @@ func (h *ClientHandler) Update(c echo.Context) error {
 	result, err := h.service.Update(c.Request().Context(), ucInput)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "client not found"})
+			return c.JSON(http.StatusNotFound, common.Response{Message: "customer not found"})
 		}
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
@@ -112,15 +112,15 @@ func (h *ClientHandler) Update(c echo.Context) error {
 }
 
 // Delete godoc
-// @Summary      Delete a client
-// @Description  Soft deletes a client by ID
-// @Tags         clients
+// @Summary      Delete a customer
+// @Description  Soft deletes a customer by ID
+// @Tags         customers
 // @Produce      json
-// @Param        id      path      string  true  "Client ID"
-// @Success      200     {string}  string  "OK"
-// @Failure      500     {object}  common.Response
-// @Router       /clients/{id} [delete]
-func (h *ClientHandler) Delete(c echo.Context) error {
+// @Param        id   path      string  true  "Customer ID"
+// @Success      200  {string}  string  "OK"
+// @Failure      500  {object}  common.Response
+// @Router       /customers/{id} [delete]
+func (h *CustomerHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
@@ -128,18 +128,18 @@ func (h *ClientHandler) Delete(c echo.Context) error {
 }
 
 // List godoc
-// @Summary      List clients
-// @Description  Get a paginated list of clients
-// @Tags         clients
+// @Summary      List customers
+// @Description  Get a paginated list of customers
+// @Tags         customers
 // @Produce      json
 // @Param        search    query     string  false  "Search by name or email"
 // @Param        active    query     bool    false  "Filter by active status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {object}  PaginatedClientResponse
+// @Success      200       {object}  PaginatedCustomerResponse
 // @Failure      500       {object}  common.Response
-// @Router       /clients [get]
-func (h *ClientHandler) List(c echo.Context) error {
+// @Router       /customers [get]
+func (h *CustomerHandler) List(c echo.Context) error {
 	filter := model.Filter{}
 
 	if s := c.QueryParam("search"); s != "" {
@@ -166,8 +166,8 @@ func (h *ClientHandler) List(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
 
-	response := PaginatedClientResponse{
-		Items:      make([]ClientDTO, 0, len(paginatedList.Items)),
+	response := PaginatedCustomerResponse{
+		Items:      make([]CustomerDTO, 0, len(paginatedList.Items)),
 		TotalCount: paginatedList.TotalCount,
 	}
 	for _, item := range paginatedList.Items {
@@ -191,7 +191,7 @@ func mapAddressDTOToDomain(a *AddressDTO) *model.Address {
 	}
 }
 
-func mapDomainToDTO(c *model.Client) ClientDTO {
+func mapDomainToDTO(c *model.Customer) CustomerDTO {
 	var addressDTO *AddressDTO
 	if c.Address != nil {
 		addressDTO = &AddressDTO{
@@ -204,7 +204,7 @@ func mapDomainToDTO(c *model.Client) ClientDTO {
 			State:        c.Address.State,
 		}
 	}
-	return ClientDTO{
+	return CustomerDTO{
 		ID:        c.ID,
 		Name:      c.Name,
 		Email:     c.Email,

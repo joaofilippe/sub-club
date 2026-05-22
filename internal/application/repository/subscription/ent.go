@@ -31,9 +31,9 @@ func (r *SubscriptionEntRepository) Create(ctx context.Context, s *model.Subscri
 		SetShipmentStatus(string(s.ShipmentStatus)).
 		SetStartDate(s.StartDate)
 
-	if s.ClientID != "" {
-		clientID, _ := uuid.Parse(s.ClientID)
-		builder = builder.SetCustomerID(clientID)
+	if s.CustomerID != "" {
+		customerID, _ := uuid.Parse(s.CustomerID)
+		builder = builder.SetCustomerID(customerID)
 	}
 	if s.PlanID != "" {
 		planID, _ := uuid.Parse(s.PlanID)
@@ -102,10 +102,10 @@ func (r *SubscriptionEntRepository) List(ctx context.Context, filter model.Filte
 	if filter.Status != nil {
 		q = q.Where(entsub.StatusEQ(string(*filter.Status)))
 	}
-	if filter.ClientID != nil && *filter.ClientID != "" {
-		cID, err := uuid.Parse(*filter.ClientID)
+	if filter.CustomerID != nil && *filter.CustomerID != "" {
+		cID, err := uuid.Parse(*filter.CustomerID)
 		if err == nil {
-			q = q.Where(entsub.ClientID(cID))
+			q = q.Where(entsub.CustomerID(cID))
 		}
 	}
 
@@ -136,8 +136,8 @@ func mapEntSubscriptionToDomain(es *ent.Subscription) *model.Subscription {
 	if es.Edges.Customer != nil {
 		cID = es.Edges.Customer.ID.String()
 		cName = es.Edges.Customer.Name
-	} else if es.ClientID != uuid.Nil {
-		cID = es.ClientID.String()
+	} else if es.CustomerID != uuid.Nil {
+		cID = es.CustomerID.String()
 	}
 
 	if es.Edges.Plan != nil {
@@ -157,8 +157,8 @@ func mapEntSubscriptionToDomain(es *ent.Subscription) *model.Subscription {
 
 	return &model.Subscription{
 		ID:               es.ID.String(),
-		ClientID:         cID,
-		ClientName:       cName,
+		CustomerID:       cID,
+		CustomerName:     cName,
 		PlanID:           pID,
 		PlanName:         pName,
 		Status:           model.Status(es.Status),

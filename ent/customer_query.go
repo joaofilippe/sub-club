@@ -415,7 +415,7 @@ func (_q *CustomerQuery) loadSubscriptions(ctx context.Context, query *Subscript
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(subscription.FieldClientID)
+		query.ctx.AppendFieldOnce(subscription.FieldCustomerID)
 	}
 	query.Where(predicate.Subscription(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(customer.SubscriptionsColumn), fks...))
@@ -425,10 +425,10 @@ func (_q *CustomerQuery) loadSubscriptions(ctx context.Context, query *Subscript
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ClientID
+		fk := n.CustomerID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "client_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "customer_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -3,19 +3,19 @@ package usecase
 import (
 	"context"
 
-	"github.com/joaofilippe/subclub/internal/domain/client"
-	"github.com/joaofilippe/subclub/internal/domain/client/model"
+	"github.com/joaofilippe/subclub/internal/domain/customer"
+	"github.com/joaofilippe/subclub/internal/domain/customer/model"
 )
 
-type UpdateClientUseCase struct {
-	repo client.Repository
+type UpdateCustomerUseCase struct {
+	repo customer.Repository
 }
 
-func NewUpdateClientUseCase(repo client.Repository) *UpdateClientUseCase {
-	return &UpdateClientUseCase{repo: repo}
+func NewUpdateCustomerUseCase(repo customer.Repository) *UpdateCustomerUseCase {
+	return &UpdateCustomerUseCase{repo: repo}
 }
 
-func (uc *UpdateClientUseCase) Execute(ctx context.Context, input model.UpdateClientInput) (*model.Client, error) {
+func (uc *UpdateCustomerUseCase) Execute(ctx context.Context, input model.UpdateCustomerInput) (*model.Customer, error) {
 	existing, err := uc.repo.GetByID(ctx, input.ID)
 	if err != nil {
 		return nil, model.ErrNotFound

@@ -20,8 +20,8 @@ type Subscription struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// ClientID holds the value of the "client_id" field.
-	ClientID uuid.UUID `json:"client_id,omitempty"`
+	// CustomerID holds the value of the "customer_id" field.
+	CustomerID uuid.UUID `json:"customer_id,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	PlanID uuid.UUID `json:"plan_id,omitempty"`
 	// Status holds the value of the "status" field.
@@ -84,7 +84,7 @@ func (*Subscription) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case subscription.FieldStartDate, subscription.FieldNextBillingDate, subscription.FieldNextShipmentDate, subscription.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case subscription.FieldID, subscription.FieldClientID, subscription.FieldPlanID:
+		case subscription.FieldID, subscription.FieldCustomerID, subscription.FieldPlanID:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -107,11 +107,11 @@ func (_m *Subscription) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.ID = *value
 			}
-		case subscription.FieldClientID:
+		case subscription.FieldCustomerID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field client_id", values[i])
+				return fmt.Errorf("unexpected type %T for field customer_id", values[i])
 			} else if value != nil {
-				_m.ClientID = *value
+				_m.CustomerID = *value
 			}
 		case subscription.FieldPlanID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -201,8 +201,8 @@ func (_m *Subscription) String() string {
 	var builder strings.Builder
 	builder.WriteString("Subscription(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("client_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ClientID))
+	builder.WriteString("customer_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CustomerID))
 	builder.WriteString(", ")
 	builder.WriteString("plan_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.PlanID))
