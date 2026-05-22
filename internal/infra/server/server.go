@@ -17,14 +17,14 @@ type Server struct {
 	router *router
 }
 
-func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManager) *Server {
+func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManager, jwtSecret []byte) *Server {
 	logger := slog.Default()
 	e := echo.New()
 
 	s := &Server{
 		echo:   e,
 		logger: logger,
-		router: newRouter(e, handlers, tenantManager),
+		router: newRouter(e, handlers, tenantManager, jwtSecret),
 	}
 
 	e.Use(middleware.ConfigureLogger(s.logger))

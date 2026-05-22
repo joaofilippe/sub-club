@@ -13,10 +13,11 @@ type router struct {
 	echo          *echo.Echo
 	handlers      *web.Handlers
 	tenantManager *database.TenantClientManager
+	jwtSecret     []byte
 }
 
-func newRouter(e *echo.Echo, handlers *web.Handlers, tenantManager *database.TenantClientManager) *router {
-	return &router{echo: e, handlers: handlers, tenantManager: tenantManager}
+func newRouter(e *echo.Echo, handlers *web.Handlers, tenantManager *database.TenantClientManager, jwtSecret []byte) *router {
+	return &router{echo: e, handlers: handlers, tenantManager: tenantManager, jwtSecret: jwtSecret}
 }
 
 func (r *router) registerRoutes() {
@@ -36,30 +37,32 @@ func (r *router) registerRoutes() {
 	accountGroup.PUT("/:id", r.handlers.Account.Update)
 	accountGroup.DELETE("/:id", r.handlers.Account.Delete)
 
-	tenantMW := middleware.TenantMiddleware(r.tenantManager)
+	r.echo.POST("/auth/login", r.handlers.Auth.Login)
 
-	customerGroup := r.echo.Group("/customers", tenantMW)
+	authMW := middleware.AuthMiddleware(r.tenantManager, r.jwtSecret)
+
+	customerGroup := r.echo.Group("/customers", authMW)
 	customerGroup.POST("", r.handlers.Customer.Create)
 	customerGroup.GET("", r.handlers.Customer.List)
 	customerGroup.GET("/:id", r.handlers.Customer.Get)
 	customerGroup.PUT("/:id", r.handlers.Customer.Update)
 	customerGroup.DELETE("/:id", r.handlers.Customer.Delete)
 
-	planGroup := r.echo.Group("/plans", tenantMW)
+	planGroup := r.echo.Group("/plans", authMW)
 	planGroup.POST("", r.handlers.Plan.Create)
 	planGroup.GET("", r.handlers.Plan.List)
 	planGroup.GET("/:id", r.handlers.Plan.Get)
 	planGroup.PUT("/:id", r.handlers.Plan.Update)
 	planGroup.DELETE("/:id", r.handlers.Plan.Delete)
 
-	subGroup := r.echo.Group("/subscriptions", tenantMW)
+	subGroup := r.echo.Group("/subscriptions", authMW)
 	subGroup.POST("", r.handlers.Subscription.Create)
 	subGroup.GET("", r.handlers.Subscription.List)
 	subGroup.GET("/:id", r.handlers.Subscription.Get)
 	subGroup.PUT("/:id", r.handlers.Subscription.Update)
 	subGroup.DELETE("/:id", r.handlers.Subscription.Delete)
 
-	productGroup := r.echo.Group("/products", tenantMW)
+	productGroup := r.echo.Group("/products", authMW)
 	productGroup.POST("", r.handlers.Product.Create)
 	productGroup.GET("", r.handlers.Product.List)
 	productGroup.GET("/:id", r.handlers.Product.Get)

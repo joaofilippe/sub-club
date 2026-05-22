@@ -24,6 +24,7 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input model.CreateUser
 	u := &model.User{
 		ID:        newID,
 		Email:     input.Email,
+		Password:  input.Password,
 		Type:      input.Type,
 		Role:      input.Role,
 		CreatedAt: now,

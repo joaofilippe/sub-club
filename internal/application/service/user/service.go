@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/joaofilippe/subclub/internal/domain/user"
 	"github.com/joaofilippe/subclub/internal/domain/user/model"
@@ -33,6 +36,11 @@ func NewUserService(repo user.Repository) *UserService {
 }
 
 func (s *UserService) Create(ctx context.Context, input model.CreateUserInput) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("hashing password: %w", err)
+	}
+	input.Password = string(hash)
 	return s.createUseCase.Execute(ctx, input)
 }
 

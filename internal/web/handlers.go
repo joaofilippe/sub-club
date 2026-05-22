@@ -2,6 +2,7 @@ package web
 
 import (
 	"github.com/joaofilippe/subclub/internal/application"
+	authhandler "github.com/joaofilippe/subclub/internal/web/auth"
 	"github.com/joaofilippe/subclub/internal/web/account"
 	"github.com/joaofilippe/subclub/internal/web/accountplan"
 	"github.com/joaofilippe/subclub/internal/web/customer"
@@ -12,6 +13,7 @@ import (
 )
 
 type Handlers struct {
+	Auth         *authhandler.AuthHandler
 	Account      *account.AccountHandler
 	AccountPlan  *accountplan.AccountPlanHandler
 	Customer     *customer.CustomerHandler
@@ -23,6 +25,7 @@ type Handlers struct {
 
 func NewHandlers(app *application.Application) *Handlers {
 	return &Handlers{
+		Auth:         authhandler.NewAuthHandler(app.AuthService),
 		Account:      account.NewAccountHandler(app.AccountService),
 		AccountPlan:  accountplan.NewAccountPlanHandler(app.AccountPlanService),
 		Customer:     customer.NewCustomerHandler(app.CustomerService),

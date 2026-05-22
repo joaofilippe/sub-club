@@ -16,6 +16,7 @@ type Config struct {
 	Port           string
 	DatabaseURL    string
 	DatabaseDriver string
+	JWTSecret      string
 }
 
 func Load() (*Config, error) {
@@ -39,11 +40,17 @@ func Load() (*Config, error) {
 		dbURL = "postgres://postgres:postgres@localhost:5432/subclub?sslmode=disable"
 	}
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		jwtSecret = "change-me-in-production"
+	}
+
 	return &Config{
 		AppEnv:         env,
 		Port:           port,
 		DatabaseURL:    dbURL,
 		DatabaseDriver: dbDriver,
+		JWTSecret:      jwtSecret,
 	}, nil
 }
 
