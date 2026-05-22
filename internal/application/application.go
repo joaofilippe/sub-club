@@ -28,6 +28,7 @@ import (
 type Application struct {
 	dbConnection        *database.Connection
 	entClient           *ent.Client
+	TenantManager       *database.TenantClientManager
 	AccountService      *accountsvc.AccountService
 	AccountPlanService  *accountplansvc.AccountPlanService
 	UserService         *usersvc.UserService
@@ -53,9 +54,11 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 		log.Printf("Failed creating schema resources: %v", err)
 	}
 
+	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB)
+
 	database.SeedAll(ctx, a.entClient, cfg)
 
-	a.AccountService = accountsvc.NewAccountService(accountrepo.NewAccountEntRepository(a.entClient))
+	a.AccountService = accountsvc.NewAccountService(accountrepo.NewAccountEntRepository(a.entClient), a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
 	a.CustomerService = customersvc.NewCustomerService(customerrepo.NewCustomerEntRepository(a.entClient))
 	a.PlanService = plansvc.NewPlanService(planrepo.NewPlanEntRepository(a.entClient))

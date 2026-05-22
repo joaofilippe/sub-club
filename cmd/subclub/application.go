@@ -43,7 +43,7 @@ func startApplication() {
 	}
 
 	h := web.NewHandlers(app)
-	srv := server.NewServer(h)
+	srv := server.NewServer(h, app.TenantManager)
 
 	log.Fatal(srv.Start(cfg.Port))
 }

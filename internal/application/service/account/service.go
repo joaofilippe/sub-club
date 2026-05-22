@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/joaofilippe/subclub/internal/domain/account"
 	"github.com/joaofilippe/subclub/internal/domain/account/model"
@@ -9,15 +10,16 @@ import (
 )
 
 type AccountService struct {
-	createUseCase     *usecase.CreateAccountUseCase
-	getByIDUseCase    *usecase.GetAccountByIDUseCase
-	getBySlugUseCase  *usecase.GetAccountBySlugUseCase
-	updateUseCase     *usecase.UpdateAccountUseCase
-	deleteUseCase     *usecase.DeleteAccountUseCase
-	listUseCase       *usecase.ListAccountsUseCase
+	createUseCase    *usecase.CreateAccountUseCase
+	getByIDUseCase   *usecase.GetAccountByIDUseCase
+	getBySlugUseCase *usecase.GetAccountBySlugUseCase
+	updateUseCase    *usecase.UpdateAccountUseCase
+	deleteUseCase    *usecase.DeleteAccountUseCase
+	listUseCase      *usecase.ListAccountsUseCase
+	schemaCreator    account.SchemaCreator
 }
 
-func NewAccountService(repo account.Repository) *AccountService {
+func NewAccountService(repo account.Repository, schemaCreator account.SchemaCreator) *AccountService {
 	return &AccountService{
 		createUseCase:    usecase.NewCreateAccountUseCase(repo),
 		getByIDUseCase:   usecase.NewGetAccountByIDUseCase(repo),
@@ -25,11 +27,21 @@ func NewAccountService(repo account.Repository) *AccountService {
 		updateUseCase:    usecase.NewUpdateAccountUseCase(repo),
 		deleteUseCase:    usecase.NewDeleteAccountUseCase(repo),
 		listUseCase:      usecase.NewListAccountsUseCase(repo),
+		schemaCreator:    schemaCreator,
 	}
 }
 
 func (s *AccountService) Create(ctx context.Context, input model.CreateAccountInput) (*model.Account, error) {
-	return s.createUseCase.Execute(ctx, input)
+	acc, err := s.createUseCase.Execute(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.schemaCreator.CreateTenantSchema(ctx, acc.Slug); err != nil {
+		return nil, fmt.Errorf("provisioning tenant schema: %w", err)
+	}
+
+	return acc, nil
 }
 
 func (s *AccountService) GetByID(ctx context.Context, id string) (*model.Account, error) {
