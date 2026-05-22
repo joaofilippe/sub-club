@@ -37,7 +37,7 @@ The seeder logic resides in `internal/infra/database/seeder.go`. It is called du
 The seeder only runs if:
 
 1. The database is empty (checked by counting rows in the `users` table).
-2. The environment variable `APP_ENV` is set to `development` or `local`.
+2. The environment variable `APP_ENV` is set to `development`.
 
 ### Seeding Configuration
 

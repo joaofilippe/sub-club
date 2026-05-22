@@ -64,7 +64,7 @@ The project includes automatically generated OpenAPI documentation using the **S
 This application utilizes **Clean Architecture** combined with the **Ent ORM** for standardizing interactions with the PostgreSQL database.
 
 ### Automated Database Seeding (Fake Data)
-When starting the application locally (e.g., using `make dev` or `make run`), the system can automatically populate the database with fake data if it is empty. This only happens if the environment variable `APP_ENV` is set to `development` or `local`.
+When starting the application locally (e.g., using `make dev` or `make run`), the system can automatically populate the database with fake data if it is empty. This only happens if the environment variable `APP_ENV` is set to `development`.
 
 When triggered, the system injects:
 - **1 Administrator**: `adm@adm.com` / `12345678`
