@@ -1,5 +1,5 @@
 # Start from the latest golang base image
-FROM golang:1.24-alpine
+FROM golang:1.26-alpine
 
 # Install necessary build tools
 RUN apk add --no-cache git curl
