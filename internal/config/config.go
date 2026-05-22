@@ -8,8 +8,6 @@ type Environment string
 
 const (
 	Development Environment = "development"
-	Dev         Environment = "dev"
-	Local       Environment = "local"
 	Production  Environment = "production"
 )
 
@@ -50,7 +48,7 @@ func Load() (*Config, error) {
 }
 
 func (c *Config) IsDevelopment() bool {
-	return c.AppEnv == Development || c.AppEnv == Dev || c.AppEnv == Local
+	return c.AppEnv == Development
 }
 
 func (c *Config) IsProduction() bool {

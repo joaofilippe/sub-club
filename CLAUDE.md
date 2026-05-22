@@ -70,4 +70,4 @@ Regenerate docs with `make swagger` after any change.
 - Do not mock the database in integration tests — use a real connection.
 
 ### Fake Data Seeder
-Runs automatically on startup when `APP_ENV` is `development`, `dev`, or `local`, and only if the database is empty. Seeds 1 admin, 10 products, 4 plans, 50 customers, 25 subscriptions.
+Runs automatically on startup when `APP_ENV` is `development`, and only if the database is empty. Seeds 1 admin, 10 products, 4 plans, 50 customers, 25 subscriptions.
