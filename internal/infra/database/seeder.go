@@ -91,7 +91,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 	log.Println("[Seeder] Seeding fake customers (50)...")
 	customers := make([]*ent.Customer, 50)
 	for i := 0; i < 50; i++ {
-		f := faker.FakeClient()
+		f := faker.FakeCustomer()
 		customers[i], _ = client.Customer.Create().
 			SetID(uuid.MustParse(f.ID)).
 			SetName(f.Name).
@@ -114,7 +114,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 			if plan != nil {
 				_, _ = client.Subscription.Create().
 					SetID(uuid.New()).
-					SetClientID(customer.ID).
+					SetCustomerID(customer.ID).
 					SetPlanID(plan.ID).
 					SetStatus("ACTIVE").
 					Save(ctx)

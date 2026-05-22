@@ -335,12 +335,12 @@ func (_q *SubscriptionQuery) WithPlan(opts ...func(*PlanQuery)) *SubscriptionQue
 // Example:
 //
 //	var v []struct {
-//		ClientID uuid.UUID `json:"client_id,omitempty"`
+//		CustomerID uuid.UUID `json:"customer_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Subscription.Query().
-//		GroupBy(subscription.FieldClientID).
+//		GroupBy(subscription.FieldCustomerID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *SubscriptionQuery) GroupBy(field string, fields ...string) *SubscriptionGroupBy {
@@ -358,11 +358,11 @@ func (_q *SubscriptionQuery) GroupBy(field string, fields ...string) *Subscripti
 // Example:
 //
 //	var v []struct {
-//		ClientID uuid.UUID `json:"client_id,omitempty"`
+//		CustomerID uuid.UUID `json:"customer_id,omitempty"`
 //	}
 //
 //	client.Subscription.Query().
-//		Select(subscription.FieldClientID).
+//		Select(subscription.FieldCustomerID).
 //		Scan(ctx, &v)
 func (_q *SubscriptionQuery) Select(fields ...string) *SubscriptionSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -449,7 +449,7 @@ func (_q *SubscriptionQuery) loadCustomer(ctx context.Context, query *CustomerQu
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Subscription)
 	for i := range nodes {
-		fk := nodes[i].ClientID
+		fk := nodes[i].CustomerID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -466,7 +466,7 @@ func (_q *SubscriptionQuery) loadCustomer(ctx context.Context, query *CustomerQu
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "client_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "customer_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -530,7 +530,7 @@ func (_q *SubscriptionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 		if _q.withCustomer != nil {
-			_spec.Node.AddColumnOnce(subscription.FieldClientID)
+			_spec.Node.AddColumnOnce(subscription.FieldCustomerID)
 		}
 		if _q.withPlan != nil {
 			_spec.Node.AddColumnOnce(subscription.FieldPlanID)

@@ -44,11 +44,6 @@ srv.Start(cfg.Port)
 
 ## Key Conventions
 
-### Client vs Customer
-`Client` is the domain name used everywhere in Go code and API routes (`/clients`).  
-`Customer` is the physical name in the database and Ent schema — required to avoid collision with `ent.Client` (the ORM connection type).  
-Mapping happens in `internal/application/repository/client/`.
-
 ### Ent ORM
 - Never write raw SQL. All queries go through Ent.
 - Schemas are defined in `ent/schema/`. After any change, run `go generate ./ent`.
@@ -66,7 +61,7 @@ All handler methods must have Swag annotations (`// @Summary`, `// @Router`, etc
 Regenerate docs with `make swagger` after any change.
 
 ### Tests
-- Use `faker` helpers (`faker.FakeUser()`, `faker.FakeClient()`, etc.) instead of hardcoded strings.
+- Use `faker` helpers (`faker.FakeUser()`, `faker.FakeCustomer()`, etc.) instead of hardcoded strings.
 - Do not mock the database in integration tests — use a real connection.
 
 ### Fake Data Seeder

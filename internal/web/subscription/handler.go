@@ -14,8 +14,8 @@ import (
 
 type SubscriptionDTO struct {
 	ID               string `json:"id"`
-	ClientID         string `json:"clientId"`
-	ClientName       string `json:"clientName"`
+	CustomerID       string `json:"customerId"`
+	CustomerName     string `json:"customerName"`
 	PlanID           string `json:"planId"`
 	PlanName         string `json:"planName"`
 	Status           string `json:"status"`
@@ -28,7 +28,7 @@ type SubscriptionDTO struct {
 }
 
 type SubscriptionInputDTO struct {
-	ClientID         string `json:"clientId"`
+	CustomerID       string `json:"customerId"`
 	PlanID           string `json:"planId"`
 	Status           string `json:"status"`
 	ShipmentStatus   string `json:"shipmentStatus"`
@@ -73,7 +73,7 @@ func (h *SubscriptionHandler) Create(c echo.Context) error {
 	}
 
 	ucInput := model.CreateSubscriptionInput{
-		ClientID:       input.ClientID,
+		CustomerID:     input.CustomerID,
 		PlanID:         input.PlanID,
 		Status:         model.Status(input.Status),
 		ShipmentStatus: model.ShipmentStatus(input.ShipmentStatus),
@@ -182,7 +182,7 @@ func (h *SubscriptionHandler) Delete(c echo.Context) error {
 // @Description  Get a paginated list of subscriptions
 // @Tags         subscriptions
 // @Produce      json
-// @Param        clientID  query     string  false  "Filter by Client ID"
+// @Param        customerId  query     string  false  "Filter by Customer ID"
 // @Param        status    query     string  false  "Filter by Status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
@@ -198,8 +198,8 @@ func (h *SubscriptionHandler) List(c echo.Context) error {
 		status := model.Status(st)
 		filter.Status = &status
 	}
-	if cid := c.QueryParam("clientId"); cid != "" {
-		filter.ClientID = &cid
+	if cid := c.QueryParam("customerId"); cid != "" {
+		filter.CustomerID = &cid
 	}
 
 	page := 1
@@ -241,8 +241,8 @@ func mapDomainToDTO(s *model.Subscription) SubscriptionDTO {
 
 	return SubscriptionDTO{
 		ID:               s.ID,
-		ClientID:         s.ClientID,
-		ClientName:       s.ClientName,
+		CustomerID:       s.CustomerID,
+		CustomerName:     s.CustomerName,
 		PlanID:           s.PlanID,
 		PlanName:         s.PlanName,
 		Status:           string(s.Status),

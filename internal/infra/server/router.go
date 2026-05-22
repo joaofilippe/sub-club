@@ -19,12 +19,12 @@ func newRouter(e *echo.Echo, handlers *web.Handlers) *router {
 func (r *router) registerRoutes() {
 	r.echo.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	clientGroup := r.echo.Group("/clients")
-	clientGroup.POST("", r.handlers.Client.Create)
-	clientGroup.GET("", r.handlers.Client.List)
-	clientGroup.GET("/:id", r.handlers.Client.Get)
-	clientGroup.PUT("/:id", r.handlers.Client.Update)
-	clientGroup.DELETE("/:id", r.handlers.Client.Delete)
+	customerGroup := r.echo.Group("/customers")
+	customerGroup.POST("", r.handlers.Customer.Create)
+	customerGroup.GET("", r.handlers.Customer.List)
+	customerGroup.GET("/:id", r.handlers.Customer.Get)
+	customerGroup.PUT("/:id", r.handlers.Customer.Update)
+	customerGroup.DELETE("/:id", r.handlers.Customer.Delete)
 
 	planGroup := r.echo.Group("/plans")
 	planGroup.POST("", r.handlers.Plan.Create)

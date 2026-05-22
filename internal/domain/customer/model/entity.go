@@ -12,7 +12,7 @@ type Address struct {
 	State        string
 }
 
-type Client struct {
+type Customer struct {
 	ID        string
 	Name      string
 	Email     string
@@ -31,6 +31,6 @@ type Filter struct {
 }
 
 type PaginatedList struct {
-	Items      []*Client
+	Items      []*Customer
 	TotalCount int
 }

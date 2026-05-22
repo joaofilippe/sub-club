@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/joaofilippe/subclub/internal/application"
-	clientsvc "github.com/joaofilippe/subclub/internal/application/service/client"
+	clientsvc "github.com/joaofilippe/subclub/internal/application/service/customer"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
@@ -16,7 +16,7 @@ import (
 func stubApp() *application.Application {
 	return &application.Application{
 		UserService:         usersvc.NewUserService(nil),
-		ClientService:       clientsvc.NewClientService(nil),
+		CustomerService:       clientsvc.NewCustomerService(nil),
 		PlanService:         plansvc.NewPlanService(nil),
 		ProductService:      productsvc.NewProductService(nil),
 		SubscriptionService: subsvc.NewSubscriptionService(nil),

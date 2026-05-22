@@ -7,19 +7,19 @@ import (
 	"github.com/joaofilippe/subclub/ent"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/schema"
-	"github.com/joaofilippe/subclub/internal/domain/client"
-	"github.com/joaofilippe/subclub/internal/domain/client/model"
+	customerdomain "github.com/joaofilippe/subclub/internal/domain/customer"
+	"github.com/joaofilippe/subclub/internal/domain/customer/model"
 )
 
-type ClientEntRepository struct {
+type CustomerEntRepository struct {
 	entClient *ent.Client
 }
 
-func NewClientEntRepository(entClient *ent.Client) client.Repository {
-	return &ClientEntRepository{entClient: entClient}
+func NewCustomerEntRepository(entClient *ent.Client) customerdomain.Repository {
+	return &CustomerEntRepository{entClient: entClient}
 }
 
-func (r *ClientEntRepository) Create(ctx context.Context, c *model.Client) error {
+func (r *CustomerEntRepository) Create(ctx context.Context, c *model.Customer) error {
 	id, err := uuid.Parse(c.ID)
 	if err != nil {
 		id = uuid.New()
@@ -53,7 +53,7 @@ func (r *ClientEntRepository) Create(ctx context.Context, c *model.Client) error
 	return err
 }
 
-func (r *ClientEntRepository) GetByID(ctx context.Context, id string) (*model.Client, error) {
+func (r *CustomerEntRepository) GetByID(ctx context.Context, id string) (*model.Customer, error) {
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (r *ClientEntRepository) GetByID(ctx context.Context, id string) (*model.Cl
 	return mapEntCustomerToDomain(c), nil
 }
 
-func (r *ClientEntRepository) Update(ctx context.Context, c *model.Client) error {
+func (r *CustomerEntRepository) Update(ctx context.Context, c *model.Customer) error {
 	parsedID, err := uuid.Parse(c.ID)
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func (r *ClientEntRepository) Update(ctx context.Context, c *model.Client) error
 	return err
 }
 
-func (r *ClientEntRepository) Delete(ctx context.Context, id string) error {
+func (r *CustomerEntRepository) Delete(ctx context.Context, id string) error {
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
 		return err
@@ -110,7 +110,7 @@ func (r *ClientEntRepository) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *ClientEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
+func (r *CustomerEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
 	q := r.entClient.Customer.Query()
 
 	if filter.IsActive != nil {
@@ -139,7 +139,7 @@ func (r *ClientEntRepository) List(ctx context.Context, filter model.Filter) (*m
 		return nil, err
 	}
 
-	var results []*model.Client
+	var results []*model.Customer
 	for _, ec := range entCustomers {
 		results = append(results, mapEntCustomerToDomain(ec))
 	}
@@ -149,7 +149,7 @@ func (r *ClientEntRepository) List(ctx context.Context, filter model.Filter) (*m
 	}, nil
 }
 
-func mapEntCustomerToDomain(ec *ent.Customer) *model.Client {
+func mapEntCustomerToDomain(ec *ent.Customer) *model.Customer {
 	var address *model.Address
 	if ec.Address != nil {
 		address = &model.Address{
@@ -163,7 +163,7 @@ func mapEntCustomerToDomain(ec *ent.Customer) *model.Client {
 		}
 	}
 
-	return &model.Client{
+	return &model.Customer{
 		ID:        ec.ID.String(),
 		Name:      ec.Name,
 		Email:     ec.Email,

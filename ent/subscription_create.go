@@ -23,16 +23,16 @@ type SubscriptionCreate struct {
 	hooks    []Hook
 }
 
-// SetClientID sets the "client_id" field.
-func (_c *SubscriptionCreate) SetClientID(v uuid.UUID) *SubscriptionCreate {
-	_c.mutation.SetClientID(v)
+// SetCustomerID sets the "customer_id" field.
+func (_c *SubscriptionCreate) SetCustomerID(v uuid.UUID) *SubscriptionCreate {
+	_c.mutation.SetCustomerID(v)
 	return _c
 }
 
-// SetNillableClientID sets the "client_id" field if the given value is not nil.
-func (_c *SubscriptionCreate) SetNillableClientID(v *uuid.UUID) *SubscriptionCreate {
+// SetNillableCustomerID sets the "customer_id" field if the given value is not nil.
+func (_c *SubscriptionCreate) SetNillableCustomerID(v *uuid.UUID) *SubscriptionCreate {
 	if v != nil {
-		_c.SetClientID(*v)
+		_c.SetCustomerID(*v)
 	}
 	return _c
 }
@@ -145,20 +145,6 @@ func (_c *SubscriptionCreate) SetID(v uuid.UUID) *SubscriptionCreate {
 func (_c *SubscriptionCreate) SetNillableID(v *uuid.UUID) *SubscriptionCreate {
 	if v != nil {
 		_c.SetID(*v)
-	}
-	return _c
-}
-
-// SetCustomerID sets the "customer" edge to the Customer entity by ID.
-func (_c *SubscriptionCreate) SetCustomerID(id uuid.UUID) *SubscriptionCreate {
-	_c.mutation.SetCustomerID(id)
-	return _c
-}
-
-// SetNillableCustomerID sets the "customer" edge to the Customer entity by ID if the given value is not nil.
-func (_c *SubscriptionCreate) SetNillableCustomerID(id *uuid.UUID) *SubscriptionCreate {
-	if id != nil {
-		_c = _c.SetCustomerID(*id)
 	}
 	return _c
 }
@@ -317,7 +303,7 @@ func (_c *SubscriptionCreate) createSpec() (*Subscription, *sqlgraph.CreateSpec)
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ClientID = nodes[0]
+		_node.CustomerID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.PlanIDs(); len(nodes) > 0 {

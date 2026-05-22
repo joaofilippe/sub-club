@@ -20,7 +20,7 @@ func NewCreateSubscriptionUseCase(repo subscription.Repository) *CreateSubscript
 func (uc *CreateSubscriptionUseCase) Execute(ctx context.Context, input model.CreateSubscriptionInput) (*model.Subscription, error) {
 	sub := &model.Subscription{
 		ID:               uuid.New().String(),
-		ClientID:         input.ClientID,
+		CustomerID:       input.CustomerID,
 		PlanID:           input.PlanID,
 		Status:           input.Status,
 		ShipmentStatus:   input.ShipmentStatus,

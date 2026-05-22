@@ -39,7 +39,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "subscription" package.
 	SubscriptionsInverseTable = "subscriptions"
 	// SubscriptionsColumn is the table column denoting the subscriptions relation/edge.
-	SubscriptionsColumn = "client_id"
+	SubscriptionsColumn = "customer_id"
 )
 
 // Columns holds all SQL columns for customer fields.
