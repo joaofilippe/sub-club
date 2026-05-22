@@ -16,6 +16,8 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
@@ -28,6 +30,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Account is the client for interacting with the Account builders.
+	Account *AccountClient
+	// AccountPlan is the client for interacting with the AccountPlan builders.
+	AccountPlan *AccountPlanClient
 	// Customer is the client for interacting with the Customer builders.
 	Customer *CustomerClient
 	// Plan is the client for interacting with the Plan builders.
@@ -49,6 +55,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Account = NewAccountClient(c.config)
+	c.AccountPlan = NewAccountPlanClient(c.config)
 	c.Customer = NewCustomerClient(c.config)
 	c.Plan = NewPlanClient(c.config)
 	c.Product = NewProductClient(c.config)
@@ -146,6 +154,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		Account:      NewAccountClient(cfg),
+		AccountPlan:  NewAccountPlanClient(cfg),
 		Customer:     NewCustomerClient(cfg),
 		Plan:         NewPlanClient(cfg),
 		Product:      NewProductClient(cfg),
@@ -170,6 +180,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		Account:      NewAccountClient(cfg),
+		AccountPlan:  NewAccountPlanClient(cfg),
 		Customer:     NewCustomerClient(cfg),
 		Plan:         NewPlanClient(cfg),
 		Product:      NewProductClient(cfg),
@@ -181,7 +193,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Customer.
+//		Account.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -203,26 +215,30 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Customer.Use(hooks...)
-	c.Plan.Use(hooks...)
-	c.Product.Use(hooks...)
-	c.Subscription.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Account, c.AccountPlan, c.Customer, c.Plan, c.Product, c.Subscription, c.User,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Customer.Intercept(interceptors...)
-	c.Plan.Intercept(interceptors...)
-	c.Product.Intercept(interceptors...)
-	c.Subscription.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Account, c.AccountPlan, c.Customer, c.Plan, c.Product, c.Subscription, c.User,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AccountMutation:
+		return c.Account.mutate(ctx, m)
+	case *AccountPlanMutation:
+		return c.AccountPlan.mutate(ctx, m)
 	case *CustomerMutation:
 		return c.Customer.mutate(ctx, m)
 	case *PlanMutation:
@@ -235,6 +251,304 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AccountClient is a client for the Account schema.
+type AccountClient struct {
+	config
+}
+
+// NewAccountClient returns a client for the Account from the given config.
+func NewAccountClient(c config) *AccountClient {
+	return &AccountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `account.Hooks(f(g(h())))`.
+func (c *AccountClient) Use(hooks ...Hook) {
+	c.hooks.Account = append(c.hooks.Account, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `account.Intercept(f(g(h())))`.
+func (c *AccountClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Account = append(c.inters.Account, interceptors...)
+}
+
+// Create returns a builder for creating a Account entity.
+func (c *AccountClient) Create() *AccountCreate {
+	mutation := newAccountMutation(c.config, OpCreate)
+	return &AccountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Account entities.
+func (c *AccountClient) CreateBulk(builders ...*AccountCreate) *AccountCreateBulk {
+	return &AccountCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountClient) MapCreateBulk(slice any, setFunc func(*AccountCreate, int)) *AccountCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountCreateBulk{err: fmt.Errorf("calling to AccountClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Account.
+func (c *AccountClient) Update() *AccountUpdate {
+	mutation := newAccountMutation(c.config, OpUpdate)
+	return &AccountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountClient) UpdateOne(_m *Account) *AccountUpdateOne {
+	mutation := newAccountMutation(c.config, OpUpdateOne, withAccount(_m))
+	return &AccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountClient) UpdateOneID(id uuid.UUID) *AccountUpdateOne {
+	mutation := newAccountMutation(c.config, OpUpdateOne, withAccountID(id))
+	return &AccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Account.
+func (c *AccountClient) Delete() *AccountDelete {
+	mutation := newAccountMutation(c.config, OpDelete)
+	return &AccountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountClient) DeleteOne(_m *Account) *AccountDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountClient) DeleteOneID(id uuid.UUID) *AccountDeleteOne {
+	builder := c.Delete().Where(account.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountDeleteOne{builder}
+}
+
+// Query returns a query builder for Account.
+func (c *AccountClient) Query() *AccountQuery {
+	return &AccountQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccount},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Account entity by its id.
+func (c *AccountClient) Get(ctx context.Context, id uuid.UUID) (*Account, error) {
+	return c.Query().Where(account.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountClient) GetX(ctx context.Context, id uuid.UUID) *Account {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccountPlan queries the account_plan edge of a Account.
+func (c *AccountClient) QueryAccountPlan(_m *Account) *AccountPlanQuery {
+	query := (&AccountPlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(accountplan.Table, accountplan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, account.AccountPlanTable, account.AccountPlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AccountClient) Hooks() []Hook {
+	return c.hooks.Account
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountClient) Interceptors() []Interceptor {
+	return c.inters.Account
+}
+
+func (c *AccountClient) mutate(ctx context.Context, m *AccountMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Account mutation op: %q", m.Op())
+	}
+}
+
+// AccountPlanClient is a client for the AccountPlan schema.
+type AccountPlanClient struct {
+	config
+}
+
+// NewAccountPlanClient returns a client for the AccountPlan from the given config.
+func NewAccountPlanClient(c config) *AccountPlanClient {
+	return &AccountPlanClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountplan.Hooks(f(g(h())))`.
+func (c *AccountPlanClient) Use(hooks ...Hook) {
+	c.hooks.AccountPlan = append(c.hooks.AccountPlan, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountplan.Intercept(f(g(h())))`.
+func (c *AccountPlanClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountPlan = append(c.inters.AccountPlan, interceptors...)
+}
+
+// Create returns a builder for creating a AccountPlan entity.
+func (c *AccountPlanClient) Create() *AccountPlanCreate {
+	mutation := newAccountPlanMutation(c.config, OpCreate)
+	return &AccountPlanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountPlan entities.
+func (c *AccountPlanClient) CreateBulk(builders ...*AccountPlanCreate) *AccountPlanCreateBulk {
+	return &AccountPlanCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountPlanClient) MapCreateBulk(slice any, setFunc func(*AccountPlanCreate, int)) *AccountPlanCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountPlanCreateBulk{err: fmt.Errorf("calling to AccountPlanClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountPlanCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountPlanCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountPlan.
+func (c *AccountPlanClient) Update() *AccountPlanUpdate {
+	mutation := newAccountPlanMutation(c.config, OpUpdate)
+	return &AccountPlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountPlanClient) UpdateOne(_m *AccountPlan) *AccountPlanUpdateOne {
+	mutation := newAccountPlanMutation(c.config, OpUpdateOne, withAccountPlan(_m))
+	return &AccountPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountPlanClient) UpdateOneID(id uuid.UUID) *AccountPlanUpdateOne {
+	mutation := newAccountPlanMutation(c.config, OpUpdateOne, withAccountPlanID(id))
+	return &AccountPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountPlan.
+func (c *AccountPlanClient) Delete() *AccountPlanDelete {
+	mutation := newAccountPlanMutation(c.config, OpDelete)
+	return &AccountPlanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountPlanClient) DeleteOne(_m *AccountPlan) *AccountPlanDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountPlanClient) DeleteOneID(id uuid.UUID) *AccountPlanDeleteOne {
+	builder := c.Delete().Where(accountplan.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountPlanDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountPlan.
+func (c *AccountPlanClient) Query() *AccountPlanQuery {
+	return &AccountPlanQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountPlan},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountPlan entity by its id.
+func (c *AccountPlanClient) Get(ctx context.Context, id uuid.UUID) (*AccountPlan, error) {
+	return c.Query().Where(accountplan.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountPlanClient) GetX(ctx context.Context, id uuid.UUID) *AccountPlan {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccounts queries the accounts edge of a AccountPlan.
+func (c *AccountPlanClient) QueryAccounts(_m *AccountPlan) *AccountQuery {
+	query := (&AccountClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(accountplan.Table, accountplan.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, accountplan.AccountsTable, accountplan.AccountsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AccountPlanClient) Hooks() []Hook {
+	return c.hooks.AccountPlan
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountPlanClient) Interceptors() []Interceptor {
+	return c.inters.AccountPlan
+}
+
+func (c *AccountPlanClient) mutate(ctx context.Context, m *AccountPlanMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountPlanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountPlanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountPlanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountPlan mutation op: %q", m.Op())
 	}
 }
 
@@ -970,9 +1284,10 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Customer, Plan, Product, Subscription, User []ent.Hook
+		Account, AccountPlan, Customer, Plan, Product, Subscription, User []ent.Hook
 	}
 	inters struct {
-		Customer, Plan, Product, Subscription, User []ent.Interceptor
+		Account, AccountPlan, Customer, Plan, Product, Subscription,
+		User []ent.Interceptor
 	}
 )

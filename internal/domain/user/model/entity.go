@@ -24,6 +24,7 @@ type User struct {
 	Password  string
 	Type      UserType
 	Role      UserRole
+	AccountID *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time

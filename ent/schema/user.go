@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+
 // User holds the schema definition for the User entity.
 type User struct {
 	ent.Schema
@@ -31,6 +32,7 @@ func (User) Fields() []ent.Field {
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 		field.Time("deleted_at").Optional().Nillable(),
+		field.UUID("account_id", uuid.UUID{}).Optional().Nillable(),
 	}
 }
 

@@ -8,6 +8,51 @@ import (
 )
 
 var (
+	// AccountsColumns holds the columns for the "accounts" table.
+	AccountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "document", Type: field.TypeString, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "subscription_status", Type: field.TypeEnum, Enums: []string{"trial", "active", "suspended", "cancelled"}, Default: "trial"},
+		{Name: "subscription_expires_at", Type: field.TypeTime, Nullable: true},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "account_plan_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// AccountsTable holds the schema information for the "accounts" table.
+	AccountsTable = &schema.Table{
+		Name:       "accounts",
+		Columns:    AccountsColumns,
+		PrimaryKey: []*schema.Column{AccountsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "accounts_account_plans_accounts",
+				Columns:    []*schema.Column{AccountsColumns[9]},
+				RefColumns: []*schema.Column{AccountPlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// AccountPlansColumns holds the columns for the "account_plans" table.
+	AccountPlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "max_customers", Type: field.TypeInt, Default: 0},
+		{Name: "max_plans", Type: field.TypeInt, Default: 0},
+		{Name: "max_products", Type: field.TypeInt, Default: 0},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AccountPlansTable holds the schema information for the "account_plans" table.
+	AccountPlansTable = &schema.Table{
+		Name:       "account_plans",
+		Columns:    AccountPlansColumns,
+		PrimaryKey: []*schema.Column{AccountPlansColumns[0]},
+	}
 	// CustomersColumns holds the columns for the "customers" table.
 	CustomersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -106,6 +151,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -115,6 +161,8 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AccountsTable,
+		AccountPlansTable,
 		CustomersTable,
 		PlansTable,
 		ProductsTable,
@@ -124,6 +172,7 @@ var (
 )
 
 func init() {
+	AccountsTable.ForeignKeys[0].RefTable = AccountPlansTable
 	SubscriptionsTable.ForeignKeys[0].RefTable = CustomersTable
 	SubscriptionsTable.ForeignKeys[1].RefTable = PlansTable
 }
