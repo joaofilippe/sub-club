@@ -9,6 +9,7 @@ import (
 	entsub "github.com/joaofilippe/subclub/ent/subscription"
 	"github.com/joaofilippe/subclub/internal/domain/subscription"
 	"github.com/joaofilippe/subclub/internal/domain/subscription/model"
+	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
 )
 
 type SubscriptionEntRepository struct {
@@ -19,13 +20,20 @@ func NewSubscriptionEntRepository(client *ent.Client) subscription.Repository {
 	return &SubscriptionEntRepository{client: client}
 }
 
+func (r *SubscriptionEntRepository) tenantClient(ctx context.Context) *ent.Client {
+	if c := tenantctx.TenantClientFromContext(ctx); c != nil {
+		return c
+	}
+	return r.client
+}
+
 func (r *SubscriptionEntRepository) Create(ctx context.Context, s *model.Subscription) error {
 	id, err := uuid.Parse(s.ID)
 	if err != nil {
 		id = uuid.New()
 	}
 
-	builder := r.client.Subscription.Create().
+	builder := r.tenantClient(ctx).Subscription.Create().
 		SetID(id).
 		SetStatus(string(s.Status)).
 		SetShipmentStatus(string(s.ShipmentStatus)).
@@ -55,7 +63,7 @@ func (r *SubscriptionEntRepository) GetByID(ctx context.Context, id string) (*mo
 	if err != nil {
 		return nil, err
 	}
-	s, err := r.client.Subscription.Query().
+	s, err := r.tenantClient(ctx).Subscription.Query().
 		Where(entsub.IDEQ(parsedID)).
 		WithCustomer().
 		WithPlan().
@@ -72,7 +80,7 @@ func (r *SubscriptionEntRepository) Update(ctx context.Context, s *model.Subscri
 		return err
 	}
 
-	builder := r.client.Subscription.UpdateOneID(parsedID).
+	builder := r.tenantClient(ctx).Subscription.UpdateOneID(parsedID).
 		SetStatus(string(s.Status)).
 		SetShipmentStatus(string(s.ShipmentStatus))
 
@@ -92,12 +100,12 @@ func (r *SubscriptionEntRepository) Delete(ctx context.Context, id string) error
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Subscription.UpdateOneID(parsedID).SetStatus(string(model.StatusCancelled)).Save(ctx)
+	_, err = r.tenantClient(ctx).Subscription.UpdateOneID(parsedID).SetStatus(string(model.StatusCancelled)).Save(ctx)
 	return err
 }
 
 func (r *SubscriptionEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
-	q := r.client.Subscription.Query().WithCustomer().WithPlan()
+	q := r.tenantClient(ctx).Subscription.Query().WithCustomer().WithPlan()
 
 	if filter.Status != nil {
 		q = q.Where(entsub.StatusEQ(string(*filter.Status)))

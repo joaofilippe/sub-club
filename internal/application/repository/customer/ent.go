@@ -9,6 +9,7 @@ import (
 	"github.com/joaofilippe/subclub/ent/schema"
 	customerdomain "github.com/joaofilippe/subclub/internal/domain/customer"
 	"github.com/joaofilippe/subclub/internal/domain/customer/model"
+	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
 )
 
 type CustomerEntRepository struct {
@@ -17,6 +18,13 @@ type CustomerEntRepository struct {
 
 func NewCustomerEntRepository(entClient *ent.Client) customerdomain.Repository {
 	return &CustomerEntRepository{entClient: entClient}
+}
+
+func (r *CustomerEntRepository) tenantClient(ctx context.Context) *ent.Client {
+	if c := tenantctx.TenantClientFromContext(ctx); c != nil {
+		return c
+	}
+	return r.entClient
 }
 
 func (r *CustomerEntRepository) Create(ctx context.Context, c *model.Customer) error {
@@ -38,7 +46,7 @@ func (r *CustomerEntRepository) Create(ctx context.Context, c *model.Customer) e
 		}
 	}
 
-	builder := r.entClient.Customer.Create().
+	builder := r.tenantClient(ctx).Customer.Create().
 		SetID(id).
 		SetName(c.Name).
 		SetEmail(c.Email).
@@ -58,7 +66,7 @@ func (r *CustomerEntRepository) GetByID(ctx context.Context, id string) (*model.
 	if err != nil {
 		return nil, err
 	}
-	c, err := r.entClient.Customer.Get(ctx, parsedID)
+	c, err := r.tenantClient(ctx).Customer.Get(ctx, parsedID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +92,7 @@ func (r *CustomerEntRepository) Update(ctx context.Context, c *model.Customer) e
 		}
 	}
 
-	builder := r.entClient.Customer.UpdateOneID(parsedID).
+	builder := r.tenantClient(ctx).Customer.UpdateOneID(parsedID).
 		SetName(c.Name).
 		SetEmail(c.Email).
 		SetNillablePhone(&c.Phone).
@@ -106,12 +114,12 @@ func (r *CustomerEntRepository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.entClient.Customer.UpdateOneID(parsedID).SetActive(false).Save(ctx)
+	_, err = r.tenantClient(ctx).Customer.UpdateOneID(parsedID).SetActive(false).Save(ctx)
 	return err
 }
 
 func (r *CustomerEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
-	q := r.entClient.Customer.Query()
+	q := r.tenantClient(ctx).Customer.Query()
 
 	if filter.IsActive != nil {
 		q = q.Where(customer.ActiveEQ(*filter.IsActive))

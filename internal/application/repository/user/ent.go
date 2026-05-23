@@ -35,6 +35,12 @@ func (r *userEntRepository) Create(ctx context.Context, u *model.User) error {
 		SetCreatedAt(u.CreatedAt).
 		SetUpdatedAt(u.UpdatedAt)
 
+	if u.AccountID != nil {
+		accountID, err := uuid.Parse(*u.AccountID)
+		if err == nil {
+			builder.SetAccountID(accountID)
+		}
+	}
 	if u.DeletedAt != nil {
 		builder.SetDeletedAt(*u.DeletedAt)
 	}
@@ -148,7 +154,7 @@ func (r *userEntRepository) List(ctx context.Context) ([]*model.User, error) {
 }
 
 func mapEntUserToDomain(eu *ent.User) *model.User {
-	return &model.User{
+	u := &model.User{
 		ID:        eu.ID.String(),
 		Name:      eu.Name,
 		Email:     eu.Email,
@@ -159,4 +165,9 @@ func mapEntUserToDomain(eu *ent.User) *model.User {
 		UpdatedAt: eu.UpdatedAt,
 		DeletedAt: eu.DeletedAt,
 	}
+	if eu.AccountID != nil {
+		s := eu.AccountID.String()
+		u.AccountID = &s
+	}
+	return u
 }

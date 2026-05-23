@@ -5,11 +5,16 @@ import (
 	"log"
 
 	"github.com/joaofilippe/subclub/ent"
+	accountrepo "github.com/joaofilippe/subclub/internal/application/repository/account"
+	accountplanrepo "github.com/joaofilippe/subclub/internal/application/repository/accountplan"
 	customerrepo "github.com/joaofilippe/subclub/internal/application/repository/customer"
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
 	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
+	accountsvc "github.com/joaofilippe/subclub/internal/application/service/account"
+	accountplansvc "github.com/joaofilippe/subclub/internal/application/service/accountplan"
+	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
 	customersvc "github.com/joaofilippe/subclub/internal/application/service/customer"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
@@ -24,6 +29,10 @@ import (
 type Application struct {
 	dbConnection        *database.Connection
 	entClient           *ent.Client
+	TenantManager       *database.TenantClientManager
+	AuthService         *authsvc.AuthService
+	AccountService      *accountsvc.AccountService
+	AccountPlanService  *accountplansvc.AccountPlanService
 	UserService         *usersvc.UserService
 	CustomerService     *customersvc.CustomerService
 	PlanService         *plansvc.PlanService
@@ -47,19 +56,21 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 		log.Printf("Failed creating schema resources: %v", err)
 	}
 
+	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB, a.entClient)
+
 	database.SeedAll(ctx, a.entClient, cfg)
 
-	cr := customerrepo.NewCustomerEntRepository(a.entClient)
-	pr := planrepo.NewPlanEntRepository(a.entClient)
-	prodr := productrepo.NewProductEntRepository(a.entClient)
-	subr := subrepo.NewSubscriptionEntRepository(a.entClient)
-	ur := userrepo.NewUserEntRepository(a.entClient)
+	userRepo := userrepo.NewUserEntRepository(a.entClient)
+	accountRepo := accountrepo.NewAccountEntRepository(a.entClient)
 
-	a.CustomerService = customersvc.NewCustomerService(cr)
-	a.PlanService = plansvc.NewPlanService(pr)
-	a.ProductService = productsvc.NewProductService(prodr)
-	a.SubscriptionService = subsvc.NewSubscriptionService(subr)
-	a.UserService = usersvc.NewUserService(ur)
+	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, []byte(cfg.JWTSecret))
+	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
+	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
+	a.CustomerService = customersvc.NewCustomerService(customerrepo.NewCustomerEntRepository(a.entClient))
+	a.PlanService = plansvc.NewPlanService(planrepo.NewPlanEntRepository(a.entClient))
+	a.ProductService = productsvc.NewProductService(productrepo.NewProductEntRepository(a.entClient))
+	a.SubscriptionService = subsvc.NewSubscriptionService(subrepo.NewSubscriptionEntRepository(a.entClient))
+	a.UserService = usersvc.NewUserService(userRepo)
 
 	return nil
 }

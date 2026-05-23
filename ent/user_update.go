@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/predicate"
 	"github.com/joaofilippe/subclub/ent/user"
 )
@@ -124,6 +125,26 @@ func (_u *UserUpdate) ClearDeletedAt() *UserUpdate {
 	return _u
 }
 
+// SetAccountID sets the "account_id" field.
+func (_u *UserUpdate) SetAccountID(v uuid.UUID) *UserUpdate {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableAccountID(v *uuid.UUID) *UserUpdate {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *UserUpdate) ClearAccountID() *UserUpdate {
+	_u.mutation.ClearAccountID()
+	return _u
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
@@ -230,6 +251,12 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.AccountID(); ok {
+		_spec.SetField(user.FieldAccountID, field.TypeUUID, value)
+	}
+	if _u.mutation.AccountIDCleared() {
+		_spec.ClearField(user.FieldAccountID, field.TypeUUID)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -344,6 +371,26 @@ func (_u *UserUpdateOne) SetNillableDeletedAt(v *time.Time) *UserUpdateOne {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (_u *UserUpdateOne) ClearDeletedAt() *UserUpdateOne {
 	_u.mutation.ClearDeletedAt()
+	return _u
+}
+
+// SetAccountID sets the "account_id" field.
+func (_u *UserUpdateOne) SetAccountID(v uuid.UUID) *UserUpdateOne {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableAccountID(v *uuid.UUID) *UserUpdateOne {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *UserUpdateOne) ClearAccountID() *UserUpdateOne {
+	_u.mutation.ClearAccountID()
 	return _u
 }
 
@@ -483,6 +530,12 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.AccountID(); ok {
+		_spec.SetField(user.FieldAccountID, field.TypeUUID, value)
+	}
+	if _u.mutation.AccountIDCleared() {
+		_spec.ClearField(user.FieldAccountID, field.TypeUUID)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

@@ -36,7 +36,7 @@ func (h *UserHandler) Create(c echo.Context) error {
 		return common.Error(c, http.StatusBadRequest, "Invalid request payload")
 	}
 
-	if input.Email == "" || input.Type == "" || input.Role == "" {
+	if input.Email == "" || input.Password == "" || input.Type == "" || input.Role == "" {
 		return common.Error(c, http.StatusBadRequest, "Missing required fields")
 	}
 

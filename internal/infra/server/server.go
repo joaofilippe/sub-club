@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/middleware"
 	"github.com/joaofilippe/subclub/internal/web"
 	"github.com/labstack/echo/v4"
@@ -16,14 +17,14 @@ type Server struct {
 	router *router
 }
 
-func NewServer(handlers *web.Handlers) *Server {
+func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManager, jwtSecret []byte) *Server {
 	logger := slog.Default()
 	e := echo.New()
 
 	s := &Server{
 		echo:   e,
 		logger: logger,
-		router: newRouter(e, handlers),
+		router: newRouter(e, handlers, tenantManager, jwtSecret),
 	}
 
 	e.Use(middleware.ConfigureLogger(s.logger))

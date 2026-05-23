@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
@@ -18,6 +20,62 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	accountFields := schema.Account{}.Fields()
+	_ = accountFields
+	// accountDescName is the schema descriptor for name field.
+	accountDescName := accountFields[1].Descriptor()
+	// account.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	account.NameValidator = accountDescName.Validators[0].(func(string) error)
+	// accountDescEmail is the schema descriptor for email field.
+	accountDescEmail := accountFields[2].Descriptor()
+	// account.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	account.EmailValidator = accountDescEmail.Validators[0].(func(string) error)
+	// accountDescSlug is the schema descriptor for slug field.
+	accountDescSlug := accountFields[4].Descriptor()
+	// account.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	account.SlugValidator = accountDescSlug.Validators[0].(func(string) error)
+	// accountDescActive is the schema descriptor for active field.
+	accountDescActive := accountFields[8].Descriptor()
+	// account.DefaultActive holds the default value on creation for the active field.
+	account.DefaultActive = accountDescActive.Default.(bool)
+	// accountDescCreatedAt is the schema descriptor for created_at field.
+	accountDescCreatedAt := accountFields[9].Descriptor()
+	// account.DefaultCreatedAt holds the default value on creation for the created_at field.
+	account.DefaultCreatedAt = accountDescCreatedAt.Default.(func() time.Time)
+	// accountDescID is the schema descriptor for id field.
+	accountDescID := accountFields[0].Descriptor()
+	// account.DefaultID holds the default value on creation for the id field.
+	account.DefaultID = accountDescID.Default.(func() uuid.UUID)
+	accountplanFields := schema.AccountPlan{}.Fields()
+	_ = accountplanFields
+	// accountplanDescName is the schema descriptor for name field.
+	accountplanDescName := accountplanFields[1].Descriptor()
+	// accountplan.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	accountplan.NameValidator = accountplanDescName.Validators[0].(func(string) error)
+	// accountplanDescMaxCustomers is the schema descriptor for max_customers field.
+	accountplanDescMaxCustomers := accountplanFields[4].Descriptor()
+	// accountplan.DefaultMaxCustomers holds the default value on creation for the max_customers field.
+	accountplan.DefaultMaxCustomers = accountplanDescMaxCustomers.Default.(int)
+	// accountplanDescMaxPlans is the schema descriptor for max_plans field.
+	accountplanDescMaxPlans := accountplanFields[5].Descriptor()
+	// accountplan.DefaultMaxPlans holds the default value on creation for the max_plans field.
+	accountplan.DefaultMaxPlans = accountplanDescMaxPlans.Default.(int)
+	// accountplanDescMaxProducts is the schema descriptor for max_products field.
+	accountplanDescMaxProducts := accountplanFields[6].Descriptor()
+	// accountplan.DefaultMaxProducts holds the default value on creation for the max_products field.
+	accountplan.DefaultMaxProducts = accountplanDescMaxProducts.Default.(int)
+	// accountplanDescActive is the schema descriptor for active field.
+	accountplanDescActive := accountplanFields[7].Descriptor()
+	// accountplan.DefaultActive holds the default value on creation for the active field.
+	accountplan.DefaultActive = accountplanDescActive.Default.(bool)
+	// accountplanDescCreatedAt is the schema descriptor for created_at field.
+	accountplanDescCreatedAt := accountplanFields[8].Descriptor()
+	// accountplan.DefaultCreatedAt holds the default value on creation for the created_at field.
+	accountplan.DefaultCreatedAt = accountplanDescCreatedAt.Default.(func() time.Time)
+	// accountplanDescID is the schema descriptor for id field.
+	accountplanDescID := accountplanFields[0].Descriptor()
+	// accountplan.DefaultID holds the default value on creation for the id field.
+	accountplan.DefaultID = accountplanDescID.Default.(func() uuid.UUID)
 	customerFields := schema.Customer{}.Fields()
 	_ = customerFields
 	// customerDescName is the schema descriptor for name field.

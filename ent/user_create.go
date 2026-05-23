@@ -109,6 +109,20 @@ func (_c *UserCreate) SetNillableDeletedAt(v *time.Time) *UserCreate {
 	return _c
 }
 
+// SetAccountID sets the "account_id" field.
+func (_c *UserCreate) SetAccountID(v uuid.UUID) *UserCreate {
+	_c.mutation.SetAccountID(v)
+	return _c
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAccountID(v *uuid.UUID) *UserCreate {
+	if v != nil {
+		_c.SetAccountID(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *UserCreate) SetID(v uuid.UUID) *UserCreate {
 	_c.mutation.SetID(v)
@@ -294,6 +308,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.DeletedAt(); ok {
 		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
+	}
+	if value, ok := _c.mutation.AccountID(); ok {
+		_spec.SetField(user.FieldAccountID, field.TypeUUID, value)
+		_node.AccountID = &value
 	}
 	return _node, _spec
 }

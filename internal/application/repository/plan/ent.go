@@ -8,6 +8,7 @@ import (
 	entplan "github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/internal/domain/plan"
 	"github.com/joaofilippe/subclub/internal/domain/plan/model"
+	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
 )
 
 type PlanEntRepository struct {
@@ -18,12 +19,19 @@ func NewPlanEntRepository(client *ent.Client) plan.Repository {
 	return &PlanEntRepository{client: client}
 }
 
+func (r *PlanEntRepository) tenantClient(ctx context.Context) *ent.Client {
+	if c := tenantctx.TenantClientFromContext(ctx); c != nil {
+		return c
+	}
+	return r.client
+}
+
 func (r *PlanEntRepository) Create(ctx context.Context, p *model.Plan) error {
 	id, err := uuid.Parse(p.ID)
 	if err != nil {
 		id = uuid.New()
 	}
-	_, err = r.client.Plan.Create().
+	_, err = r.tenantClient(ctx).Plan.Create().
 		SetID(id).
 		SetCode(p.Code).
 		SetName(p.Name).
@@ -43,7 +51,7 @@ func (r *PlanEntRepository) GetByID(ctx context.Context, id string) (*model.Plan
 	if err != nil {
 		return nil, err
 	}
-	p, err := r.client.Plan.Get(ctx, parsedID)
+	p, err := r.tenantClient(ctx).Plan.Get(ctx, parsedID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +63,7 @@ func (r *PlanEntRepository) Update(ctx context.Context, p *model.Plan) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Plan.UpdateOneID(parsedID).
+	_, err = r.tenantClient(ctx).Plan.UpdateOneID(parsedID).
 		SetCode(p.Code).
 		SetName(p.Name).
 		SetDescription(p.Description).
@@ -74,12 +82,12 @@ func (r *PlanEntRepository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Plan.UpdateOneID(parsedID).SetActive(false).Save(ctx)
+	_, err = r.tenantClient(ctx).Plan.UpdateOneID(parsedID).SetActive(false).Save(ctx)
 	return err
 }
 
 func (r *PlanEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
-	q := r.client.Plan.Query()
+	q := r.tenantClient(ctx).Plan.Query()
 
 	if filter.IsActive != nil {
 		q = q.Where(entplan.ActiveEQ(*filter.IsActive))

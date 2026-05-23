@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
@@ -77,6 +79,8 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			account.Table:      account.ValidColumn,
+			accountplan.Table:  accountplan.ValidColumn,
 			customer.Table:     customer.ValidColumn,
 			plan.Table:         plan.ValidColumn,
 			product.Table:      product.ValidColumn,

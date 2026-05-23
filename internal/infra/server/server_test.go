@@ -4,7 +4,10 @@ import (
 	"testing"
 
 	"github.com/joaofilippe/subclub/internal/application"
-	clientsvc "github.com/joaofilippe/subclub/internal/application/service/customer"
+	accountsvc "github.com/joaofilippe/subclub/internal/application/service/account"
+	accountplansvc "github.com/joaofilippe/subclub/internal/application/service/accountplan"
+	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
+	customersvc "github.com/joaofilippe/subclub/internal/application/service/customer"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
@@ -15,8 +18,11 @@ import (
 
 func stubApp() *application.Application {
 	return &application.Application{
+		AuthService:         authsvc.NewAuthService(nil, nil, nil),
+		AccountService:      accountsvc.NewAccountService(nil, nil),
+		AccountPlanService:  accountplansvc.NewAccountPlanService(nil),
 		UserService:         usersvc.NewUserService(nil),
-		CustomerService:       clientsvc.NewCustomerService(nil),
+		CustomerService:     customersvc.NewCustomerService(nil),
 		PlanService:         plansvc.NewPlanService(nil),
 		ProductService:      productsvc.NewProductService(nil),
 		SubscriptionService: subsvc.NewSubscriptionService(nil),
@@ -24,7 +30,7 @@ func stubApp() *application.Application {
 }
 
 func TestServer_AllRoutesPresent(t *testing.T) {
-	srv := server.NewServer(web.NewHandlers(stubApp()))
+	srv := server.NewServer(web.NewHandlers(stubApp()), nil, []byte("test-secret"))
 
 	registered := map[string]bool{}
 	for _, r := range srv.GetEcho().Routes() {
@@ -32,11 +38,26 @@ func TestServer_AllRoutesPresent(t *testing.T) {
 	}
 
 	want := []struct{ method, path string }{
-		{"POST", "/clients"},
-		{"GET", "/clients"},
-		{"GET", "/clients/:id"},
-		{"PUT", "/clients/:id"},
-		{"DELETE", "/clients/:id"},
+		// public
+		{"POST", "/auth/login"},
+		// admin-only
+		{"POST", "/accounts"},
+		{"GET", "/accounts"},
+		{"GET", "/accounts/:id"},
+		{"PUT", "/accounts/:id"},
+		{"DELETE", "/accounts/:id"},
+		{"POST", "/account-plans"},
+		{"GET", "/account-plans"},
+		{"GET", "/account-plans/:id"},
+		{"PUT", "/account-plans/:id"},
+		{"DELETE", "/account-plans/:id"},
+		{"POST", "/users"},
+		// tenant-scoped
+		{"POST", "/customers"},
+		{"GET", "/customers"},
+		{"GET", "/customers/:id"},
+		{"PUT", "/customers/:id"},
+		{"DELETE", "/customers/:id"},
 		{"POST", "/plans"},
 		{"GET", "/plans"},
 		{"GET", "/plans/:id"},
@@ -52,7 +73,6 @@ func TestServer_AllRoutesPresent(t *testing.T) {
 		{"GET", "/products/:id"},
 		{"PUT", "/products/:id"},
 		{"DELETE", "/products/:id"},
-		{"POST", "/users"},
 	}
 
 	for _, w := range want {

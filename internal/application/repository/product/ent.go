@@ -8,6 +8,7 @@ import (
 	entproduct "github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/internal/domain/product"
 	"github.com/joaofilippe/subclub/internal/domain/product/model"
+	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
 )
 
 type ProductEntRepository struct {
@@ -18,12 +19,19 @@ func NewProductEntRepository(client *ent.Client) product.Repository {
 	return &ProductEntRepository{client: client}
 }
 
+func (r *ProductEntRepository) tenantClient(ctx context.Context) *ent.Client {
+	if c := tenantctx.TenantClientFromContext(ctx); c != nil {
+		return c
+	}
+	return r.client
+}
+
 func (r *ProductEntRepository) Create(ctx context.Context, p *model.Product) error {
 	id, err := uuid.Parse(p.ID)
 	if err != nil {
 		id = uuid.New()
 	}
-	_, err = r.client.Product.Create().
+	_, err = r.tenantClient(ctx).Product.Create().
 		SetID(id).
 		SetCode(p.Code).
 		SetName(p.Name).
@@ -41,7 +49,7 @@ func (r *ProductEntRepository) GetByID(ctx context.Context, id string) (*model.P
 	if err != nil {
 		return nil, err
 	}
-	p, err := r.client.Product.Get(ctx, parsedID)
+	p, err := r.tenantClient(ctx).Product.Get(ctx, parsedID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +61,7 @@ func (r *ProductEntRepository) Update(ctx context.Context, p *model.Product) err
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Product.UpdateOneID(parsedID).
+	_, err = r.tenantClient(ctx).Product.UpdateOneID(parsedID).
 		SetCode(p.Code).
 		SetName(p.Name).
 		SetDescription(p.Description).
@@ -70,12 +78,12 @@ func (r *ProductEntRepository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Product.UpdateOneID(parsedID).SetActive(false).Save(ctx)
+	_, err = r.tenantClient(ctx).Product.UpdateOneID(parsedID).SetActive(false).Save(ctx)
 	return err
 }
 
 func (r *ProductEntRepository) List(ctx context.Context, filter model.Filter) (*model.PaginatedList, error) {
-	q := r.client.Product.Query()
+	q := r.tenantClient(ctx).Product.Query()
 
 	if filter.IsActive != nil {
 		q = q.Where(entproduct.ActiveEQ(*filter.IsActive))
