@@ -9,7 +9,13 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/joaofilippe/subclub/ent"
+	"github.com/joaofilippe/subclub/ent/account"
 	entsql "entgo.io/ent/dialect/sql"
+)
+
+var (
+	ErrAccountNotFound  = fmt.Errorf("account not found")
+	ErrAccountSuspended = fmt.Errorf("account is suspended or cancelled")
 )
 
 // TenantClientManager caches one *ent.Client per account slug.
@@ -17,18 +23,41 @@ import (
 // "account_{slug}", public — so every query from that client goes to the
 // correct tenant schema without needing per-request transactions.
 type TenantClientManager struct {
-	baseURL string
-	mu      sync.RWMutex
-	clients map[string]*ent.Client
-	// globalDB is used for DDL operations (CREATE SCHEMA).
-	globalDB *sql.DB
+	baseURL      string
+	mu           sync.RWMutex
+	clients      map[string]*ent.Client
+	globalDB     *sql.DB
+	globalClient *ent.Client
 }
 
-func NewTenantClientManager(baseURL string, globalDB *sql.DB) *TenantClientManager {
+func NewTenantClientManager(baseURL string, globalDB *sql.DB, globalClient *ent.Client) *TenantClientManager {
 	return &TenantClientManager{
-		baseURL:  baseURL,
-		globalDB: globalDB,
-		clients:  make(map[string]*ent.Client),
+		baseURL:      baseURL,
+		globalDB:     globalDB,
+		globalClient: globalClient,
+		clients:      make(map[string]*ent.Client),
+	}
+}
+
+// IsAccountAccessible returns nil if the account exists and its subscription
+// status allows access (trial or active). Returns ErrAccountSuspended or
+// ErrAccountNotFound otherwise.
+func (m *TenantClientManager) IsAccountAccessible(ctx context.Context, slug string) error {
+	acc, err := m.globalClient.Account.Query().
+		Where(account.SlugEQ(slug)).
+		Select(account.FieldSubscriptionStatus, account.FieldActive).
+		First(ctx)
+	if err != nil {
+		return ErrAccountNotFound
+	}
+	if !acc.Active {
+		return ErrAccountSuspended
+	}
+	switch acc.SubscriptionStatus {
+	case "active", "trial":
+		return nil
+	default:
+		return ErrAccountSuspended
 	}
 }
 

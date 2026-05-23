@@ -56,7 +56,7 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 		log.Printf("Failed creating schema resources: %v", err)
 	}
 
-	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB)
+	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB, a.entClient)
 
 	database.SeedAll(ctx, a.entClient, cfg)
 

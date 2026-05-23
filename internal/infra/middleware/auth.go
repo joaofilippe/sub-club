@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -38,6 +39,13 @@ func AuthMiddleware(manager *database.TenantClientManager, jwtSecret []byte) ech
 
 			if claims.AccountSlug == "" {
 				return c.JSON(http.StatusForbidden, common.Response{Message: "token does not belong to any account"})
+			}
+
+			if err := manager.IsAccountAccessible(c.Request().Context(), claims.AccountSlug); err != nil {
+				if errors.Is(err, database.ErrAccountSuspended) {
+					return c.JSON(http.StatusForbidden, common.Response{Message: "account is suspended or cancelled"})
+				}
+				return c.JSON(http.StatusForbidden, common.Response{Message: "account not found"})
 			}
 
 			client, err := manager.GetOrCreate(claims.AccountSlug)
