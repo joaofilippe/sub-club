@@ -22,22 +22,26 @@ func newRouter(e *echo.Echo, handlers *web.Handlers, tenantManager *database.Ten
 
 func (r *router) registerRoutes() {
 	r.echo.GET("/swagger/*", echoSwagger.WrapHandler)
+	r.echo.POST("/auth/login", r.handlers.Auth.Login)
 
-	accountPlanGroup := r.echo.Group("/account-plans")
+	adminMW := middleware.RequireAdminMiddleware(r.jwtSecret)
+
+	accountPlanGroup := r.echo.Group("/account-plans", adminMW)
 	accountPlanGroup.POST("", r.handlers.AccountPlan.Create)
 	accountPlanGroup.GET("", r.handlers.AccountPlan.List)
 	accountPlanGroup.GET("/:id", r.handlers.AccountPlan.Get)
 	accountPlanGroup.PUT("/:id", r.handlers.AccountPlan.Update)
 	accountPlanGroup.DELETE("/:id", r.handlers.AccountPlan.Delete)
 
-	accountGroup := r.echo.Group("/accounts")
+	accountGroup := r.echo.Group("/accounts", adminMW)
 	accountGroup.POST("", r.handlers.Account.Create)
 	accountGroup.GET("", r.handlers.Account.List)
 	accountGroup.GET("/:id", r.handlers.Account.Get)
 	accountGroup.PUT("/:id", r.handlers.Account.Update)
 	accountGroup.DELETE("/:id", r.handlers.Account.Delete)
 
-	r.echo.POST("/auth/login", r.handlers.Auth.Login)
+	userGroup2 := r.echo.Group("/users", adminMW)
+	userGroup2.POST("", r.handlers.User.Create)
 
 	authMW := middleware.AuthMiddleware(r.tenantManager, r.jwtSecret)
 
@@ -69,6 +73,4 @@ func (r *router) registerRoutes() {
 	productGroup.PUT("/:id", r.handlers.Product.Update)
 	productGroup.DELETE("/:id", r.handlers.Product.Delete)
 
-	userGroup := r.echo.Group("/users")
-	userGroup.POST("", r.handlers.User.Create)
 }

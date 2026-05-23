@@ -9,14 +9,13 @@ import (
 
 	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
-	"github.com/joaofilippe/subclub/internal/infra/database"
-	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
 	"github.com/joaofilippe/subclub/internal/web/common"
 )
 
-// AuthMiddleware validates the JWT from the Authorization header, resolves the
-// tenant client from the account_slug claim, and injects it into the request context.
-func AuthMiddleware(manager *database.TenantClientManager, jwtSecret []byte) echo.MiddlewareFunc {
+// RequireAdminMiddleware validates the JWT and rejects requests whose role
+// claim is not "admin". It does not resolve a tenant client — admin routes
+// operate on the global schema.
+func RequireAdminMiddleware(jwtSecret []byte) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			header := c.Request().Header.Get("Authorization")
@@ -36,17 +35,11 @@ func AuthMiddleware(manager *database.TenantClientManager, jwtSecret []byte) ech
 				return c.JSON(http.StatusUnauthorized, common.Response{Message: "invalid or expired token"})
 			}
 
-			if claims.AccountSlug == "" {
-				return c.JSON(http.StatusForbidden, common.Response{Message: "token does not belong to any account"})
+			if claims.Role != "admin" {
+				return c.JSON(http.StatusForbidden, common.Response{Message: "admin access required"})
 			}
 
-			client, err := manager.GetOrCreate(claims.AccountSlug)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, common.Response{Message: "failed to resolve tenant"})
-			}
-
-			ctx := tenantctx.WithTenantClient(c.Request().Context(), client)
-			ctx = authctx.WithClaims(ctx, authctx.Claims{
+			ctx := authctx.WithClaims(c.Request().Context(), authctx.Claims{
 				UserID:      claims.UserID,
 				AccountSlug: claims.AccountSlug,
 				Role:        claims.Role,
