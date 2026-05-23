@@ -1,21 +1,17 @@
 basePath: /
 definitions:
-  github_com_joaofilippe_subclub_internal_adapter_api_common.Response:
-    properties:
-      data: {}
-      message:
-        type: string
-    type: object
-  github_com_joaofilippe_subclub_internal_domain_user.CreateUserInput:
+  github_com_joaofilippe_subclub_internal_domain_user_model.CreateUserInput:
     properties:
       email:
         type: string
+      password:
+        type: string
       role:
-        $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user.UserRole'
+        $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.UserRole'
       type:
-        $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user.UserType'
+        $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.UserType'
     type: object
-  github_com_joaofilippe_subclub_internal_domain_user.UserRole:
+  github_com_joaofilippe_subclub_internal_domain_user_model.UserRole:
     enum:
     - admin
     - operations
@@ -23,7 +19,7 @@ definitions:
     x-enum-varnames:
     - UserRoleAdmin
     - UserRoleOperations
-  github_com_joaofilippe_subclub_internal_domain_user.UserType:
+  github_com_joaofilippe_subclub_internal_domain_user_model.UserType:
     enum:
     - individual
     - corporate
@@ -33,106 +29,293 @@ definitions:
     - UserTypeIndividual
     - UserTypeCorporate
     - UserTypeSystem
-  internal_adapter_api_plan.PlanDTO:
+  github_com_joaofilippe_subclub_internal_web_common.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+  internal_web_account.AccountDTO:
+    properties:
+      accountPlanId:
+        type: string
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      document:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      subscriptionExpiresAt:
+        type: string
+      subscriptionStatus:
+        type: string
+    type: object
+  internal_web_account.AccountInputDTO:
+    properties:
+      accountPlanId:
+        type: string
+      document:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
+  internal_web_account.UpdateAccountInputDTO:
+    properties:
+      accountPlanId:
+        type: string
+      active:
+        type: boolean
+      document:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      subscriptionExpiresAt:
+        type: string
+      subscriptionStatus:
+        type: string
+    type: object
+  internal_web_accountplan.AccountPlanDTO:
     properties:
       active:
         type: boolean
-      code:
-        type: string
       createdAt:
         type: string
       description:
         type: string
-      discountValue:
-        type: number
       id:
         type: string
-      imageUrl:
-        type: string
-      intervalDays:
+      maxCustomers:
+        type: integer
+      maxPlans:
+        type: integer
+      maxProducts:
         type: integer
       name:
         type: string
       price:
         type: number
-      productValue:
-        type: number
     type: object
-  internal_adapter_api_plan.PlanInputDTO:
+  internal_web_accountplan.AccountPlanInputDTO:
     properties:
       active:
         type: boolean
-      code:
-        type: string
       description:
         type: string
-      discountValue:
-        type: number
-      imageUrl:
-        type: string
-      intervalDays:
+      maxCustomers:
+        type: integer
+      maxPlans:
+        type: integer
+      maxProducts:
         type: integer
       name:
         type: string
       price:
         type: number
-      productValue:
-        type: number
     type: object
-  internal_adapter_api_product.ProductDTO:
+  internal_web_auth.LoginRequestDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_web_auth.TokenResponseDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_web_customer.AddressDTO:
+    properties:
+      city:
+        type: string
+      complement:
+        type: string
+      neighborhood:
+        type: string
+      number:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      zipCode:
+        type: string
+    type: object
+  internal_web_customer.CustomerDTO:
     properties:
       active:
         type: boolean
-      category:
-        type: string
-      code:
-        type: string
-      costPrice:
-        type: number
+      address:
+        $ref: '#/definitions/internal_web_customer.AddressDTO'
       createdAt:
         type: string
-      description:
+      document:
+        type: string
+      email:
         type: string
       id:
         type: string
-      imageUrl:
-        type: string
       name:
         type: string
+      phone:
+        type: string
     type: object
-  internal_adapter_api_product.ProductInputDTO:
+  internal_web_customer.CustomerInputDTO:
     properties:
       active:
         type: boolean
-      category:
+      address:
+        $ref: '#/definitions/internal_web_customer.AddressDTO'
+      document:
         type: string
-      code:
-        type: string
-      costPrice:
-        type: number
-      description:
-        type: string
-      imageUrl:
+      email:
         type: string
       name:
         type: string
+      phone:
+        type: string
     type: object
-  internal_adapter_api_subscription.PaginatedSubscriptionResponse:
+  internal_web_customer.PaginatedCustomerResponse:
     properties:
       items:
         items:
-          $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionDTO'
+          $ref: '#/definitions/internal_web_customer.CustomerDTO'
         type: array
       totalCount:
         type: integer
     type: object
-  internal_adapter_api_subscription.SubscriptionDTO:
+  internal_web_plan.PaginatedPlanResponse:
     properties:
-      clientId:
-        type: string
-      clientName:
+      items:
+        items:
+          $ref: '#/definitions/internal_web_plan.PlanDTO'
+        type: array
+      totalCount:
+        type: integer
+    type: object
+  internal_web_plan.PlanDTO:
+    properties:
+      active:
+        type: boolean
+      code:
         type: string
       createdAt:
+        type: string
+      description:
+        type: string
+      discountValue:
+        type: number
+      id:
+        type: string
+      imageUrl:
+        type: string
+      intervalDays:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      productValue:
+        type: number
+    type: object
+  internal_web_plan.PlanInputDTO:
+    properties:
+      active:
+        type: boolean
+      code:
+        type: string
+      description:
+        type: string
+      discountValue:
+        type: number
+      imageUrl:
+        type: string
+      intervalDays:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      productValue:
+        type: number
+    type: object
+  internal_web_product.PaginatedProductResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_web_product.ProductDTO'
+        type: array
+      totalCount:
+        type: integer
+    type: object
+  internal_web_product.ProductDTO:
+    properties:
+      active:
+        type: boolean
+      category:
+        type: string
+      code:
+        type: string
+      costPrice:
+        type: number
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_web_product.ProductInputDTO:
+    properties:
+      active:
+        type: boolean
+      category:
+        type: string
+      code:
+        type: string
+      costPrice:
+        type: number
+      description:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_web_subscription.PaginatedSubscriptionResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+        type: array
+      totalCount:
+        type: integer
+    type: object
+  internal_web_subscription.SubscriptionDTO:
+    properties:
+      createdAt:
+        type: string
+      customerId:
+        type: string
+      customerName:
         type: string
       daysUntilRenewal:
         type: integer
@@ -153,9 +336,9 @@ definitions:
       status:
         type: string
     type: object
-  internal_adapter_api_subscription.SubscriptionInputDTO:
+  internal_web_subscription.SubscriptionInputDTO:
     properties:
-      clientId:
+      customerId:
         type: string
       nextBillingDate:
         type: string
@@ -166,7 +349,6 @@ definitions:
       shipmentStatus:
         type: string
       startDate:
-        description: e.g. RFC3339
         type: string
       status:
         type: string
@@ -178,6 +360,453 @@ info:
   title: SubClub API
   version: "1.0"
 paths:
+  /account-plans:
+    get:
+      description: Returns all active SubClub subscription plans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List account plans
+      tags:
+      - account-plans
+    post:
+      consumes:
+      - application/json
+      description: Creates a new SubClub subscription plan
+      parameters:
+      - description: Account plan data
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_accountplan.AccountPlanInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Create an account plan
+      tags:
+      - account-plans
+  /account-plans/{id}:
+    delete:
+      description: Soft deletes an account plan by ID
+      parameters:
+      - description: Account Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Delete an account plan
+      tags:
+      - account-plans
+    get:
+      description: Retrieves a SubClub subscription plan by UUID
+      parameters:
+      - description: Account Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Get an account plan by ID
+      tags:
+      - account-plans
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing SubClub subscription plan
+      parameters:
+      - description: Account Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated plan data
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_accountplan.AccountPlanInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Update an account plan
+      tags:
+      - account-plans
+  /accounts:
+    get:
+      description: Returns all accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_web_account.AccountDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List accounts
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Registers a new account (SubClub client)
+      parameters:
+      - description: Account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_account.AccountInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_web_account.AccountDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Create an account
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      description: Soft deletes an account by ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Delete an account
+      tags:
+      - accounts
+    get:
+      description: Retrieves an account by UUID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_account.AccountDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Get an account by ID
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing account
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_account.UpdateAccountInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_account.AccountDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Update an account
+      tags:
+      - accounts
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Validates credentials and returns a signed JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_auth.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_auth.TokenResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Authenticate
+      tags:
+      - auth
+  /customers:
+    get:
+      description: Get a paginated list of customers
+      parameters:
+      - description: Search by name or email
+        in: query
+        name: search
+        type: string
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_customer.PaginatedCustomerResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Creates a new customer in the system
+      parameters:
+      - description: Customer data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_customer.CustomerInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Create a customer
+      tags:
+      - customers
+  /customers/{id}:
+    delete:
+      description: Soft deletes a customer by ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Delete a customer
+      tags:
+      - customers
+    get:
+      description: Retrieves a customer by their UUID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Get a customer by ID
+      tags:
+      - customers
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated customer data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_customer.CustomerInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Update a customer
+      tags:
+      - customers
   /plans:
     get:
       description: Get a paginated list of plans
@@ -204,13 +833,11 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_adapter_api_plan.PlanDTO'
-            type: array
+            $ref: '#/definitions/internal_web_plan.PaginatedPlanResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: List plans
       tags:
       - plans
@@ -224,22 +851,22 @@ paths:
         name: plan
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_plan.PlanInputDTO'
+          $ref: '#/definitions/internal_web_plan.PlanInputDTO'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_adapter_api_plan.PlanDTO'
+            $ref: '#/definitions/internal_web_plan.PlanDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Create a plan
       tags:
       - plans
@@ -262,7 +889,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Delete a plan
       tags:
       - plans
@@ -280,11 +907,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_plan.PlanDTO'
+            $ref: '#/definitions/internal_web_plan.PlanDTO'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Get a plan by ID
       tags:
       - plans
@@ -303,26 +930,26 @@ paths:
         name: plan
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_plan.PlanInputDTO'
+          $ref: '#/definitions/internal_web_plan.PlanInputDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_plan.PlanDTO'
+            $ref: '#/definitions/internal_web_plan.PlanDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Update a plan
       tags:
       - plans
@@ -333,6 +960,10 @@ paths:
       - description: Search by name or code
         in: query
         name: search
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
         type: string
       - description: Filter by active status
         in: query
@@ -352,13 +983,11 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_adapter_api_product.ProductDTO'
-            type: array
+            $ref: '#/definitions/internal_web_product.PaginatedProductResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: List products
       tags:
       - products
@@ -372,22 +1001,22 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_product.ProductInputDTO'
+          $ref: '#/definitions/internal_web_product.ProductInputDTO'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_adapter_api_product.ProductDTO'
+            $ref: '#/definitions/internal_web_product.ProductDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Create a product
       tags:
       - products
@@ -410,7 +1039,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Delete a product
       tags:
       - products
@@ -428,11 +1057,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_product.ProductDTO'
+            $ref: '#/definitions/internal_web_product.ProductDTO'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Get a product by ID
       tags:
       - products
@@ -451,26 +1080,26 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_product.ProductInputDTO'
+          $ref: '#/definitions/internal_web_product.ProductInputDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_product.ProductDTO'
+            $ref: '#/definitions/internal_web_product.ProductDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Update a product
       tags:
       - products
@@ -478,13 +1107,9 @@ paths:
     get:
       description: Get a paginated list of subscriptions
       parameters:
-      - description: Filter by Client ID
+      - description: Filter by Customer ID
         in: query
-        name: clientID
-        type: string
-      - description: Filter by Plan ID
-        in: query
-        name: planID
+        name: customerId
         type: string
       - description: Filter by Status
         in: query
@@ -504,11 +1129,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_subscription.PaginatedSubscriptionResponse'
+            $ref: '#/definitions/internal_web_subscription.PaginatedSubscriptionResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: List subscriptions
       tags:
       - subscriptions
@@ -522,22 +1147,22 @@ paths:
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionInputDTO'
+          $ref: '#/definitions/internal_web_subscription.SubscriptionInputDTO'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionDTO'
+            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Create a subscription
       tags:
       - subscriptions
@@ -560,7 +1185,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Delete a subscription
       tags:
       - subscriptions
@@ -578,11 +1203,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionDTO'
+            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Get a subscription by ID
       tags:
       - subscriptions
@@ -601,26 +1226,26 @@ paths:
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionInputDTO'
+          $ref: '#/definitions/internal_web_subscription.SubscriptionInputDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_adapter_api_subscription.SubscriptionDTO'
+            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response'
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Update a subscription
       tags:
       - subscriptions
@@ -635,7 +1260,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user.CreateUserInput'
+          $ref: '#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.CreateUserInput'
       produces:
       - application/json
       responses:

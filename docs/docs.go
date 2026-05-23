@@ -15,6 +15,687 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/account-plans": {
+            "get": {
+                "description": "Returns all active SubClub subscription plans",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account-plans"
+                ],
+                "summary": "List account plans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new SubClub subscription plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account-plans"
+                ],
+                "summary": "Create an account plan",
+                "parameters": [
+                    {
+                        "description": "Account plan data",
+                        "name": "plan",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/account-plans/{id}": {
+            "get": {
+                "description": "Retrieves a SubClub subscription plan by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account-plans"
+                ],
+                "summary": "Get an account plan by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Plan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing SubClub subscription plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account-plans"
+                ],
+                "summary": "Update an account plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Plan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated plan data",
+                        "name": "plan",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Soft deletes an account plan by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account-plans"
+                ],
+                "summary": "Delete an account plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Plan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts": {
+            "get": {
+                "description": "Returns all accounts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_web_account.AccountDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Registers a new account (SubClub client)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create an account",
+                "parameters": [
+                    {
+                        "description": "Account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_account.AccountInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Retrieves an account by UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get an account by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated account data",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_account.UpdateAccountInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Soft deletes an account by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Validates credentials and returns a signed JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Authenticate",
+                "parameters": [
+                    {
+                        "description": "Login credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_auth.LoginRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_auth.TokenResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/customers": {
+            "get": {
+                "description": "Get a paginated list of customers",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "List customers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search by name or email",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.PaginatedCustomerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new customer in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Create a customer",
+                "parameters": [
+                    {
+                        "description": "Customer data",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.CustomerInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "description": "Retrieves a customer by their UUID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get a customer by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Update a customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated customer data",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.CustomerInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Soft deletes a customer by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Delete a customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/plans": {
             "get": {
                 "description": "Get a paginated list of plans",
@@ -55,16 +736,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_adapter_api_plan.PlanDTO"
-                            }
+                            "$ref": "#/definitions/internal_web_plan.PaginatedPlanResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -88,7 +766,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_plan.PlanInputDTO"
+                            "$ref": "#/definitions/internal_web_plan.PlanInputDTO"
                         }
                     }
                 ],
@@ -96,19 +774,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_plan.PlanDTO"
+                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -137,13 +815,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_plan.PlanDTO"
+                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -174,7 +852,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_plan.PlanInputDTO"
+                            "$ref": "#/definitions/internal_web_plan.PlanInputDTO"
                         }
                     }
                 ],
@@ -182,25 +860,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_plan.PlanDTO"
+                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -233,7 +911,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -254,6 +932,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Search by name or code",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by category",
+                        "name": "category",
                         "in": "query"
                     },
                     {
@@ -279,16 +963,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_adapter_api_product.ProductDTO"
-                            }
+                            "$ref": "#/definitions/internal_web_product.PaginatedProductResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -312,7 +993,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_product.ProductInputDTO"
+                            "$ref": "#/definitions/internal_web_product.ProductInputDTO"
                         }
                     }
                 ],
@@ -320,19 +1001,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_product.ProductDTO"
+                            "$ref": "#/definitions/internal_web_product.ProductDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -361,13 +1042,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_product.ProductDTO"
+                            "$ref": "#/definitions/internal_web_product.ProductDTO"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -398,7 +1079,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_product.ProductInputDTO"
+                            "$ref": "#/definitions/internal_web_product.ProductInputDTO"
                         }
                     }
                 ],
@@ -406,25 +1087,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_product.ProductDTO"
+                            "$ref": "#/definitions/internal_web_product.ProductDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -457,7 +1138,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -476,14 +1157,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Filter by Client ID",
-                        "name": "clientID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by Plan ID",
-                        "name": "planID",
+                        "description": "Filter by Customer ID",
+                        "name": "customerId",
                         "in": "query"
                     },
                     {
@@ -509,13 +1184,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.PaginatedSubscriptionResponse"
+                            "$ref": "#/definitions/internal_web_subscription.PaginatedSubscriptionResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -539,7 +1214,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionInputDTO"
+                            "$ref": "#/definitions/internal_web_subscription.SubscriptionInputDTO"
                         }
                     }
                 ],
@@ -547,19 +1222,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionDTO"
+                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -588,13 +1263,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionDTO"
+                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -625,7 +1300,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionInputDTO"
+                            "$ref": "#/definitions/internal_web_subscription.SubscriptionInputDTO"
                         }
                     }
                 ],
@@ -633,25 +1308,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionDTO"
+                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -684,7 +1359,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_adapter_api_common.Response"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     }
                 }
@@ -710,7 +1385,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user.CreateUserInput"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.CreateUserInput"
                         }
                     }
                 ],
@@ -745,30 +1420,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_joaofilippe_subclub_internal_adapter_api_common.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_joaofilippe_subclub_internal_domain_user.CreateUserInput": {
+        "github_com_joaofilippe_subclub_internal_domain_user_model.CreateUserInput": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
+                "password": {
+                    "type": "string"
+                },
                 "role": {
-                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user.UserRole"
+                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.UserRole"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user.UserType"
+                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_domain_user_model.UserType"
                 }
             }
         },
-        "github_com_joaofilippe_subclub_internal_domain_user.UserRole": {
+        "github_com_joaofilippe_subclub_internal_domain_user_model.UserRole": {
             "type": "string",
             "enum": [
                 "admin",
@@ -779,7 +1448,7 @@ const docTemplate = `{
                 "UserRoleOperations"
             ]
         },
-        "github_com_joaofilippe_subclub_internal_domain_user.UserType": {
+        "github_com_joaofilippe_subclub_internal_domain_user_model.UserType": {
             "type": "string",
             "enum": [
                 "individual",
@@ -792,14 +1461,101 @@ const docTemplate = `{
                 "UserTypeSystem"
             ]
         },
-        "internal_adapter_api_plan.PlanDTO": {
+        "github_com_joaofilippe_subclub_internal_web_common.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_account.AccountDTO": {
+            "type": "object",
+            "properties": {
+                "accountPlanId": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "document": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "subscriptionExpiresAt": {
+                    "type": "string"
+                },
+                "subscriptionStatus": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_account.AccountInputDTO": {
+            "type": "object",
+            "properties": {
+                "accountPlanId": {
+                    "type": "string"
+                },
+                "document": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_account.UpdateAccountInputDTO": {
+            "type": "object",
+            "properties": {
+                "accountPlanId": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "document": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "subscriptionExpiresAt": {
+                    "type": "string"
+                },
+                "subscriptionStatus": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_accountplan.AccountPlanDTO": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
-                },
-                "code": {
-                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -807,16 +1563,16 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "discountValue": {
-                    "type": "number"
-                },
                 "id": {
                     "type": "string"
                 },
-                "imageUrl": {
-                    "type": "string"
+                "maxCustomers": {
+                    "type": "integer"
                 },
-                "intervalDays": {
+                "maxPlans": {
+                    "type": "integer"
+                },
+                "maxProducts": {
                     "type": "integer"
                 },
                 "name": {
@@ -824,31 +1580,25 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
-                },
-                "productValue": {
-                    "type": "number"
                 }
             }
         },
-        "internal_adapter_api_plan.PlanInputDTO": {
+        "internal_web_accountplan.AccountPlanInputDTO": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
-                },
-                "code": {
-                    "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
-                "discountValue": {
-                    "type": "number"
+                "maxCustomers": {
+                    "type": "integer"
                 },
-                "imageUrl": {
-                    "type": "string"
+                "maxPlans": {
+                    "type": "integer"
                 },
-                "intervalDays": {
+                "maxProducts": {
                     "type": "integer"
                 },
                 "name": {
@@ -856,77 +1606,113 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
-                },
-                "productValue": {
-                    "type": "number"
                 }
             }
         },
-        "internal_adapter_api_product.ProductDTO": {
+        "internal_web_auth.LoginRequestDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_auth.TokenResponseDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_customer.AddressDTO": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "complement": {
+                    "type": "string"
+                },
+                "neighborhood": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "zipCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_customer.CustomerDTO": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
                 },
-                "category": {
-                    "type": "string"
-                },
-                "code": {
-                    "type": "string"
-                },
-                "costPrice": {
-                    "type": "number"
+                "address": {
+                    "$ref": "#/definitions/internal_web_customer.AddressDTO"
                 },
                 "createdAt": {
                     "type": "string"
                 },
-                "description": {
+                "document": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "imageUrl": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "phone": {
                     "type": "string"
                 }
             }
         },
-        "internal_adapter_api_product.ProductInputDTO": {
+        "internal_web_customer.CustomerInputDTO": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
                 },
-                "category": {
+                "address": {
+                    "$ref": "#/definitions/internal_web_customer.AddressDTO"
+                },
+                "document": {
                     "type": "string"
                 },
-                "code": {
-                    "type": "string"
-                },
-                "costPrice": {
-                    "type": "number"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "imageUrl": {
+                "email": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
-        "internal_adapter_api_subscription.PaginatedSubscriptionResponse": {
+        "internal_web_customer.PaginatedCustomerResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_adapter_api_subscription.SubscriptionDTO"
+                        "$ref": "#/definitions/internal_web_customer.CustomerDTO"
                     }
                 },
                 "totalCount": {
@@ -934,16 +1720,186 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_api_subscription.SubscriptionDTO": {
+        "internal_web_plan.PaginatedPlanResponse": {
             "type": "object",
             "properties": {
-                "clientId": {
-                    "type": "string"
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                    }
                 },
-                "clientName": {
+                "totalCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_web_plan.PlanDTO": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discountValue": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "intervalDays": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "productValue": {
+                    "type": "number"
+                }
+            }
+        },
+        "internal_web_plan.PlanInputDTO": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discountValue": {
+                    "type": "number"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "intervalDays": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "productValue": {
+                    "type": "number"
+                }
+            }
+        },
+        "internal_web_product.PaginatedProductResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_web_product.ProductDTO"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_web_product.ProductDTO": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "costPrice": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_product.ProductInputDTO": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "costPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_subscription.PaginatedSubscriptionResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_web_subscription.SubscriptionDTO": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "customerId": {
+                    "type": "string"
+                },
+                "customerName": {
                     "type": "string"
                 },
                 "daysUntilRenewal": {
@@ -975,10 +1931,10 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_adapter_api_subscription.SubscriptionInputDTO": {
+        "internal_web_subscription.SubscriptionInputDTO": {
             "type": "object",
             "properties": {
-                "clientId": {
+                "customerId": {
                     "type": "string"
                 },
                 "nextBillingDate": {
@@ -994,7 +1950,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startDate": {
-                    "description": "e.g. RFC3339",
                     "type": "string"
                 },
                 "status": {
