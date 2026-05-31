@@ -7,6 +7,7 @@ type CreateAccountPlanInput struct {
 	MaxCustomers int
 	MaxPlans     int
 	MaxProducts  int
+	ModuleIDs    []string
 }
 
 type UpdateAccountPlanInput struct {
@@ -18,4 +19,5 @@ type UpdateAccountPlanInput struct {
 	MaxPlans     int
 	MaxProducts  int
 	Active       bool
+	ModuleIDs    []string
 }

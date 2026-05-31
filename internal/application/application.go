@@ -8,6 +8,7 @@ import (
 	accountrepo "github.com/joaofilippe/subclub/internal/application/repository/account"
 	accountplanrepo "github.com/joaofilippe/subclub/internal/application/repository/accountplan"
 	customerrepo "github.com/joaofilippe/subclub/internal/application/repository/customer"
+	modulerepo "github.com/joaofilippe/subclub/internal/application/repository/module"
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
@@ -16,6 +17,7 @@ import (
 	accountplansvc "github.com/joaofilippe/subclub/internal/application/service/accountplan"
 	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
 	customersvc "github.com/joaofilippe/subclub/internal/application/service/customer"
+	modulesvc "github.com/joaofilippe/subclub/internal/application/service/module"
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
@@ -33,6 +35,7 @@ type Application struct {
 	AuthService         *authsvc.AuthService
 	AccountService      *accountsvc.AccountService
 	AccountPlanService  *accountplansvc.AccountPlanService
+	ModuleService       *modulesvc.ModuleService
 	UserService         *usersvc.UserService
 	CustomerService     *customersvc.CustomerService
 	PlanService         *plansvc.PlanService
@@ -66,6 +69,7 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, []byte(cfg.JWTSecret))
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
+	a.ModuleService = modulesvc.NewModuleService(modulerepo.NewModuleEntRepository(a.entClient))
 	a.CustomerService = customersvc.NewCustomerService(customerrepo.NewCustomerEntRepository(a.entClient))
 	a.PlanService = plansvc.NewPlanService(planrepo.NewPlanEntRepository(a.entClient))
 	a.ProductService = productsvc.NewProductService(productrepo.NewProductEntRepository(a.entClient))

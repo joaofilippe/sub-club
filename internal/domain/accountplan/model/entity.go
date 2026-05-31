@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	modulemodel "github.com/joaofilippe/subclub/internal/domain/module/model"
+)
 
 type AccountPlan struct {
 	ID           string
@@ -12,4 +16,5 @@ type AccountPlan struct {
 	MaxProducts  int
 	Active       bool
 	CreatedAt    time.Time
+	Modules      []*modulemodel.Module
 }

@@ -44,9 +44,11 @@ type AccountPlan struct {
 type AccountPlanEdges struct {
 	// Accounts holds the value of the accounts edge.
 	Accounts []*Account `json:"accounts,omitempty"`
+	// Modules holds the value of the modules edge.
+	Modules []*Module `json:"modules,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // AccountsOrErr returns the Accounts value or an error if the edge
@@ -56,6 +58,15 @@ func (e AccountPlanEdges) AccountsOrErr() ([]*Account, error) {
 		return e.Accounts, nil
 	}
 	return nil, &NotLoadedError{edge: "accounts"}
+}
+
+// ModulesOrErr returns the Modules value or an error if the edge
+// was not loaded in eager-loading.
+func (e AccountPlanEdges) ModulesOrErr() ([]*Module, error) {
+	if e.loadedTypes[1] {
+		return e.Modules, nil
+	}
+	return nil, &NotLoadedError{edge: "modules"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -160,6 +171,11 @@ func (_m *AccountPlan) Value(name string) (ent.Value, error) {
 // QueryAccounts queries the "accounts" edge of the AccountPlan entity.
 func (_m *AccountPlan) QueryAccounts() *AccountQuery {
 	return NewAccountPlanClient(_m.config).QueryAccounts(_m)
+}
+
+// QueryModules queries the "modules" edge of the AccountPlan entity.
+func (_m *AccountPlan) QueryModules() *ModuleQuery {
+	return NewAccountPlanClient(_m.config).QueryModules(_m)
 }
 
 // Update returns a builder for updating this AccountPlan.

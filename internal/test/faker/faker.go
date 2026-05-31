@@ -8,10 +8,21 @@ import (
 	accountmodel "github.com/joaofilippe/subclub/internal/domain/account/model"
 	accountplanmodel "github.com/joaofilippe/subclub/internal/domain/accountplan/model"
 	customermodel "github.com/joaofilippe/subclub/internal/domain/customer/model"
+	modulemodel "github.com/joaofilippe/subclub/internal/domain/module/model"
 	planmodel "github.com/joaofilippe/subclub/internal/domain/plan/model"
 	productmodel "github.com/joaofilippe/subclub/internal/domain/product/model"
 	usermodel "github.com/joaofilippe/subclub/internal/domain/user/model"
 )
+
+// FakeModule generates a fake module model
+func FakeModule() *modulemodel.Module {
+	return &modulemodel.Module{
+		ID:        uuid.New().String(),
+		Name:      gofakeit.AppName(),
+		Active:    true,
+		CreatedAt: time.Now(),
+	}
+}
 
 // FakeAccountPlan generates a fake account plan model
 func FakeAccountPlan() *accountplanmodel.AccountPlan {
