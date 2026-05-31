@@ -15,6 +15,7 @@ import (
 	"github.com/joaofilippe/subclub/ent/account"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
+	"github.com/joaofilippe/subclub/ent/module"
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/ent/subscription"
@@ -82,6 +83,7 @@ func checkColumn(t, c string) error {
 			account.Table:      account.ValidColumn,
 			accountplan.Table:  accountplan.ValidColumn,
 			customer.Table:     customer.ValidColumn,
+			module.Table:       module.ValidColumn,
 			plan.Table:         plan.ValidColumn,
 			product.Table:      product.ValidColumn,
 			subscription.Table: subscription.ValidColumn,

@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
 	"github.com/joaofilippe/subclub/ent/accountplan"
+	"github.com/joaofilippe/subclub/ent/module"
 	"github.com/joaofilippe/subclub/ent/predicate"
 )
 
@@ -176,6 +177,21 @@ func (_u *AccountPlanUpdate) AddAccounts(v ...*Account) *AccountPlanUpdate {
 	return _u.AddAccountIDs(ids...)
 }
 
+// AddModuleIDs adds the "modules" edge to the Module entity by IDs.
+func (_u *AccountPlanUpdate) AddModuleIDs(ids ...uuid.UUID) *AccountPlanUpdate {
+	_u.mutation.AddModuleIDs(ids...)
+	return _u
+}
+
+// AddModules adds the "modules" edges to the Module entity.
+func (_u *AccountPlanUpdate) AddModules(v ...*Module) *AccountPlanUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddModuleIDs(ids...)
+}
+
 // Mutation returns the AccountPlanMutation object of the builder.
 func (_u *AccountPlanUpdate) Mutation() *AccountPlanMutation {
 	return _u.mutation
@@ -200,6 +216,27 @@ func (_u *AccountPlanUpdate) RemoveAccounts(v ...*Account) *AccountPlanUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAccountIDs(ids...)
+}
+
+// ClearModules clears all "modules" edges to the Module entity.
+func (_u *AccountPlanUpdate) ClearModules() *AccountPlanUpdate {
+	_u.mutation.ClearModules()
+	return _u
+}
+
+// RemoveModuleIDs removes the "modules" edge to Module entities by IDs.
+func (_u *AccountPlanUpdate) RemoveModuleIDs(ids ...uuid.UUID) *AccountPlanUpdate {
+	_u.mutation.RemoveModuleIDs(ids...)
+	return _u
+}
+
+// RemoveModules removes "modules" edges to Module entities.
+func (_u *AccountPlanUpdate) RemoveModules(v ...*Module) *AccountPlanUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveModuleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -325,6 +362,51 @@ func (_u *AccountPlanUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ModulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedModulesIDs(); len(nodes) > 0 && !_u.mutation.ModulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ModulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -499,6 +581,21 @@ func (_u *AccountPlanUpdateOne) AddAccounts(v ...*Account) *AccountPlanUpdateOne
 	return _u.AddAccountIDs(ids...)
 }
 
+// AddModuleIDs adds the "modules" edge to the Module entity by IDs.
+func (_u *AccountPlanUpdateOne) AddModuleIDs(ids ...uuid.UUID) *AccountPlanUpdateOne {
+	_u.mutation.AddModuleIDs(ids...)
+	return _u
+}
+
+// AddModules adds the "modules" edges to the Module entity.
+func (_u *AccountPlanUpdateOne) AddModules(v ...*Module) *AccountPlanUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddModuleIDs(ids...)
+}
+
 // Mutation returns the AccountPlanMutation object of the builder.
 func (_u *AccountPlanUpdateOne) Mutation() *AccountPlanMutation {
 	return _u.mutation
@@ -523,6 +620,27 @@ func (_u *AccountPlanUpdateOne) RemoveAccounts(v ...*Account) *AccountPlanUpdate
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAccountIDs(ids...)
+}
+
+// ClearModules clears all "modules" edges to the Module entity.
+func (_u *AccountPlanUpdateOne) ClearModules() *AccountPlanUpdateOne {
+	_u.mutation.ClearModules()
+	return _u
+}
+
+// RemoveModuleIDs removes the "modules" edge to Module entities by IDs.
+func (_u *AccountPlanUpdateOne) RemoveModuleIDs(ids ...uuid.UUID) *AccountPlanUpdateOne {
+	_u.mutation.RemoveModuleIDs(ids...)
+	return _u
+}
+
+// RemoveModules removes "modules" edges to Module entities.
+func (_u *AccountPlanUpdateOne) RemoveModules(v ...*Module) *AccountPlanUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveModuleIDs(ids...)
 }
 
 // Where appends a list predicates to the AccountPlanUpdate builder.
@@ -678,6 +796,51 @@ func (_u *AccountPlanUpdateOne) sqlSave(ctx context.Context) (_node *AccountPlan
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ModulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedModulesIDs(); len(nodes) > 0 && !_u.mutation.ModulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ModulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -70,6 +70,19 @@ var (
 		Columns:    CustomersColumns,
 		PrimaryKey: []*schema.Column{CustomersColumns[0]},
 	}
+	// ModulesColumns holds the columns for the "modules" table.
+	ModulesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ModulesTable holds the schema information for the "modules" table.
+	ModulesTable = &schema.Table{
+		Name:       "modules",
+		Columns:    ModulesColumns,
+		PrimaryKey: []*schema.Column{ModulesColumns[0]},
+	}
 	// PlansColumns holds the columns for the "plans" table.
 	PlansColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -159,15 +172,42 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// AccountPlanModulesColumns holds the columns for the "account_plan_modules" table.
+	AccountPlanModulesColumns = []*schema.Column{
+		{Name: "account_plan_id", Type: field.TypeUUID},
+		{Name: "module_id", Type: field.TypeUUID},
+	}
+	// AccountPlanModulesTable holds the schema information for the "account_plan_modules" table.
+	AccountPlanModulesTable = &schema.Table{
+		Name:       "account_plan_modules",
+		Columns:    AccountPlanModulesColumns,
+		PrimaryKey: []*schema.Column{AccountPlanModulesColumns[0], AccountPlanModulesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_plan_modules_account_plan_id",
+				Columns:    []*schema.Column{AccountPlanModulesColumns[0]},
+				RefColumns: []*schema.Column{AccountPlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "account_plan_modules_module_id",
+				Columns:    []*schema.Column{AccountPlanModulesColumns[1]},
+				RefColumns: []*schema.Column{ModulesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
 		AccountPlansTable,
 		CustomersTable,
+		ModulesTable,
 		PlansTable,
 		ProductsTable,
 		SubscriptionsTable,
 		UsersTable,
+		AccountPlanModulesTable,
 	}
 )
 
@@ -175,4 +215,6 @@ func init() {
 	AccountsTable.ForeignKeys[0].RefTable = AccountPlansTable
 	SubscriptionsTable.ForeignKeys[0].RefTable = CustomersTable
 	SubscriptionsTable.ForeignKeys[1].RefTable = PlansTable
+	AccountPlanModulesTable.ForeignKeys[0].RefTable = AccountPlansTable
+	AccountPlanModulesTable.ForeignKeys[1].RefTable = ModulesTable
 }

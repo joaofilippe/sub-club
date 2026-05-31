@@ -32,5 +32,6 @@ func (AccountPlan) Fields() []ent.Field {
 func (AccountPlan) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("accounts", Account.Type),
+		edge.To("modules", Module.Type),
 	}
 }

@@ -15,6 +15,9 @@ type AccountPlan func(*sql.Selector)
 // Customer is the predicate function for customer builders.
 type Customer func(*sql.Selector)
 
+// Module is the predicate function for module builders.
+type Module func(*sql.Selector)
+
 // Plan is the predicate function for plan builders.
 type Plan func(*sql.Selector)
 

@@ -45,6 +45,18 @@ func (f CustomerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerMutation", m)
 }
 
+// The ModuleFunc type is an adapter to allow the use of ordinary
+// function as Module mutator.
+type ModuleFunc func(context.Context, *ent.ModuleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ModuleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ModuleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ModuleMutation", m)
+}
+
 // The PlanFunc type is an adapter to allow the use of ordinary
 // function as Plan mutator.
 type PlanFunc func(context.Context, *ent.PlanMutation) (ent.Value, error)

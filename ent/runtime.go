@@ -9,6 +9,7 @@ import (
 	"github.com/joaofilippe/subclub/ent/account"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
+	"github.com/joaofilippe/subclub/ent/module"
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/ent/schema"
@@ -98,6 +99,24 @@ func init() {
 	customerDescID := customerFields[0].Descriptor()
 	// customer.DefaultID holds the default value on creation for the id field.
 	customer.DefaultID = customerDescID.Default.(func() uuid.UUID)
+	moduleFields := schema.Module{}.Fields()
+	_ = moduleFields
+	// moduleDescName is the schema descriptor for name field.
+	moduleDescName := moduleFields[1].Descriptor()
+	// module.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	module.NameValidator = moduleDescName.Validators[0].(func(string) error)
+	// moduleDescActive is the schema descriptor for active field.
+	moduleDescActive := moduleFields[2].Descriptor()
+	// module.DefaultActive holds the default value on creation for the active field.
+	module.DefaultActive = moduleDescActive.Default.(bool)
+	// moduleDescCreatedAt is the schema descriptor for created_at field.
+	moduleDescCreatedAt := moduleFields[3].Descriptor()
+	// module.DefaultCreatedAt holds the default value on creation for the created_at field.
+	module.DefaultCreatedAt = moduleDescCreatedAt.Default.(func() time.Time)
+	// moduleDescID is the schema descriptor for id field.
+	moduleDescID := moduleFields[0].Descriptor()
+	// module.DefaultID holds the default value on creation for the id field.
+	module.DefaultID = moduleDescID.Default.(func() uuid.UUID)
 	planFields := schema.Plan{}.Fields()
 	_ = planFields
 	// planDescCode is the schema descriptor for code field.

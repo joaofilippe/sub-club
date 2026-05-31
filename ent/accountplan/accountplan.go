@@ -33,6 +33,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
 	EdgeAccounts = "accounts"
+	// EdgeModules holds the string denoting the modules edge name in mutations.
+	EdgeModules = "modules"
 	// Table holds the table name of the accountplan in the database.
 	Table = "account_plans"
 	// AccountsTable is the table that holds the accounts relation/edge.
@@ -42,6 +44,11 @@ const (
 	AccountsInverseTable = "accounts"
 	// AccountsColumn is the table column denoting the accounts relation/edge.
 	AccountsColumn = "account_plan_id"
+	// ModulesTable is the table that holds the modules relation/edge. The primary key declared below.
+	ModulesTable = "account_plan_modules"
+	// ModulesInverseTable is the table name for the Module entity.
+	// It exists in this package in order to avoid circular dependency with the "module" package.
+	ModulesInverseTable = "modules"
 )
 
 // Columns holds all SQL columns for accountplan fields.
@@ -56,6 +63,12 @@ var Columns = []string{
 	FieldActive,
 	FieldCreatedAt,
 }
+
+var (
+	// ModulesPrimaryKey and ModulesColumn2 are the table columns denoting the
+	// primary key for the modules relation (M2M).
+	ModulesPrimaryKey = []string{"account_plan_id", "module_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -145,10 +158,31 @@ func ByAccounts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAccountsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByModulesCount orders the results by modules count.
+func ByModulesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newModulesStep(), opts...)
+	}
+}
+
+// ByModules orders the results by modules terms.
+func ByModules(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newModulesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAccountsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AccountsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
+	)
+}
+func newModulesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ModulesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, ModulesTable, ModulesPrimaryKey...),
 	)
 }

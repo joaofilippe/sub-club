@@ -33,6 +33,13 @@ func (r *router) registerRoutes() {
 	accountPlanGroup.PUT("/:id", r.handlers.AccountPlan.Update)
 	accountPlanGroup.DELETE("/:id", r.handlers.AccountPlan.Delete)
 
+	moduleGroup := r.echo.Group("/modules", adminMW)
+	moduleGroup.POST("", r.handlers.Module.Create)
+	moduleGroup.GET("", r.handlers.Module.List)
+	moduleGroup.GET("/:id", r.handlers.Module.Get)
+	moduleGroup.PUT("/:id", r.handlers.Module.Update)
+	moduleGroup.DELETE("/:id", r.handlers.Module.Delete)
+
 	accountGroup := r.echo.Group("/accounts", adminMW)
 	accountGroup.POST("", r.handlers.Account.Create)
 	accountGroup.GET("", r.handlers.Account.List)

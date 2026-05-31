@@ -5,6 +5,7 @@ import (
 
 	"github.com/joaofilippe/subclub/internal/domain/accountplan"
 	"github.com/joaofilippe/subclub/internal/domain/accountplan/model"
+	modulemodel "github.com/joaofilippe/subclub/internal/domain/module/model"
 )
 
 type UpdateAccountPlanUseCase struct {
@@ -21,6 +22,11 @@ func (uc *UpdateAccountPlanUseCase) Execute(ctx context.Context, input model.Upd
 		return nil, model.ErrNotFound
 	}
 
+	modules := make([]*modulemodel.Module, 0, len(input.ModuleIDs))
+	for _, id := range input.ModuleIDs {
+		modules = append(modules, &modulemodel.Module{ID: id})
+	}
+
 	existing.Name = input.Name
 	existing.Description = input.Description
 	existing.Price = input.Price
@@ -28,6 +34,7 @@ func (uc *UpdateAccountPlanUseCase) Execute(ctx context.Context, input model.Upd
 	existing.MaxPlans = input.MaxPlans
 	existing.MaxProducts = input.MaxProducts
 	existing.Active = input.Active
+	existing.Modules = modules
 
 	if err := uc.repo.Update(ctx, existing); err != nil {
 		return nil, err

@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
 	"github.com/joaofilippe/subclub/ent/accountplan"
+	"github.com/joaofilippe/subclub/ent/module"
 )
 
 // AccountPlanCreate is the builder for creating a AccountPlan entity.
@@ -145,6 +146,21 @@ func (_c *AccountPlanCreate) AddAccounts(v ...*Account) *AccountPlanCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddAccountIDs(ids...)
+}
+
+// AddModuleIDs adds the "modules" edge to the Module entity by IDs.
+func (_c *AccountPlanCreate) AddModuleIDs(ids ...uuid.UUID) *AccountPlanCreate {
+	_c.mutation.AddModuleIDs(ids...)
+	return _c
+}
+
+// AddModules adds the "modules" edges to the Module entity.
+func (_c *AccountPlanCreate) AddModules(v ...*Module) *AccountPlanCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddModuleIDs(ids...)
 }
 
 // Mutation returns the AccountPlanMutation object of the builder.
@@ -312,6 +328,22 @@ func (_c *AccountPlanCreate) createSpec() (*AccountPlan, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ModulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   accountplan.ModulesTable,
+			Columns: accountplan.ModulesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(module.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -18,6 +18,8 @@ type Tx struct {
 	AccountPlan *AccountPlanClient
 	// Customer is the client for interacting with the Customer builders.
 	Customer *CustomerClient
+	// Module is the client for interacting with the Module builders.
+	Module *ModuleClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
 	// Product is the client for interacting with the Product builders.
@@ -160,6 +162,7 @@ func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
 	tx.AccountPlan = NewAccountPlanClient(tx.config)
 	tx.Customer = NewCustomerClient(tx.config)
+	tx.Module = NewModuleClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)

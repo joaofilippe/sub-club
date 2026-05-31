@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/internal/domain/accountplan"
 	"github.com/joaofilippe/subclub/internal/domain/accountplan/model"
+	modulemodel "github.com/joaofilippe/subclub/internal/domain/module/model"
 )
 
 type CreateAccountPlanUseCase struct {
@@ -18,6 +19,11 @@ func NewCreateAccountPlanUseCase(repo accountplan.Repository) *CreateAccountPlan
 }
 
 func (uc *CreateAccountPlanUseCase) Execute(ctx context.Context, input model.CreateAccountPlanInput) (*model.AccountPlan, error) {
+	modules := make([]*modulemodel.Module, 0, len(input.ModuleIDs))
+	for _, id := range input.ModuleIDs {
+		modules = append(modules, &modulemodel.Module{ID: id})
+	}
+
 	p := &model.AccountPlan{
 		ID:           uuid.New().String(),
 		Name:         input.Name,
@@ -28,6 +34,7 @@ func (uc *CreateAccountPlanUseCase) Execute(ctx context.Context, input model.Cre
 		MaxProducts:  input.MaxProducts,
 		Active:       true,
 		CreatedAt:    time.Now(),
+		Modules:      modules,
 	}
 	if err := uc.repo.Create(ctx, p); err != nil {
 		return nil, err
