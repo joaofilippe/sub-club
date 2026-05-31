@@ -54,11 +54,11 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 		log.Printf("[Seeder] Failed to seed user: %v\n", err)
 	}
 
-	// 2. Seed Fake Products
-	log.Println("[Seeder] Seeding fake products (10)...")
-	products := make([]*ent.Product, 10)
-	for i := 0; i < 10; i++ {
-		f := faker.FakeProduct()
+	// 2. Seed Coffee Products
+	log.Println("[Seeder] Seeding coffee products (10)...")
+	coffeeProducts := faker.CoffeeProducts()
+	products := make([]*ent.Product, len(coffeeProducts))
+	for i, f := range coffeeProducts {
 		products[i], _ = client.Product.Create().
 			SetID(uuid.MustParse(f.ID)).
 			SetCode(f.Code).
@@ -69,11 +69,11 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 			Save(ctx)
 	}
 
-	// 3. Seed Fake Plans
-	log.Println("[Seeder] Seeding fake plans (4)...")
-	plans := make([]*ent.Plan, 4)
-	for i := 0; i < 4; i++ {
-		f := faker.FakePlan()
+	// 3. Seed Fixed Plans (Básico, Intermediário, Avançado)
+	log.Println("[Seeder] Seeding plans (Básico, Intermediário, Avançado)...")
+	fixedPlans := faker.FixedPlans()
+	plans := make([]*ent.Plan, len(fixedPlans))
+	for i, f := range fixedPlans {
 		plans[i], _ = client.Plan.Create().
 			SetID(uuid.MustParse(f.ID)).
 			SetCode(f.Code).

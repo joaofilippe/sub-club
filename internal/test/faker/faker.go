@@ -102,6 +102,41 @@ func FakeProduct() *productmodel.Product {
 	}
 }
 
+// CoffeeProducts returns 10 fixed coffee products for seeding.
+func CoffeeProducts() []*productmodel.Product {
+	now := time.Now()
+	items := []struct {
+		code, name, description string
+		costPrice               float64
+	}{
+		{"CAFE-EXPRESSO", "Café Expresso", "Grão arábica tostado escuro para extração concentrada em 25 ml.", 8.50},
+		{"CAFE-AMERICANO", "Café Americano", "Espresso diluído em água quente, suave e levemente encorpado.", 7.50},
+		{"CAFE-LEITE", "Café com Leite", "Blend suave de espresso com leite vaporizado na proporção 1:2.", 9.00},
+		{"CAPPUCCINO", "Cappuccino", "Espresso com leite vaporizado e camada generosa de espuma cremosa.", 12.00},
+		{"MACCHIATO", "Macchiato", "Espresso marcado com um toque de leite vaporizado.", 10.50},
+		{"FLAT-WHITE", "Flat White", "Espresso duplo com leite vaporizado sedoso, sem espuma.", 13.00},
+		{"CAFE-GELADO", "Café Gelado", "Espresso resfriado servido sobre gelo com leite opcional.", 11.00},
+		{"MOCHA", "Mocha", "Espresso com calda de chocolate amargo e leite vaporizado.", 14.00},
+		{"COLD-BREW", "Cold Brew", "Café extraído a frio por 12 horas, resultado suave e adocicado.", 15.00},
+		{"CAFE-COADO", "Café Coado", "Método tradicional filtrado, torra média para xícara limpa e aromática.", 6.50},
+	}
+
+	products := make([]*productmodel.Product, len(items))
+	for i, item := range items {
+		products[i] = &productmodel.Product{
+			ID:          uuid.New().String(),
+			Code:        item.code,
+			Name:        item.name,
+			Description: item.description,
+			CostPrice:   item.costPrice,
+			Category:    "Café",
+			Active:      true,
+			CreatedAt:   now,
+		}
+	}
+	return products
+}
+
 // FakePlan generates a fake plan model
 func FakePlan() *planmodel.Plan {
 	productValue := gofakeit.Price(50, 300)
@@ -119,4 +154,46 @@ func FakePlan() *planmodel.Plan {
 		Active:        true,
 		CreatedAt:     time.Now(),
 	}
+}
+
+// FixedPlans returns the 3 subscription tiers (Básico, Intermediário, Avançado) for seeding.
+func FixedPlans() []*planmodel.Plan {
+	now := time.Now()
+	items := []struct {
+		code, name, description string
+		productValue, discount  float64
+	}{
+		{
+			"PLANO-BASICO", "Básico",
+			"Ideal para quem quer experimentar o clube. Receba 2 produtos por mês.",
+			49.90, 5.00,
+		},
+		{
+			"PLANO-INTERMEDIARIO", "Intermediário",
+			"Para os apreciadores frequentes. Receba 4 produtos por mês com desconto especial.",
+			89.90, 10.00,
+		},
+		{
+			"PLANO-AVANCADO", "Avançado",
+			"Experiência completa para entusiastas. Receba 8 produtos por mês e acesso a lançamentos.",
+			149.90, 20.00,
+		},
+	}
+
+	plans := make([]*planmodel.Plan, len(items))
+	for i, item := range items {
+		plans[i] = &planmodel.Plan{
+			ID:            uuid.New().String(),
+			Code:          item.code,
+			Name:          item.name,
+			Description:   item.description,
+			ProductValue:  item.productValue,
+			DiscountValue: item.discount,
+			Price:         item.productValue - item.discount,
+			IntervalDays:  30,
+			Active:        true,
+			CreatedAt:     now,
+		}
+	}
+	return plans
 }
