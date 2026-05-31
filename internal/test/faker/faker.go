@@ -5,11 +5,42 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
+	accountmodel "github.com/joaofilippe/subclub/internal/domain/account/model"
+	accountplanmodel "github.com/joaofilippe/subclub/internal/domain/accountplan/model"
 	customermodel "github.com/joaofilippe/subclub/internal/domain/customer/model"
 	planmodel "github.com/joaofilippe/subclub/internal/domain/plan/model"
 	productmodel "github.com/joaofilippe/subclub/internal/domain/product/model"
 	usermodel "github.com/joaofilippe/subclub/internal/domain/user/model"
 )
+
+// FakeAccountPlan generates a fake account plan model
+func FakeAccountPlan() *accountplanmodel.AccountPlan {
+	return &accountplanmodel.AccountPlan{
+		ID:           uuid.New().String(),
+		Name:         gofakeit.JobTitle(),
+		Description:  gofakeit.Sentence(8),
+		Price:        gofakeit.Price(50, 500),
+		MaxCustomers: gofakeit.Number(10, 1000),
+		MaxPlans:     gofakeit.Number(1, 20),
+		MaxProducts:  gofakeit.Number(1, 50),
+		Active:       true,
+		CreatedAt:    time.Now(),
+	}
+}
+
+// FakeAccount generates a fake account model
+func FakeAccount() *accountmodel.Account {
+	return &accountmodel.Account{
+		ID:                 uuid.New().String(),
+		Name:               gofakeit.Company(),
+		Email:              gofakeit.Email(),
+		Document:           gofakeit.DigitN(14),
+		Slug:               gofakeit.Lexify("????????"),
+		SubscriptionStatus: accountmodel.SubscriptionStatusTrial,
+		Active:             true,
+		CreatedAt:          time.Now(),
+	}
+}
 
 // FakeUser generates a fake user model
 func FakeUser() *usermodel.User {

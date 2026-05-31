@@ -44,5 +44,8 @@ func (s *Server) GetEcho() *echo.Echo {
 }
 
 func (s *Server) Start(port string) error {
+	if port != "" && port[0] != ':' {
+		port = ":" + port
+	}
 	return s.echo.Start(port)
 }
