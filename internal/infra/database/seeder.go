@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent"
-	"github.com/joaofilippe/subclub/ent/user"
+	"github.com/joaofilippe/subclub/ent/systemuser"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/test/faker"
 	"golang.org/x/crypto/bcrypt"
@@ -20,8 +20,8 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 
 	log.Println("[Seeder] Checking database state...")
 
-	// Verify if there are any users in the database
-	count, err := client.User.Query().Count(ctx)
+	// Verify if there are any system users in the database
+	count, err := client.SystemUser.Query().Count(ctx)
 	if err != nil {
 		log.Printf("[Seeder] Error counting users: %v\n", err)
 		return
@@ -41,13 +41,13 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 		return
 	}
 
-	_, err = client.User.Create().
+	_, err = client.SystemUser.Create().
 		SetID(uuid.New()).
 		SetName("Admin").
 		SetEmail("adm@adm.com").
 		SetPassword(string(hash)).
-		SetType(user.TypeSystem).
-		SetRole(user.RoleAdmin).
+		SetType(systemuser.TypeSystem).
+		SetRole(systemuser.RoleAdmin).
 		Save(ctx)
 
 	if err != nil {

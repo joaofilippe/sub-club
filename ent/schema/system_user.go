@@ -8,12 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// User holds the schema for tenant-scoped users, created inside each account_{slug} schema.
-type User struct {
+// SystemUser holds platform-level administrators that live in the public schema.
+type SystemUser struct {
 	ent.Schema
 }
 
-func (User) Fields() []ent.Field {
+func (SystemUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
@@ -21,6 +21,9 @@ func (User) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("email").Unique().NotEmpty(),
 		field.String("password").NotEmpty(),
+		field.Enum("type").
+			Values("individual", "corporate", "system").
+			Default("individual"),
 		field.Enum("role").
 			Values("admin", "operations").
 			Default("admin"),
@@ -30,6 +33,6 @@ func (User) Fields() []ent.Field {
 	}
 }
 
-func (User) Edges() []ent.Edge {
+func (SystemUser) Edges() []ent.Edge {
 	return nil
 }

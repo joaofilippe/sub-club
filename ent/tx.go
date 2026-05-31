@@ -26,6 +26,8 @@ type Tx struct {
 	Product *ProductClient
 	// Subscription is the client for interacting with the Subscription builders.
 	Subscription *SubscriptionClient
+	// SystemUser is the client for interacting with the SystemUser builders.
+	SystemUser *SystemUserClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -166,6 +168,7 @@ func (tx *Tx) init() {
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)
+	tx.SystemUser = NewSystemUserClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

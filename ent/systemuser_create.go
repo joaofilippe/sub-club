@@ -11,42 +11,56 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/joaofilippe/subclub/ent/user"
+	"github.com/joaofilippe/subclub/ent/systemuser"
 )
 
-// UserCreate is the builder for creating a User entity.
-type UserCreate struct {
+// SystemUserCreate is the builder for creating a SystemUser entity.
+type SystemUserCreate struct {
 	config
-	mutation *UserMutation
+	mutation *SystemUserMutation
 	hooks    []Hook
 }
 
 // SetName sets the "name" field.
-func (_c *UserCreate) SetName(v string) *UserCreate {
+func (_c *SystemUserCreate) SetName(v string) *SystemUserCreate {
 	_c.mutation.SetName(v)
 	return _c
 }
 
 // SetEmail sets the "email" field.
-func (_c *UserCreate) SetEmail(v string) *UserCreate {
+func (_c *SystemUserCreate) SetEmail(v string) *SystemUserCreate {
 	_c.mutation.SetEmail(v)
 	return _c
 }
 
 // SetPassword sets the "password" field.
-func (_c *UserCreate) SetPassword(v string) *UserCreate {
+func (_c *SystemUserCreate) SetPassword(v string) *SystemUserCreate {
 	_c.mutation.SetPassword(v)
 	return _c
 }
 
+// SetType sets the "type" field.
+func (_c *SystemUserCreate) SetType(v systemuser.Type) *SystemUserCreate {
+	_c.mutation.SetType(v)
+	return _c
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_c *SystemUserCreate) SetNillableType(v *systemuser.Type) *SystemUserCreate {
+	if v != nil {
+		_c.SetType(*v)
+	}
+	return _c
+}
+
 // SetRole sets the "role" field.
-func (_c *UserCreate) SetRole(v user.Role) *UserCreate {
+func (_c *SystemUserCreate) SetRole(v systemuser.Role) *SystemUserCreate {
 	_c.mutation.SetRole(v)
 	return _c
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_c *UserCreate) SetNillableRole(v *user.Role) *UserCreate {
+func (_c *SystemUserCreate) SetNillableRole(v *systemuser.Role) *SystemUserCreate {
 	if v != nil {
 		_c.SetRole(*v)
 	}
@@ -54,13 +68,13 @@ func (_c *UserCreate) SetNillableRole(v *user.Role) *UserCreate {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *UserCreate) SetCreatedAt(v time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetCreatedAt(v time.Time) *SystemUserCreate {
 	_c.mutation.SetCreatedAt(v)
 	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *UserCreate) SetNillableCreatedAt(v *time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetNillableCreatedAt(v *time.Time) *SystemUserCreate {
 	if v != nil {
 		_c.SetCreatedAt(*v)
 	}
@@ -68,13 +82,13 @@ func (_c *UserCreate) SetNillableCreatedAt(v *time.Time) *UserCreate {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_c *UserCreate) SetUpdatedAt(v time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetUpdatedAt(v time.Time) *SystemUserCreate {
 	_c.mutation.SetUpdatedAt(v)
 	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetNillableUpdatedAt(v *time.Time) *SystemUserCreate {
 	if v != nil {
 		_c.SetUpdatedAt(*v)
 	}
@@ -82,13 +96,13 @@ func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (_c *UserCreate) SetDeletedAt(v time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetDeletedAt(v time.Time) *SystemUserCreate {
 	_c.mutation.SetDeletedAt(v)
 	return _c
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_c *UserCreate) SetNillableDeletedAt(v *time.Time) *UserCreate {
+func (_c *SystemUserCreate) SetNillableDeletedAt(v *time.Time) *SystemUserCreate {
 	if v != nil {
 		_c.SetDeletedAt(*v)
 	}
@@ -96,32 +110,32 @@ func (_c *UserCreate) SetNillableDeletedAt(v *time.Time) *UserCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *UserCreate) SetID(v uuid.UUID) *UserCreate {
+func (_c *SystemUserCreate) SetID(v uuid.UUID) *SystemUserCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *UserCreate) SetNillableID(v *uuid.UUID) *UserCreate {
+func (_c *SystemUserCreate) SetNillableID(v *uuid.UUID) *SystemUserCreate {
 	if v != nil {
 		_c.SetID(*v)
 	}
 	return _c
 }
 
-// Mutation returns the UserMutation object of the builder.
-func (_c *UserCreate) Mutation() *UserMutation {
+// Mutation returns the SystemUserMutation object of the builder.
+func (_c *SystemUserCreate) Mutation() *SystemUserMutation {
 	return _c.mutation
 }
 
-// Save creates the User in the database.
-func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+// Save creates the SystemUser in the database.
+func (_c *SystemUserCreate) Save(ctx context.Context) (*SystemUser, error) {
 	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *UserCreate) SaveX(ctx context.Context) *User {
+func (_c *SystemUserCreate) SaveX(ctx context.Context) *SystemUser {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -130,82 +144,94 @@ func (_c *UserCreate) SaveX(ctx context.Context) *User {
 }
 
 // Exec executes the query.
-func (_c *UserCreate) Exec(ctx context.Context) error {
+func (_c *SystemUserCreate) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *UserCreate) ExecX(ctx context.Context) {
+func (_c *SystemUserCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *UserCreate) defaults() {
+func (_c *SystemUserCreate) defaults() {
+	if _, ok := _c.mutation.GetType(); !ok {
+		v := systemuser.DefaultType
+		_c.mutation.SetType(v)
+	}
 	if _, ok := _c.mutation.Role(); !ok {
-		v := user.DefaultRole
+		v := systemuser.DefaultRole
 		_c.mutation.SetRole(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
-		v := user.DefaultCreatedAt()
+		v := systemuser.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := user.DefaultUpdatedAt()
+		v := systemuser.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
-		v := user.DefaultID()
+		v := systemuser.DefaultID()
 		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *UserCreate) check() error {
+func (_c *SystemUserCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "SystemUser.name"`)}
 	}
 	if v, ok := _c.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
+		if err := systemuser.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SystemUser.name": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "SystemUser.email"`)}
 	}
 	if v, ok := _c.mutation.Email(); ok {
-		if err := user.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
+		if err := systemuser.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "SystemUser.email": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
+		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "SystemUser.password"`)}
 	}
 	if v, ok := _c.mutation.Password(); ok {
-		if err := user.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
+		if err := systemuser.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "SystemUser.password": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "SystemUser.type"`)}
+	}
+	if v, ok := _c.mutation.GetType(); ok {
+		if err := systemuser.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "SystemUser.type": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Role(); !ok {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "SystemUser.role"`)}
 	}
 	if v, ok := _c.mutation.Role(); ok {
-		if err := user.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		if err := systemuser.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "SystemUser.role": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "SystemUser.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "SystemUser.updated_at"`)}
 	}
 	return nil
 }
 
-func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
+func (_c *SystemUserCreate) sqlSave(ctx context.Context) (*SystemUser, error) {
 	if err := _c.check(); err != nil {
 		return nil, err
 	}
@@ -228,67 +254,71 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 	return _node, nil
 }
 
-func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
+func (_c *SystemUserCreate) createSpec() (*SystemUser, *sqlgraph.CreateSpec) {
 	var (
-		_node = &User{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
+		_node = &SystemUser{config: _c.config}
+		_spec = sqlgraph.NewCreateSpec(systemuser.Table, sqlgraph.NewFieldSpec(systemuser.FieldID, field.TypeUUID))
 	)
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
 	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
+		_spec.SetField(systemuser.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := _c.mutation.Email(); ok {
-		_spec.SetField(user.FieldEmail, field.TypeString, value)
+		_spec.SetField(systemuser.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
 	if value, ok := _c.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
+		_spec.SetField(systemuser.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
+	if value, ok := _c.mutation.GetType(); ok {
+		_spec.SetField(systemuser.FieldType, field.TypeEnum, value)
+		_node.Type = value
+	}
 	if value, ok := _c.mutation.Role(); ok {
-		_spec.SetField(user.FieldRole, field.TypeEnum, value)
+		_spec.SetField(systemuser.FieldRole, field.TypeEnum, value)
 		_node.Role = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(systemuser.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(systemuser.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := _c.mutation.DeletedAt(); ok {
-		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
+		_spec.SetField(systemuser.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	return _node, _spec
 }
 
-// UserCreateBulk is the builder for creating many User entities in bulk.
-type UserCreateBulk struct {
+// SystemUserCreateBulk is the builder for creating many SystemUser entities in bulk.
+type SystemUserCreateBulk struct {
 	config
 	err      error
-	builders []*UserCreate
+	builders []*SystemUserCreate
 }
 
-// Save creates the User entities in the database.
-func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+// Save creates the SystemUser entities in the database.
+func (_c *SystemUserCreateBulk) Save(ctx context.Context) ([]*SystemUser, error) {
 	if _c.err != nil {
 		return nil, _c.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*User, len(_c.builders))
+	nodes := make([]*SystemUser, len(_c.builders))
 	mutators := make([]Mutator, len(_c.builders))
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*UserMutation)
+				mutation, ok := m.(*SystemUserMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -331,7 +361,7 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *UserCreateBulk) SaveX(ctx context.Context) []*User {
+func (_c *SystemUserCreateBulk) SaveX(ctx context.Context) []*SystemUser {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -340,13 +370,13 @@ func (_c *UserCreateBulk) SaveX(ctx context.Context) []*User {
 }
 
 // Exec executes the query.
-func (_c *UserCreateBulk) Exec(ctx context.Context) error {
+func (_c *SystemUserCreateBulk) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *UserCreateBulk) ExecX(ctx context.Context) {
+func (_c *SystemUserCreateBulk) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}

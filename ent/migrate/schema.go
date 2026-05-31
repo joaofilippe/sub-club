@@ -153,8 +153,8 @@ var (
 			},
 		},
 	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
+	// SystemUsersColumns holds the columns for the "system_users" table.
+	SystemUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
@@ -164,7 +164,23 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// SystemUsersTable holds the schema information for the "system_users" table.
+	SystemUsersTable = &schema.Table{
+		Name:       "system_users",
+		Columns:    SystemUsersColumns,
+		PrimaryKey: []*schema.Column{SystemUsersColumns[0]},
+	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"admin", "operations"}, Default: "admin"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -206,6 +222,7 @@ var (
 		PlansTable,
 		ProductsTable,
 		SubscriptionsTable,
+		SystemUsersTable,
 		UsersTable,
 		AccountPlanModulesTable,
 	}

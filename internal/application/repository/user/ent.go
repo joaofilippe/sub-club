@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent"
-	entuser "github.com/joaofilippe/subclub/ent/user"
+	entsystemuser "github.com/joaofilippe/subclub/ent/systemuser"
 	"github.com/joaofilippe/subclub/internal/domain/user"
 	"github.com/joaofilippe/subclub/internal/domain/user/model"
 )
@@ -25,27 +25,16 @@ func (r *userEntRepository) Create(ctx context.Context, u *model.User) error {
 		id = uuid.New()
 	}
 
-	builder := r.client.User.Create().
+	_, err = r.client.SystemUser.Create().
 		SetID(id).
 		SetName(u.Name).
 		SetEmail(u.Email).
 		SetPassword(u.Password).
-		SetType(entuser.Type(u.Type)).
-		SetRole(entuser.Role(u.Role)).
+		SetType(entsystemuser.Type(u.Type)).
+		SetRole(entsystemuser.Role(u.Role)).
 		SetCreatedAt(u.CreatedAt).
-		SetUpdatedAt(u.UpdatedAt)
-
-	if u.AccountID != nil {
-		accountID, err := uuid.Parse(*u.AccountID)
-		if err == nil {
-			builder.SetAccountID(accountID)
-		}
-	}
-	if u.DeletedAt != nil {
-		builder.SetDeletedAt(*u.DeletedAt)
-	}
-
-	_, err = builder.Save(ctx)
+		SetUpdatedAt(u.UpdatedAt).
+		Save(ctx)
 	return err
 }
 
@@ -54,51 +43,49 @@ func (r *userEntRepository) GetByID(ctx context.Context, id string) (*model.User
 	if err != nil {
 		return nil, err
 	}
-	u, err := r.client.User.Query().
-		Where(entuser.IDEQ(parsedID), entuser.DeletedAtIsNil()).
+	u, err := r.client.SystemUser.Query().
+		Where(entsystemuser.IDEQ(parsedID), entsystemuser.DeletedAtIsNil()).
 		First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return mapEntUserToDomain(u), nil
+	return mapEntSystemUserToDomain(u), nil
 }
 
 func (r *userEntRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
-	u, err := r.client.User.Query().
-		Where(entuser.EmailEQ(email), entuser.DeletedAtIsNil()).
+	u, err := r.client.SystemUser.Query().
+		Where(entsystemuser.EmailEQ(email), entsystemuser.DeletedAtIsNil()).
 		First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return mapEntUserToDomain(u), nil
+	return mapEntSystemUserToDomain(u), nil
 }
 
 func (r *userEntRepository) GetByRole(ctx context.Context, role model.UserRole) ([]*model.User, error) {
-	users, err := r.client.User.Query().
-		Where(entuser.RoleEQ(entuser.Role(role)), entuser.DeletedAtIsNil()).
+	users, err := r.client.SystemUser.Query().
+		Where(entsystemuser.RoleEQ(entsystemuser.Role(role)), entsystemuser.DeletedAtIsNil()).
 		All(ctx)
 	if err != nil {
 		return nil, err
 	}
-
 	results := make([]*model.User, 0, len(users))
 	for _, eu := range users {
-		results = append(results, mapEntUserToDomain(eu))
+		results = append(results, mapEntSystemUserToDomain(eu))
 	}
 	return results, nil
 }
 
 func (r *userEntRepository) GetByType(ctx context.Context, userType model.UserType) ([]*model.User, error) {
-	users, err := r.client.User.Query().
-		Where(entuser.TypeEQ(entuser.Type(userType)), entuser.DeletedAtIsNil()).
+	users, err := r.client.SystemUser.Query().
+		Where(entsystemuser.TypeEQ(entsystemuser.Type(userType)), entsystemuser.DeletedAtIsNil()).
 		All(ctx)
 	if err != nil {
 		return nil, err
 	}
-
 	results := make([]*model.User, 0, len(users))
 	for _, eu := range users {
-		results = append(results, mapEntUserToDomain(eu))
+		results = append(results, mapEntSystemUserToDomain(eu))
 	}
 	return results, nil
 }
@@ -109,12 +96,12 @@ func (r *userEntRepository) Update(ctx context.Context, u *model.User) error {
 		return err
 	}
 
-	builder := r.client.User.UpdateOneID(parsedID).
+	builder := r.client.SystemUser.UpdateOneID(parsedID).
 		SetName(u.Name).
 		SetEmail(u.Email).
 		SetPassword(u.Password).
-		SetType(entuser.Type(u.Type)).
-		SetRole(entuser.Role(u.Role)).
+		SetType(entsystemuser.Type(u.Type)).
+		SetRole(entsystemuser.Role(u.Role)).
 		SetUpdatedAt(u.UpdatedAt)
 
 	if u.DeletedAt != nil {
@@ -132,29 +119,28 @@ func (r *userEntRepository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.client.User.UpdateOneID(parsedID).
+	_, err = r.client.SystemUser.UpdateOneID(parsedID).
 		SetDeletedAt(time.Now()).
 		Save(ctx)
 	return err
 }
 
 func (r *userEntRepository) List(ctx context.Context) ([]*model.User, error) {
-	users, err := r.client.User.Query().
-		Where(entuser.DeletedAtIsNil()).
+	users, err := r.client.SystemUser.Query().
+		Where(entsystemuser.DeletedAtIsNil()).
 		All(ctx)
 	if err != nil {
 		return nil, err
 	}
-
 	results := make([]*model.User, 0, len(users))
 	for _, eu := range users {
-		results = append(results, mapEntUserToDomain(eu))
+		results = append(results, mapEntSystemUserToDomain(eu))
 	}
 	return results, nil
 }
 
-func mapEntUserToDomain(eu *ent.User) *model.User {
-	u := &model.User{
+func mapEntSystemUserToDomain(eu *ent.SystemUser) *model.User {
+	return &model.User{
 		ID:        eu.ID.String(),
 		Name:      eu.Name,
 		Email:     eu.Email,
@@ -165,9 +151,4 @@ func mapEntUserToDomain(eu *ent.User) *model.User {
 		UpdatedAt: eu.UpdatedAt,
 		DeletedAt: eu.DeletedAt,
 	}
-	if eu.AccountID != nil {
-		s := eu.AccountID.String()
-		u.AccountID = &s
-	}
-	return u
 }

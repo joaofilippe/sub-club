@@ -106,8 +106,8 @@ func (m *TenantClientManager) CreateTenantSchema(ctx context.Context, slug strin
 
 	// 3. Run Ent auto-migration.
 	// With search_path = account_{slug}, public:
-	//   - global tables (accounts, account_plans, users) are already present in public → skipped.
-	//   - tenant tables (customers, plans, products, subscriptions) are absent → created in account_{slug}.
+	//   - global tables (accounts, account_plans, system_users, modules) already exist in public → skipped.
+	//   - tenant tables (users, customers, plans, products, subscriptions) are absent → created in account_{slug}.
 	if err := tenantClient.Schema.Create(ctx); err != nil {
 		return fmt.Errorf("migrate tenant schema %q: %w", schemaName, err)
 	}

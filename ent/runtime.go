@@ -14,6 +14,7 @@ import (
 	"github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/ent/schema"
 	"github.com/joaofilippe/subclub/ent/subscription"
+	"github.com/joaofilippe/subclub/ent/systemuser"
 	"github.com/joaofilippe/subclub/ent/user"
 )
 
@@ -203,6 +204,34 @@ func init() {
 	subscriptionDescID := subscriptionFields[0].Descriptor()
 	// subscription.DefaultID holds the default value on creation for the id field.
 	subscription.DefaultID = subscriptionDescID.Default.(func() uuid.UUID)
+	systemuserFields := schema.SystemUser{}.Fields()
+	_ = systemuserFields
+	// systemuserDescName is the schema descriptor for name field.
+	systemuserDescName := systemuserFields[1].Descriptor()
+	// systemuser.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	systemuser.NameValidator = systemuserDescName.Validators[0].(func(string) error)
+	// systemuserDescEmail is the schema descriptor for email field.
+	systemuserDescEmail := systemuserFields[2].Descriptor()
+	// systemuser.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	systemuser.EmailValidator = systemuserDescEmail.Validators[0].(func(string) error)
+	// systemuserDescPassword is the schema descriptor for password field.
+	systemuserDescPassword := systemuserFields[3].Descriptor()
+	// systemuser.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	systemuser.PasswordValidator = systemuserDescPassword.Validators[0].(func(string) error)
+	// systemuserDescCreatedAt is the schema descriptor for created_at field.
+	systemuserDescCreatedAt := systemuserFields[6].Descriptor()
+	// systemuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	systemuser.DefaultCreatedAt = systemuserDescCreatedAt.Default.(func() time.Time)
+	// systemuserDescUpdatedAt is the schema descriptor for updated_at field.
+	systemuserDescUpdatedAt := systemuserFields[7].Descriptor()
+	// systemuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	systemuser.DefaultUpdatedAt = systemuserDescUpdatedAt.Default.(func() time.Time)
+	// systemuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	systemuser.UpdateDefaultUpdatedAt = systemuserDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// systemuserDescID is the schema descriptor for id field.
+	systemuserDescID := systemuserFields[0].Descriptor()
+	// systemuser.DefaultID holds the default value on creation for the id field.
+	systemuser.DefaultID = systemuserDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
@@ -218,11 +247,11 @@ func init() {
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[6].Descriptor()
+	userDescCreatedAt := userFields[5].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[7].Descriptor()
+	userDescUpdatedAt := userFields[6].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

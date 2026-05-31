@@ -19,6 +19,7 @@ import (
 	"github.com/joaofilippe/subclub/ent/plan"
 	"github.com/joaofilippe/subclub/ent/product"
 	"github.com/joaofilippe/subclub/ent/subscription"
+	"github.com/joaofilippe/subclub/ent/systemuser"
 	"github.com/joaofilippe/subclub/ent/user"
 )
 
@@ -87,6 +88,7 @@ func checkColumn(t, c string) error {
 			plan.Table:         plan.ValidColumn,
 			product.Table:      product.ValidColumn,
 			subscription.Table: subscription.ValidColumn,
+			systemuser.Table:   systemuser.ValidColumn,
 			user.Table:         user.ValidColumn,
 		})
 	})
