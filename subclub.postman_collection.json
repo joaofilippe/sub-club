@@ -24,6 +24,19 @@
   ],
   "item": [
     {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
       "name": "Auth",
       "item": [
         {
@@ -328,7 +341,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"João Silva Atualizado\",\n  \"email\": \"joao.novo@email.com\",\n  \"phone\": \"(11) 88888-8888\",\n  \"document\": \"123.456.789-00\",\n  \"active\": true\n}"
+              "raw": "{\n  \"name\": \"João Silva Atualizado\",\n  \"email\": \"joao.novo@email.com\",\n  \"phone\": \"(11) 88888-8888\",\n  \"document\": \"123.456.789-00\",\n  \"active\": true,\n  \"address\": {\n    \"zipCode\": \"01310-100\",\n    \"street\": \"Av. Paulista\",\n    \"number\": \"1000\",\n    \"complement\": \"Apto 42\",\n    \"neighborhood\": \"Bela Vista\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\"\n  }\n}"
             },
             "url": { "raw": "{{baseUrl}}/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
@@ -357,7 +370,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico\",\n  \"description\": \"1 café especial por mês\",\n  \"productValue\": 50.00,\n  \"discountValue\": 5.00,\n  \"price\": 45.00,\n  \"intervalDays\": 30,\n  \"active\": true\n}"
+              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico\",\n  \"description\": \"1 café especial por mês\",\n  \"productValue\": 50.00,\n  \"discountValue\": 5.00,\n  \"price\": 45.00,\n  \"intervalDays\": 30,\n  \"active\": true,\n  \"imageUrl\": null\n}"
             },
             "url": { "raw": "{{baseUrl}}/plans", "host": ["{{baseUrl}}"], "path": ["plans"] }
           }
@@ -398,7 +411,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico Atualizado\",\n  \"description\": \"2 cafés especiais por mês\",\n  \"productValue\": 100.00,\n  \"discountValue\": 10.00,\n  \"price\": 90.00,\n  \"intervalDays\": 30,\n  \"active\": true\n}"
+              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico Atualizado\",\n  \"description\": \"2 cafés especiais por mês\",\n  \"productValue\": 100.00,\n  \"discountValue\": 10.00,\n  \"price\": 90.00,\n  \"intervalDays\": 30,\n  \"active\": true,\n  \"imageUrl\": null\n}"
             },
             "url": { "raw": "{{baseUrl}}/plans/:id", "host": ["{{baseUrl}}"], "path": ["plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
@@ -427,7 +440,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo\",\n  \"description\": \"Café especial da região do Cerrado\",\n  \"costPrice\": 35.00,\n  \"category\": \"especial\",\n  \"active\": true\n}"
+              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo\",\n  \"description\": \"Café especial da região do Cerrado\",\n  \"costPrice\": 35.00,\n  \"category\": \"especial\",\n  \"active\": true,\n  \"imageUrl\": null\n}"
             },
             "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
           }
@@ -469,7 +482,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo Premium\",\n  \"description\": \"Café especial da região do Cerrado - safra 2025\",\n  \"costPrice\": 45.00,\n  \"category\": \"especial\",\n  \"active\": true\n}"
+              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo Premium\",\n  \"description\": \"Café especial da região do Cerrado - safra 2025\",\n  \"costPrice\": 45.00,\n  \"category\": \"especial\",\n  \"active\": true,\n  \"imageUrl\": null\n}"
             },
             "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
@@ -498,7 +511,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerId\": \"<uuid-do-customer>\",\n  \"planId\": \"<uuid-do-plan>\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"PENDING\",\n  \"startDate\": \"2026-06-01T00:00:00Z\"\n}"
+              "raw": "{\n  \"customerId\": \"<uuid-do-customer>\",\n  \"planId\": \"<uuid-do-plan>\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"PENDING\",\n  \"startDate\": \"2026-06-01T00:00:00Z\",\n  \"nextBillingDate\": null,\n  \"nextShipmentDate\": null\n}"
             },
             "url": { "raw": "{{baseUrl}}/subscriptions", "host": ["{{baseUrl}}"], "path": ["subscriptions"] }
           }
