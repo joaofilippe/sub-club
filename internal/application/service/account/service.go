@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/joaofilippe/subclub/internal/domain/account"
@@ -31,17 +33,34 @@ func NewAccountService(repo account.Repository, schemaCreator account.SchemaCrea
 	}
 }
 
-func (s *AccountService) Create(ctx context.Context, input model.CreateAccountInput) (*model.Account, error) {
+func (s *AccountService) Create(ctx context.Context, input model.CreateAccountInput) (*model.Account, string, error) {
 	acc, err := s.createUseCase.Execute(ctx, input)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	if err := s.schemaCreator.CreateTenantSchema(ctx, acc.Slug); err != nil {
-		return nil, fmt.Errorf("provisioning tenant schema: %w", err)
+		return nil, "", fmt.Errorf("provisioning tenant schema: %w", err)
 	}
 
-	return acc, nil
+	password, err := generateTempPassword()
+	if err != nil {
+		return nil, "", fmt.Errorf("generating temp password: %w", err)
+	}
+
+	if err := s.schemaCreator.CreateTenantOwner(ctx, acc.Slug, acc.Email, acc.Name, password); err != nil {
+		return nil, "", fmt.Errorf("creating tenant owner: %w", err)
+	}
+
+	return acc, password, nil
+}
+
+func generateTempPassword() (string, error) {
+	b := make([]byte, 8)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(b), nil
 }
 
 func (s *AccountService) GetByID(ctx context.Context, id string) (*model.Account, error) {

@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/joaofilippe/subclub/ent"
 	"github.com/joaofilippe/subclub/ent/account"
 	entsql "entgo.io/ent/dialect/sql"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -119,6 +121,29 @@ func (m *TenantClientManager) CreateTenantSchema(ctx context.Context, slug strin
 	}
 
 	return nil
+}
+
+// CreateTenantOwner creates the first admin User inside the tenant schema.
+// The password is hashed with bcrypt before storing.
+func (m *TenantClientManager) CreateTenantOwner(ctx context.Context, slug, email, name, password string) error {
+	tenantClient, err := m.GetOrCreate(slug)
+	if err != nil {
+		return fmt.Errorf("get tenant client for %q: %w", slug, err)
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("hash password: %w", err)
+	}
+
+	_, err = tenantClient.User.Create().
+		SetID(uuid.New()).
+		SetName(name).
+		SetEmail(email).
+		SetPassword(string(hash)).
+		SetRole("admin").
+		Save(ctx)
+	return err
 }
 
 func (m *TenantClientManager) newTenantClient(slug string) (*ent.Client, error) {
