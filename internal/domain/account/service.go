@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, input model.CreateAccountInput) (*model.Account, error)
+	Create(ctx context.Context, input model.CreateAccountInput) (*model.Account, string, error)
 	GetByID(ctx context.Context, id string) (*model.Account, error)
 	GetBySlug(ctx context.Context, slug string) (*model.Account, error)
 	Update(ctx context.Context, input model.UpdateAccountInput) (*model.Account, error)

@@ -11,6 +11,7 @@ type AccountDTO struct {
 	SubscriptionExpiresAt *string `json:"subscriptionExpiresAt,omitempty"`
 	Active                bool    `json:"active"`
 	CreatedAt             string  `json:"createdAt"`
+	OwnerPassword         *string `json:"ownerPassword,omitempty"`
 }
 
 type AccountInputDTO struct {

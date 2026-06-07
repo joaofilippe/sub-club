@@ -87,9 +87,14 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 	// Provision tenant schema + seed tenant data
 	if err := manager.CreateTenantSchema(ctx, demoSlug); err != nil {
 		log.Printf("[Seeder] Failed to provision demo tenant schema: %v\n", err)
+		return
 	}
 
-	log.Println("[Seeder] Done! Admin: adm@adm.com / 12345678 | Tenant: admin@demo.com / 12345678")
+	if err := manager.CreateTenantOwner(ctx, demoSlug, "demo@subclub.com", "Demo", "12345678"); err != nil {
+		log.Printf("[Seeder] Failed to create demo tenant owner: %v\n", err)
+	}
+
+	log.Println("[Seeder] Done! Admin: adm@adm.com / 12345678 | Tenant: demo@subclub.com / 12345678")
 }
 
 // SeedTenant seeds a newly provisioned tenant schema with demo data.
@@ -97,24 +102,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
 	log.Printf("[Seeder] Seeding tenant schema for %q...\n", slug)
 
-	// 1. Tenant admin user
-	hash, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
-	if err != nil {
-		log.Printf("[Seeder] Error hashing password: %v\n", err)
-		return
-	}
-	_, err = client.User.Create().
-		SetID(uuid.New()).
-		SetName("Admin").
-		SetEmail("admin@" + slug + ".com").
-		SetPassword(string(hash)).
-		SetRole("admin").
-		Save(ctx)
-	if err != nil {
-		log.Printf("[Seeder] Failed to seed tenant user: %v\n", err)
-	}
-
-	// 2. Coffee products
+	// 1. Products
 	log.Println("[Seeder] Seeding coffee products (10)...")
 	coffeeProducts := faker.CoffeeProducts()
 	products := make([]*ent.Product, len(coffeeProducts))
@@ -129,7 +117,7 @@ func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
 			Save(ctx)
 	}
 
-	// 3. Plans
+	// 2. Plans
 	log.Println("[Seeder] Seeding plans (Básico, Intermediário, Avançado)...")
 	fixedPlans := faker.FixedPlans()
 	plans := make([]*ent.Plan, len(fixedPlans))
@@ -147,7 +135,7 @@ func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
 			Save(ctx)
 	}
 
-	// 4. Customers
+	// 3. Customers
 	log.Println("[Seeder] Seeding fake customers (50)...")
 	customers := make([]*ent.Customer, 50)
 	for i := 0; i < 50; i++ {
@@ -162,7 +150,7 @@ func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
 			Save(ctx)
 	}
 
-	// 5. Subscriptions (first 25 customers)
+	// 4. Subscriptions (first 25 customers)
 	log.Println("[Seeder] Seeding fake subscriptions (25)...")
 	for i, customer := range customers {
 		if customer == nil || i >= 25 {
@@ -179,5 +167,5 @@ func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
 		}
 	}
 
-	log.Printf("[Seeder] Tenant %q seeded! Tenant Admin: admin@%s.com / 12345678\n", slug, slug)
+	log.Printf("[Seeder] Tenant %q seeded with demo data.\n", slug)
 }

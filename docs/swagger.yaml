@@ -51,6 +51,8 @@ definitions:
         type: string
       name:
         type: string
+      ownerPassword:
+        type: string
       slug:
         type: string
       subscriptionExpiresAt:
@@ -197,6 +199,29 @@ definitions:
         type: array
       totalCount:
         type: integer
+    type: object
+  internal_web_module.ModuleDTO:
+    properties:
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_web_module.ModuleInputDTO:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_web_module.UpdateModuleInputDTO:
+    properties:
+      active:
+        type: boolean
+      name:
+        type: string
     type: object
   internal_web_plan.PaginatedPlanResponse:
     properties:
@@ -807,6 +832,135 @@ paths:
       summary: Update a customer
       tags:
       - customers
+  /modules:
+    get:
+      description: Returns all active modules
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_web_module.ModuleDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List modules
+      tags:
+      - modules
+    post:
+      consumes:
+      - application/json
+      description: Creates a new platform module
+      parameters:
+      - description: Module data
+        in: body
+        name: module
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_module.ModuleInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_web_module.ModuleDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Create a module
+      tags:
+      - modules
+  /modules/{id}:
+    delete:
+      description: Soft deletes a module by ID
+      parameters:
+      - description: Module ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Delete a module
+      tags:
+      - modules
+    get:
+      description: Retrieves a module by its UUID
+      parameters:
+      - description: Module ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_module.ModuleDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Get a module by ID
+      tags:
+      - modules
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing module
+      parameters:
+      - description: Module ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated module data
+        in: body
+        name: module
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_module.UpdateModuleInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_module.ModuleDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Update a module
+      tags:
+      - modules
   /plans:
     get:
       description: Get a paginated list of plans
