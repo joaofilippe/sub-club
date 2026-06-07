@@ -12,35 +12,33 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
+func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manager *TenantClientManager) {
 	if !cfg.IsDevelopment() {
 		log.Printf("[Seeder] Skipping: current environment is %q\n", cfg.AppEnv)
 		return
 	}
 
-	log.Println("[Seeder] Checking database state...")
+	log.Println("[Seeder] Checking public schema state...")
 
-	// Verify if there are any system users in the database
 	count, err := client.SystemUser.Query().Count(ctx)
 	if err != nil {
-		log.Printf("[Seeder] Error counting users: %v\n", err)
+		log.Printf("[Seeder] Error counting system users: %v\n", err)
 		return
 	}
 
 	if count > 0 {
-		log.Println("[Seeder] Database already populated. Skipping seeds.")
+		log.Println("[Seeder] Public schema already populated. Skipping seeds.")
 		return
 	}
 
-	log.Println("[Seeder] Database is empty. Starting seed process...")
+	log.Println("[Seeder] Seeding public schema...")
 
-	// 1. Seed Admin User
+	// System admin
 	hash, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("[Seeder] Error hashing password: %v\n", err)
 		return
 	}
-
 	_, err = client.SystemUser.Create().
 		SetID(uuid.New()).
 		SetName("Admin").
@@ -49,18 +47,80 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 		SetType(systemuser.TypeSystem).
 		SetRole(systemuser.RoleAdmin).
 		Save(ctx)
-
 	if err != nil {
-		log.Printf("[Seeder] Failed to seed user: %v\n", err)
+		log.Printf("[Seeder] Failed to seed system user: %v\n", err)
 	}
 
-	// 2. Seed Coffee Products
+	// Demo AccountPlan
+	plan, err := client.AccountPlan.Create().
+		SetID(uuid.New()).
+		SetName("Demo").
+		SetDescription("Plano demonstração para avaliação da plataforma.").
+		SetPrice(0).
+		SetMaxCustomers(100).
+		SetMaxPlans(5).
+		SetMaxProducts(20).
+		SetActive(true).
+		Save(ctx)
+	if err != nil {
+		log.Printf("[Seeder] Failed to seed account plan: %v\n", err)
+		return
+	}
+
+	// Demo Account
+	const demoSlug = "demo"
+	_, err = client.Account.Create().
+		SetID(uuid.New()).
+		SetName("Demo").
+		SetEmail("demo@subclub.com").
+		SetDocument("00.000.000/0001-00").
+		SetSlug(demoSlug).
+		SetAccountPlanID(plan.ID).
+		SetSubscriptionStatus("trial").
+		SetActive(true).
+		Save(ctx)
+	if err != nil {
+		log.Printf("[Seeder] Failed to seed demo account: %v\n", err)
+		return
+	}
+
+	// Provision tenant schema + seed tenant data
+	if err := manager.CreateTenantSchema(ctx, demoSlug); err != nil {
+		log.Printf("[Seeder] Failed to provision demo tenant schema: %v\n", err)
+	}
+
+	log.Println("[Seeder] Done! Admin: adm@adm.com / 12345678 | Tenant: admin@demo.com / 12345678")
+}
+
+// SeedTenant seeds a newly provisioned tenant schema with demo data.
+// It is called automatically on development environments when a new account is created.
+func SeedTenant(ctx context.Context, client *ent.Client, slug string) {
+	log.Printf("[Seeder] Seeding tenant schema for %q...\n", slug)
+
+	// 1. Tenant admin user
+	hash, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("[Seeder] Error hashing password: %v\n", err)
+		return
+	}
+	_, err = client.User.Create().
+		SetID(uuid.New()).
+		SetName("Admin").
+		SetEmail("admin@" + slug + ".com").
+		SetPassword(string(hash)).
+		SetRole("admin").
+		Save(ctx)
+	if err != nil {
+		log.Printf("[Seeder] Failed to seed tenant user: %v\n", err)
+	}
+
+	// 2. Coffee products
 	log.Println("[Seeder] Seeding coffee products (10)...")
 	coffeeProducts := faker.CoffeeProducts()
 	products := make([]*ent.Product, len(coffeeProducts))
 	for i, f := range coffeeProducts {
 		products[i], _ = client.Product.Create().
-			SetID(uuid.MustParse(f.ID)).
+			SetID(uuid.New()).
 			SetCode(f.Code).
 			SetName(f.Name).
 			SetDescription(f.Description).
@@ -69,13 +129,13 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 			Save(ctx)
 	}
 
-	// 3. Seed Fixed Plans (Básico, Intermediário, Avançado)
+	// 3. Plans
 	log.Println("[Seeder] Seeding plans (Básico, Intermediário, Avançado)...")
 	fixedPlans := faker.FixedPlans()
 	plans := make([]*ent.Plan, len(fixedPlans))
 	for i, f := range fixedPlans {
 		plans[i], _ = client.Plan.Create().
-			SetID(uuid.MustParse(f.ID)).
+			SetID(uuid.New()).
 			SetCode(f.Code).
 			SetName(f.Name).
 			SetDescription(f.Description).
@@ -87,13 +147,13 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 			Save(ctx)
 	}
 
-	// 4. Seed Fake Customers (Clients)
+	// 4. Customers
 	log.Println("[Seeder] Seeding fake customers (50)...")
 	customers := make([]*ent.Customer, 50)
 	for i := 0; i < 50; i++ {
 		f := faker.FakeCustomer()
 		customers[i], _ = client.Customer.Create().
-			SetID(uuid.MustParse(f.ID)).
+			SetID(uuid.New()).
 			SetName(f.Name).
 			SetEmail(f.Email).
 			SetPhone(f.Phone).
@@ -102,25 +162,22 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config) {
 			Save(ctx)
 	}
 
-	// 5. Seed Subscriptions for some customers
+	// 5. Subscriptions (first 25 customers)
 	log.Println("[Seeder] Seeding fake subscriptions (25)...")
 	for i, customer := range customers {
-		if customer == nil {
-			continue
+		if customer == nil || i >= 25 {
+			break
 		}
-		// Subscribe first 25 customers to random plans
-		if i < 25 {
-			plan := plans[i%len(plans)]
-			if plan != nil {
-				_, _ = client.Subscription.Create().
-					SetID(uuid.New()).
-					SetCustomerID(customer.ID).
-					SetPlanID(plan.ID).
-					SetStatus("ACTIVE").
-					Save(ctx)
-			}
+		plan := plans[i%len(plans)]
+		if plan != nil {
+			_, _ = client.Subscription.Create().
+				SetID(uuid.New()).
+				SetCustomerID(customer.ID).
+				SetPlanID(plan.ID).
+				SetStatus("ACTIVE").
+				Save(ctx)
 		}
 	}
 
-	log.Println("[Seeder] Mocks successfully inserted! Root Admin: adm@adm.com / 12345678")
+	log.Printf("[Seeder] Tenant %q seeded! Tenant Admin: admin@%s.com / 12345678\n", slug, slug)
 }

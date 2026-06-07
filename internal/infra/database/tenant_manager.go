@@ -24,15 +24,17 @@ var (
 // correct tenant schema without needing per-request transactions.
 type TenantClientManager struct {
 	baseURL      string
+	isDev        bool
 	mu           sync.RWMutex
 	clients      map[string]*ent.Client
 	globalDB     *sql.DB
 	globalClient *ent.Client
 }
 
-func NewTenantClientManager(baseURL string, globalDB *sql.DB, globalClient *ent.Client) *TenantClientManager {
+func NewTenantClientManager(baseURL string, globalDB *sql.DB, globalClient *ent.Client, isDev bool) *TenantClientManager {
 	return &TenantClientManager{
 		baseURL:      baseURL,
+		isDev:        isDev,
 		globalDB:     globalDB,
 		globalClient: globalClient,
 		clients:      make(map[string]*ent.Client),
@@ -104,12 +106,16 @@ func (m *TenantClientManager) CreateTenantSchema(ctx context.Context, slug strin
 		return fmt.Errorf("get tenant client for %q: %w", slug, err)
 	}
 
-	// 3. Run Ent auto-migration.
-	// With search_path = account_{slug}, public:
-	//   - global tables (accounts, account_plans, system_users, modules) already exist in public → skipped.
-	//   - tenant tables (users, customers, plans, products, subscriptions) are absent → created in account_{slug}.
-	if err := tenantClient.Schema.Create(ctx); err != nil {
+	// 3. Run migration for tenant tables only.
+	// The tenant client's search_path is "account_{slug}, public", so tables are
+	// created inside account_{slug}. Public tables are intentionally excluded.
+	if err := MigrateTenant(ctx, tenantClient); err != nil {
 		return fmt.Errorf("migrate tenant schema %q: %w", schemaName, err)
+	}
+
+	// 4. Seed demo data on development environments.
+	if m.isDev {
+		SeedTenant(ctx, tenantClient, slug)
 	}
 
 	return nil

@@ -55,13 +55,13 @@ func (a *Application) Init(ctx context.Context, cfg *config.Config) error {
 
 func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg *config.Config) error {
 	a.entClient = client
-	if err := a.entClient.Schema.Create(ctx); err != nil {
-		log.Printf("Failed creating schema resources: %v", err)
+	if err := database.MigratePublic(ctx, a.entClient); err != nil {
+		log.Printf("Failed migrating public schema: %v", err)
 	}
 
-	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB, a.entClient)
+	a.TenantManager = database.NewTenantClientManager(cfg.DatabaseURL, a.dbConnection.GetDB().DB, a.entClient, cfg.IsDevelopment())
 
-	database.SeedAll(ctx, a.entClient, cfg)
+	database.SeedAll(ctx, a.entClient, cfg, a.TenantManager)
 
 	userRepo := userrepo.NewUserEntRepository(a.entClient)
 	accountRepo := accountrepo.NewAccountEntRepository(a.entClient)

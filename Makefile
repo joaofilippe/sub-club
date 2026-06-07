@@ -27,7 +27,8 @@ run:
 	APP_ENV=development $(GOCMD) run $(MAIN_PATH)/*.go server
 
 dev:
-	docker compose up
+	docker compose up -d db pgadmin
+	docker compose up app
 
 lint:
 	golangci-lint run
