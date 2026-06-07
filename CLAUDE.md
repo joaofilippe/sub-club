@@ -14,6 +14,7 @@ Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, s
 2. **Commitar** ao fim de cada tarefa concluída, com mensagem em inglês seguindo Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`).
 3. **Não fazer push nem abrir PR** sem o usuário pedir explicitamente.
 4. **Após cada commit**, criar `docs/changes/<branch-name>.md` com descrição no estilo PR para o agente de front-end, cobrindo: o que mudou e por quê, endpoints novos ou alterados (método, rota, payload, response), contratos quebrados ou campos renomeados, e qualquer detalhe que o front precise saber.
+5. **Verificar `/docs`**: após qualquer mudança de código, avaliar se algum documento em `docs/` precisa ser atualizado para refletir a nova realidade — arquitetura, contratos, convenções, seeder, etc. Se sim, atualizar e incluir no mesmo commit ou num commit imediatamente seguinte.
 
 ---
 
