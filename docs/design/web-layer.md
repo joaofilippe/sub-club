@@ -23,11 +23,15 @@ A entrega HTTP da aplicação é dividida entre dois pacotes com responsabilidad
 
 ```go
 type Handlers struct {
-    Client       *client.ClientHandler
-    Plan         *plan.PlanHandler
-    Product      *product.ProductHandler
+    Account     *account.AccountHandler
+    AccountPlan *accountplan.AccountPlanHandler
+    Auth        *auth.AuthHandler
+    Customer    *customer.CustomerHandler
+    Module      *module.ModuleHandler
+    Plan        *plan.PlanHandler
+    Product     *product.ProductHandler
     Subscription *subscription.SubscriptionHandler
-    User         *userhandler.UserHandler
+    User        *user.UserHandler
 }
 
 func NewHandlers(app *application.Application) *Handlers
@@ -41,20 +45,32 @@ Cada subpacote de `internal/web` cuida de um domínio:
 
 ```
 internal/web/
-    handlers.go          → agrega todos os handlers
-    client/
-        handler.go       → CRUD de clientes
-        dto.go           → structs de entrada e saída JSON
+    handlers.go              → agrega todos os handlers
+    account/
+        handler.go           → CRUD de accounts (rotas admin)
+        dto.go
+    accountplan/
+        handler.go           → CRUD de account plans (rotas admin)
+        dto.go
+    auth/
+        handler.go           → login / geração de JWT
+        dto.go
+    customer/
+        handler.go           → CRUD de clientes do tenant
+        dto.go
+    module/
+        handler.go
+        dto.go
     plan/
-        handler.go
+        handler.go           → CRUD de planos do tenant
     product/
-        handler.go
+        handler.go           → CRUD de produtos do tenant
     subscription/
-        handler.go
+        handler.go           → CRUD de assinaturas do tenant
     user/
-        handler.go
+        handler.go           → CRUD de usuários do tenant
     common/
-        response.go      → helpers de resposta padronizada
+        response.go          → helpers de resposta padronizada
 ```
 
 ---
