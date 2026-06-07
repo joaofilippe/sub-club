@@ -40,7 +40,7 @@ Define a orquestração dos serviços:
 O ambiente está configurado para habilitar a população automática de dados fakes (Seeder):
 
 - **`APP_ENV=development`**: Ativa a lógica de seeding.
-- **Seeding Automático**: Se o banco estiver vazio, o sistema cria 50 clientes, 10 produtos, 4 planos e um administrador (`adm@adm.com` / `12345678`).
+- **Seeding Automático**: Se o banco estiver vazio, o sistema cria um administrador de sistema (`adm@adm.com` / `12345678`), uma conta demo com 10 produtos, 3 planos, 50 clientes e 25 assinaturas. Veja [seeding-and-fake-data.md](seeding-and-fake-data.md) para detalhes.
 
 ### 3. Configuração do Air (.air.toml)
 
@@ -60,8 +60,9 @@ Adicionada configuração "Attach to Docker" para debug remoto.
 
 1.**Iniciar o ambiente**:
     ```bash
-    docker-compose up --build
+    make dev
     ```
+    > Equivale a `docker-compose up --build`. Sobe a aplicação com hot-reload via `air` e debug remoto via `dlv`.
 2. **Acessar a API**:
     - URL: `http://localhost:8080`
     - Health Check: `http://localhost:8080/health`
