@@ -42,7 +42,8 @@ domain → application → web → infra
 ```
 
 Para detalhes completos de cada camada e pacotes, consulte:
-- [Arquitetura & ORM](docs/design/architecture_orm.md)
+- [Arquitetura](docs/design/architecture.md)
+- [ORM & Convenções de Banco](docs/design/orm.md)
 - [Camada Web](docs/design/web-layer.md)
 - [Multi-tenant](docs/design/multi-tenant.md)
 - [Auth / Roles](docs/design/auth_levels.md)
