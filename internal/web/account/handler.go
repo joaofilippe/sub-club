@@ -36,7 +36,7 @@ func (h *AccountHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
 
-	result, err := h.service.Create(c.Request().Context(), model.CreateAccountInput{
+	result, ownerPassword, err := h.service.Create(c.Request().Context(), model.CreateAccountInput{
 		Name:          input.Name,
 		Email:         input.Email,
 		Document:      input.Document,
@@ -46,7 +46,9 @@ func (h *AccountHandler) Create(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(result))
+	dto := mapDomainToDTO(result)
+	dto.OwnerPassword = &ownerPassword
+	return c.JSON(http.StatusCreated, dto)
 }
 
 // Get godoc
