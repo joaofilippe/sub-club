@@ -62,7 +62,7 @@ Adicionada configuração "Attach to Docker" para debug remoto.
     ```bash
     make dev
     ```
-    > Equivale a `docker-compose up --build`. Sobe a aplicação com hot-reload via `air` e debug remoto via `dlv`.
+    > Sobe `db` e `pgadmin` em background e depois sobe o `app` em foreground (com hot-reload via `air` e debug remoto via `dlv`).
 2. **Acessar a API**:
     - URL: `http://localhost:8080`
     - Health Check: `http://localhost:8080/health`
