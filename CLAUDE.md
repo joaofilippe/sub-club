@@ -13,11 +13,8 @@ Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, s
    ```
 2. **Commitar** ao fim de cada tarefa concluída, com mensagem em inglês seguindo Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`).
 3. **Não fazer push nem abrir PR** sem o usuário pedir explicitamente.
-4. **Após cada commit**, criar um arquivo em `docs/changes/<branch-name>.md` com uma descrição no estilo PR para o agente de front-end, cobrindo:
-   - O que mudou e por quê
-   - Endpoints novos ou alterados (método, rota, payload, response)
-   - Contratos quebrados ou campos renomeados
-   - Qualquer detalhe que o front precise saber para se adaptar
+4. **Após cada commit**, criar `docs/changes/<branch-name>.md` com descrição no estilo PR para o agente de front-end, cobrindo: o que mudou e por quê, endpoints novos ou alterados (método, rota, payload, response), contratos quebrados ou campos renomeados, e qualquer detalhe que o front precise saber.
+5. **Verificar `/docs`**: após qualquer mudança de código, avaliar se algum documento em `docs/` precisa ser atualizado para refletir a nova realidade — arquitetura, contratos, convenções, seeder, etc. Se sim, atualizar e incluir no mesmo commit ou num commit imediatamente seguinte.
 
 ---
 
@@ -34,111 +31,49 @@ make tidy       # go mod tidy
 go generate ./ent  # regenerate Ent ORM code after schema changes
 ```
 
+---
+
 ## Architecture
 
-Four layers — dependencies always point inward, outer layers never imported by inner ones:
+Quatro camadas — dependências sempre apontam para dentro:
 
 ```
 domain → application → web → infra
 ```
 
-| Layer | Package | Responsibility |
-|---|---|---|
-| Domain | `internal/domain` | Models, repository/service interfaces, use cases (`usecase/`). No SQL, no JSON, no frameworks. |
-| Application | `internal/application` | `service/` (use-case orchestration) and `repository/` (Ent ORM implementations). |
-| Web | `internal/web` | HTTP handlers, DTOs, `Handlers` struct that wires services to handlers. |
-| Infrastructure | `internal/infra` | `server/` (Echo + middleware + routes), `database/` (connection, migrations, seeder, TenantClientManager), `middleware/`, `authctx/`, `tenantctx/`. |
+Para detalhes completos de cada camada e pacotes, consulte:
+- [Arquitetura & ORM](docs/design/architecture_orm.md)
+- [Camada Web](docs/design/web-layer.md)
+- [Multi-tenant](docs/design/multi-tenant.md)
+- [Auth / Roles](docs/design/auth_levels.md)
+- [Seeder & Fake Data](docs/development/seeding-and-fake-data.md)
+- [Docker / Air / Debug](docs/development/docker-setup.md)
 
-### Domain structure per entity
-
-Each business entity under `internal/domain/<entity>/` follows this layout:
-
-```
-model/          → structs, typed inputs, domain errors
-repository.go   → persistence interface
-service.go      → service interface
-usecase/        → use-case implementations (create, list, get_by_id, update, delete)
-```
-
-### HTTP wiring
-
-`Server` owns the full HTTP setup: it holds a `logger *slog.Logger` and an internal `router` struct as fields.
-- `server.go` — Echo init, middleware, health route, calls `router.registerRoutes()`
-- `router.go` — unexported `router` struct, registers all business routes under two groups (see Multi-tenant below)
-- `middleware/logger.go` — receives `*slog.Logger`, does not use `slog.Default()`
-
-Initialization in `cmd/subclub/application.go`:
-```go
-h   := web.NewHandlers(app)
-srv := server.NewServer(h)
-srv.Start(cfg.Port)
-```
-
-## Multi-tenant Architecture
-
-SubClub is a B2B platform: each tenant is an `Account`. Data is isolated per tenant using **PostgreSQL schema-per-tenant** (`account_{slug}`).
-
-| Schema | Tables |
-|--------|--------|
-| `public` | `system_users`, `accounts`, `account_plans` |
-| `account_{slug}` | `users`, `customers`, `plans`, `products`, `subscriptions` |
-
-### Users: SystemUser vs User
-
-| Type | Ent entity | Schema | Purpose |
-|---|---|---|---|
-| `SystemUser` | `ent.SystemUser` | `public` | SubClub platform admins |
-| `User` | `ent.User` | `account_{slug}` | Tenant-level admins/operators |
-
-### Route groups and middleware
-
-| Group | Middleware | Routes |
-|-------|-----------|--------|
-| Admin | `RequireAdminMiddleware` — validates JWT, requires role `admin` | `/accounts`, `/account-plans`, `/users` |
-| Tenant | `AuthMiddleware` — validates JWT, resolves tenant schema, injects context | `/customers`, `/plans`, `/products`, `/subscriptions`, `/modules` |
-
-### Request context
-
-Handlers in the tenant group read two injected values from the Echo context:
-
-```go
-client := tenantctx.TenantClientFromContext(ctx)   // *ent.Client scoped to tenant schema
-claims, ok := authctx.ClaimsFromContext(ctx)        // UserID, AccountSlug, Role
-```
-
-### TenantClientManager
-
-Located in `internal/infra/database/tenant_manager.go`. Caches one `*ent.Client` per slug (backed by a `*sql.DB` with `search_path = "account_{slug}", public`). On first request per tenant it opens the connection; subsequent requests hit the cache.
-
-### AccountPlan
-
-`AccountPlan` is SubClub's own subscription plan for its tenants — not to be confused with the `Plan` entities tenants sell to their customers. It defines `max_customers`, `max_plans`, `max_products`, and `price`.
+---
 
 ## Key Conventions
 
 ### Ent ORM
-- Never write raw SQL. All queries go through Ent.
-- Schemas are defined in `ent/schema/`. After any change, run `go generate ./ent`.
-- The `*sql.DB` connection in `internal/infra/database` exists solely for TCP connection pool management and to seed the Ent driver.
+- Nunca escrever SQL raw. Todas as queries passam pelo Ent.
+- Schemas em `ent/schema/`. Após qualquer mudança: `go generate ./ent`.
+- O `*sql.DB` em `internal/infra/database` existe apenas para gerenciar o pool TCP e alimentar o driver Ent.
+
+### Multi-tenant
+- Schema público (`public`): `system_users`, `accounts`, `account_plans`.
+- Schema por tenant (`account_{slug}`): `users`, `customers`, `plans`, `products`, `subscriptions`.
+- Handlers de rotas tenant obtêm o `*ent.Client` isolado via `tenantctx.TenantClientFromContext(ctx)`.
+- Nunca usar o client global em handlers de rotas tenant.
 
 ### Soft Delete
-Entities that need logical deletion use a nullable `deleted_at` field:
 ```go
 field.Time("deleted_at").Optional().Nillable()
+// Sempre filtrar com:
+.Where(<entity>.DeletedAtIsNil())
 ```
-Queries must always filter with `.Where(<entity>.DeletedAtIsNil())`.
 
-### Swagger Annotations
-All handler methods must have Swag annotations (`// @Summary`, `// @Router`, etc.).
-Regenerate docs with `make swagger` after any change.
+### Swagger
+Todos os handlers precisam de anotações Swag (`// @Summary`, `// @Router`, etc.). Regenerar com `make swagger`.
 
 ### Tests
-- Use `faker` helpers (`faker.FakeUser()`, `faker.FakeCustomer()`, etc.) instead of hardcoded strings.
-- Do not mock the database in integration tests — use a real connection.
-
-### Fake Data Seeder
-Runs automatically on startup when `APP_ENV=development` and the public schema is empty. Seeds two phases:
-
-**Public schema** (`SeedAll`): 1 SystemUser admin (`adm@adm.com` / `12345678`), 1 Demo AccountPlan, 1 Demo Account (slug `demo`).
-
-**Tenant schema** (`SeedTenant`, triggered by account creation): 1 tenant User (`admin@demo.com` / `12345678`), 10 fixed coffee products, 3 fixed plans (Básico / Intermediário / Avançado), 50 fake customers, 25 active subscriptions.
+- Usar helpers `faker.FakeUser()`, `faker.FakeCustomer()`, etc. — nunca strings hardcoded.
+- Testes de integração usam conexão real com o banco — sem mocks de banco.
