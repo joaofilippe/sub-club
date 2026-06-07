@@ -13,6 +13,11 @@ Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, s
    ```
 2. **Commitar** ao fim de cada tarefa concluída, com mensagem em inglês seguindo Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`).
 3. **Não fazer push nem abrir PR** sem o usuário pedir explicitamente.
+4. **Após cada commit**, escrever uma descrição no estilo PR para o agente de front-end, cobrindo:
+   - O que mudou e por quê
+   - Endpoints novos ou alterados (método, rota, payload, response)
+   - Contratos quebrados ou campos renomeados
+   - Qualquer detalhe que o front precise saber para se adaptar
 
 ---
 
