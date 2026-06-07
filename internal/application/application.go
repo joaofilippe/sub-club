@@ -12,6 +12,7 @@ import (
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
+	tenantuserrepo "github.com/joaofilippe/subclub/internal/application/repository/tenantuser"
 	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
 	accountsvc "github.com/joaofilippe/subclub/internal/application/service/account"
 	accountplansvc "github.com/joaofilippe/subclub/internal/application/service/accountplan"
@@ -21,6 +22,7 @@ import (
 	plansvc "github.com/joaofilippe/subclub/internal/application/service/plan"
 	productsvc "github.com/joaofilippe/subclub/internal/application/service/product"
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
+	tenantusersvc "github.com/joaofilippe/subclub/internal/application/service/tenantuser"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
@@ -37,6 +39,7 @@ type Application struct {
 	AccountPlanService  *accountplansvc.AccountPlanService
 	ModuleService       *modulesvc.ModuleService
 	UserService         *usersvc.UserService
+	TenantUserService   *tenantusersvc.TenantUserService
 	CustomerService     *customersvc.CustomerService
 	PlanService         *plansvc.PlanService
 	ProductService      *productsvc.ProductService
@@ -75,6 +78,7 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	a.ProductService = productsvc.NewProductService(productrepo.NewProductEntRepository(a.entClient))
 	a.SubscriptionService = subsvc.NewSubscriptionService(subrepo.NewSubscriptionEntRepository(a.entClient))
 	a.UserService = usersvc.NewUserService(userRepo)
+	a.TenantUserService = tenantusersvc.NewTenantUserService(tenantuserrepo.NewTenantUserEntRepository(a.entClient))
 
 	return nil
 }

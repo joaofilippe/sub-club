@@ -378,6 +378,39 @@ definitions:
       status:
         type: string
     type: object
+  internal_web_tenantuser.TenantUserDTO:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  internal_web_tenantuser.TenantUserInputDTO:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  internal_web_tenantuser.UpdateTenantUserInputDTO:
+    properties:
+      name:
+        type: string
+      role:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -1404,6 +1437,29 @@ paths:
       tags:
       - subscriptions
   /users:
+    get:
+      description: Returns all active users for the current tenant. Requires tenant
+        admin role.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List tenant users
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -1436,6 +1492,102 @@ paths:
               type: string
             type: object
       summary: Create a user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Soft deletes a tenant user by ID. Requires tenant admin role.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Delete a tenant user
+      tags:
+      - users
+    get:
+      description: Returns a tenant user by ID. Requires tenant admin role.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Get a tenant user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Updates name and/or role of a tenant user. Requires tenant admin
+        role.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_tenantuser.UpdateTenantUserInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Update a tenant user
       tags:
       - users
 swagger: "2.0"
