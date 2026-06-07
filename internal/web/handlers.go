@@ -10,6 +10,7 @@ import (
 	"github.com/joaofilippe/subclub/internal/web/plan"
 	"github.com/joaofilippe/subclub/internal/web/product"
 	"github.com/joaofilippe/subclub/internal/web/subscription"
+	tenantuserweb "github.com/joaofilippe/subclub/internal/web/tenantuser"
 	userhandler "github.com/joaofilippe/subclub/internal/web/user"
 )
 
@@ -23,6 +24,7 @@ type Handlers struct {
 	Product      *product.ProductHandler
 	Subscription *subscription.SubscriptionHandler
 	User         *userhandler.UserHandler
+	TenantUser   *tenantuserweb.TenantUserHandler
 }
 
 func NewHandlers(app *application.Application) *Handlers {
@@ -36,5 +38,6 @@ func NewHandlers(app *application.Application) *Handlers {
 		Product:      product.NewProductHandler(app.ProductService),
 		Subscription: subscription.NewSubscriptionHandler(app.SubscriptionService),
 		User:         userhandler.NewUserHandler(app.UserService),
+		TenantUser:   tenantuserweb.NewTenantUserHandler(app.TenantUserService),
 	}
 }

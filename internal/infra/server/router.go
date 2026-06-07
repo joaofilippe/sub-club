@@ -47,10 +47,18 @@ func (r *router) registerRoutes() {
 	accountGroup.PUT("/:id", r.handlers.Account.Update)
 	accountGroup.DELETE("/:id", r.handlers.Account.Delete)
 
-	userGroup2 := r.echo.Group("/users", adminMW)
-	userGroup2.POST("", r.handlers.User.Create)
+	systemUserGroup := r.echo.Group("/system-users", adminMW)
+	systemUserGroup.POST("", r.handlers.User.Create)
 
 	authMW := middleware.AuthMiddleware(r.tenantManager, r.jwtSecret)
+	tenantAdminMW := middleware.RequireTenantAdminMiddleware()
+
+	userGroup := r.echo.Group("/users", authMW, tenantAdminMW)
+	userGroup.POST("", r.handlers.TenantUser.Create)
+	userGroup.GET("", r.handlers.TenantUser.List)
+	userGroup.GET("/:id", r.handlers.TenantUser.Get)
+	userGroup.PUT("/:id", r.handlers.TenantUser.Update)
+	userGroup.DELETE("/:id", r.handlers.TenantUser.Delete)
 
 	customerGroup := r.echo.Group("/customers", authMW)
 	customerGroup.POST("", r.handlers.Customer.Create)
