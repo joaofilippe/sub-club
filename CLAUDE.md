@@ -1,5 +1,21 @@
 # SubClub — Claude Code Guide
 
+## Claude Behavior
+
+Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, sugira melhorias, mas implemente apenas o que for pedido — sem abstrações prematuras nem escopo extra.
+
+### Workflow obrigatório para qualquer mudança de código
+
+1. **Criar branch** antes de qualquer alteração:
+   ```bash
+   git checkout -b <tipo>/<descricao-curta>
+   # ex: feat/customer-filter, fix/auth-middleware, refactor/tenant-ctx
+   ```
+2. **Commitar** ao fim de cada tarefa concluída, com mensagem em inglês seguindo Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`).
+3. **Não fazer push nem abrir PR** sem o usuário pedir explicitamente.
+
+---
+
 ## Common Commands
 
 ```bash
