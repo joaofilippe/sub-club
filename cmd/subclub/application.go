@@ -43,7 +43,7 @@ func startApplication() {
 	}
 
 	h := web.NewHandlers(app)
-	srv := server.NewServer(h, app.TenantManager, []byte(cfg.JWTSecret))
+	srv := server.NewServer(h, app.TenantManager, []byte(cfg.JWTSecret), cfg.IsDevelopment())
 
 	log.Fatal(srv.Start(cfg.Port))
 }
