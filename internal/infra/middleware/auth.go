@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 
-	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
+	authusecase "github.com/joaofilippe/subclub/internal/application/usecase/auth"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
@@ -26,7 +26,7 @@ func AuthMiddleware(manager *database.TenantClientManager, jwtSecret []byte) ech
 			}
 			raw := strings.TrimPrefix(header, "Bearer ")
 
-			claims := &authsvc.Claims{}
+			claims := &authusecase.Claims{}
 			token, err := jwt.ParseWithClaims(raw, claims, func(t *jwt.Token) (any, error) {
 				if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, jwt.ErrSignatureInvalid

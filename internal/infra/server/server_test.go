@@ -18,7 +18,7 @@ import (
 
 func stubApp() *application.Application {
 	return &application.Application{
-		AuthService:         authsvc.NewAuthService(nil, nil, nil, nil, nil),
+		AuthService:         authsvc.NewAuthService(nil, nil, nil),
 		AccountService:      accountsvc.NewAccountService(nil, nil),
 		AccountPlanService:  accountplansvc.NewAccountPlanService(nil),
 		UserService:         usersvc.NewUserService(nil),

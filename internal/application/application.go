@@ -25,6 +25,7 @@ import (
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	tenantusersvc "github.com/joaofilippe/subclub/internal/application/service/tenantuser"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
+	authusecase "github.com/joaofilippe/subclub/internal/application/usecase/auth"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 
@@ -71,7 +72,12 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	accountRepo := accountrepo.NewAccountEntRepository(a.entClient)
 	accountDomainRepo := accountdomainrepo.NewAccountDomainEntRepository(a.entClient)
 
-	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, accountDomainRepo, a.TenantManager, []byte(cfg.JWTSecret))
+	jwtSecret := []byte(cfg.JWTSecret)
+	a.AuthService = authsvc.NewAuthService(
+		authusecase.NewLoginUseCase(userRepo, accountRepo, jwtSecret),
+		authusecase.NewTenantLoginUseCase(a.TenantManager, jwtSecret),
+		authusecase.NewLookupUseCase(accountRepo, accountDomainRepo, a.TenantManager),
+	)
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
 	a.ModuleService = modulesvc.NewModuleService(modulerepo.NewModuleEntRepository(a.entClient))
