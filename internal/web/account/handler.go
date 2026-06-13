@@ -29,7 +29,7 @@ func NewAccountHandler(service domain.Service) *AccountHandler {
 // @Success      201      {object}  AccountDTO
 // @Failure      400      {object}  common.Response
 // @Failure      500      {object}  common.Response
-// @Router       /accounts [post]
+// @Router       /api/v1/accounts [post]
 func (h *AccountHandler) Create(c echo.Context) error {
 	var input AccountInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -59,7 +59,7 @@ func (h *AccountHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Account ID"
 // @Success      200  {object}  AccountDTO
 // @Failure      404  {object}  common.Response
-// @Router       /accounts/{id} [get]
+// @Router       /api/v1/accounts/{id} [get]
 func (h *AccountHandler) Get(c echo.Context) error {
 	result, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -80,7 +80,7 @@ func (h *AccountHandler) Get(c echo.Context) error {
 // @Failure      400      {object}  common.Response
 // @Failure      404      {object}  common.Response
 // @Failure      500      {object}  common.Response
-// @Router       /accounts/{id} [put]
+// @Router       /api/v1/accounts/{id} [put]
 func (h *AccountHandler) Update(c echo.Context) error {
 	var input UpdateAccountInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -120,7 +120,7 @@ func (h *AccountHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Account ID"
 // @Success      200  {string}  string  "OK"
 // @Failure      500  {object}  common.Response
-// @Router       /accounts/{id} [delete]
+// @Router       /api/v1/accounts/{id} [delete]
 func (h *AccountHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
@@ -135,7 +135,7 @@ func (h *AccountHandler) Delete(c echo.Context) error {
 // @Produce      json
 // @Success      200  {array}   AccountDTO
 // @Failure      500  {object}  common.Response
-// @Router       /accounts [get]
+// @Router       /api/v1/accounts [get]
 func (h *AccountHandler) List(c echo.Context) error {
 	results, err := h.service.List(c.Request().Context())
 	if err != nil {

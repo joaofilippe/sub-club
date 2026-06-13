@@ -28,7 +28,7 @@ func NewModuleHandler(service domain.Service) *ModuleHandler {
 // @Success      201     {object}  ModuleDTO
 // @Failure      400     {object}  common.Response
 // @Failure      500     {object}  common.Response
-// @Router       /modules [post]
+// @Router       /api/v1/modules [post]
 func (h *ModuleHandler) Create(c echo.Context) error {
 	var input ModuleInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -51,7 +51,7 @@ func (h *ModuleHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Module ID"
 // @Success      200  {object}  ModuleDTO
 // @Failure      404  {object}  common.Response
-// @Router       /modules/{id} [get]
+// @Router       /api/v1/modules/{id} [get]
 func (h *ModuleHandler) Get(c echo.Context) error {
 	m, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -72,7 +72,7 @@ func (h *ModuleHandler) Get(c echo.Context) error {
 // @Failure      400     {object}  common.Response
 // @Failure      404     {object}  common.Response
 // @Failure      500     {object}  common.Response
-// @Router       /modules/{id} [put]
+// @Router       /api/v1/modules/{id} [put]
 func (h *ModuleHandler) Update(c echo.Context) error {
 	var input UpdateModuleInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -99,7 +99,7 @@ func (h *ModuleHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Module ID"
 // @Success      204  "No Content"
 // @Failure      500  {object}  common.Response
-// @Router       /modules/{id} [delete]
+// @Router       /api/v1/modules/{id} [delete]
 func (h *ModuleHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
@@ -114,7 +114,7 @@ func (h *ModuleHandler) Delete(c echo.Context) error {
 // @Produce      json
 // @Success      200  {array}   ModuleDTO
 // @Failure      500  {object}  common.Response
-// @Router       /modules [get]
+// @Router       /api/v1/modules [get]
 func (h *ModuleHandler) List(c echo.Context) error {
 	modules, err := h.service.List(c.Request().Context())
 	if err != nil {

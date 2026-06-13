@@ -30,7 +30,7 @@ func NewTenantUserHandler(service domain.Service) *TenantUserHandler {
 // @Failure      400   {object}  common.Response
 // @Failure      403   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /users [post]
+// @Router       /api/v1/users [post]
 func (h *TenantUserHandler) Create(c echo.Context) error {
 	var input TenantUserInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -61,7 +61,7 @@ func (h *TenantUserHandler) Create(c echo.Context) error {
 // @Success      200 {object}  TenantUserDTO
 // @Failure      403 {object}  common.Response
 // @Failure      404 {object}  common.Response
-// @Router       /users/{id} [get]
+// @Router       /api/v1/users/{id} [get]
 func (h *TenantUserHandler) Get(c echo.Context) error {
 	result, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -78,7 +78,7 @@ func (h *TenantUserHandler) Get(c echo.Context) error {
 // @Success      200 {array}   TenantUserDTO
 // @Failure      403 {object}  common.Response
 // @Failure      500 {object}  common.Response
-// @Router       /users [get]
+// @Router       /api/v1/users [get]
 func (h *TenantUserHandler) List(c echo.Context) error {
 	results, err := h.service.List(c.Request().Context())
 	if err != nil {
@@ -104,7 +104,7 @@ func (h *TenantUserHandler) List(c echo.Context) error {
 // @Failure      403   {object}  common.Response
 // @Failure      404   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /users/{id} [put]
+// @Router       /api/v1/users/{id} [put]
 func (h *TenantUserHandler) Update(c echo.Context) error {
 	var input UpdateTenantUserInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -134,7 +134,7 @@ func (h *TenantUserHandler) Update(c echo.Context) error {
 // @Success      200 {string}  string  "OK"
 // @Failure      403 {object}  common.Response
 // @Failure      500 {object}  common.Response
-// @Router       /users/{id} [delete]
+// @Router       /api/v1/users/{id} [delete]
 func (h *TenantUserHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})

@@ -22,70 +22,71 @@ func newRouter(e *echo.Echo, handlers *web.Handlers, tenantManager *database.Ten
 
 func (r *router) registerRoutes() {
 	r.echo.GET("/swagger/*", echoSwagger.WrapHandler)
-	r.echo.POST("/auth/login", r.handlers.Auth.Login)
+
+	v1 := r.echo.Group("/api/v1")
+	v1.POST("/auth/login", r.handlers.Auth.Login)
 
 	adminMW := middleware.RequireAdminMiddleware(r.jwtSecret)
 
-	accountPlanGroup := r.echo.Group("/account-plans", adminMW)
+	accountPlanGroup := v1.Group("/account-plans", adminMW)
 	accountPlanGroup.POST("", r.handlers.AccountPlan.Create)
 	accountPlanGroup.GET("", r.handlers.AccountPlan.List)
 	accountPlanGroup.GET("/:id", r.handlers.AccountPlan.Get)
 	accountPlanGroup.PUT("/:id", r.handlers.AccountPlan.Update)
 	accountPlanGroup.DELETE("/:id", r.handlers.AccountPlan.Delete)
 
-	moduleGroup := r.echo.Group("/modules", adminMW)
+	moduleGroup := v1.Group("/modules", adminMW)
 	moduleGroup.POST("", r.handlers.Module.Create)
 	moduleGroup.GET("", r.handlers.Module.List)
 	moduleGroup.GET("/:id", r.handlers.Module.Get)
 	moduleGroup.PUT("/:id", r.handlers.Module.Update)
 	moduleGroup.DELETE("/:id", r.handlers.Module.Delete)
 
-	accountGroup := r.echo.Group("/accounts", adminMW)
+	accountGroup := v1.Group("/accounts", adminMW)
 	accountGroup.POST("", r.handlers.Account.Create)
 	accountGroup.GET("", r.handlers.Account.List)
 	accountGroup.GET("/:id", r.handlers.Account.Get)
 	accountGroup.PUT("/:id", r.handlers.Account.Update)
 	accountGroup.DELETE("/:id", r.handlers.Account.Delete)
 
-	systemUserGroup := r.echo.Group("/system-users", adminMW)
+	systemUserGroup := v1.Group("/system-users", adminMW)
 	systemUserGroup.POST("", r.handlers.User.Create)
 
 	authMW := middleware.AuthMiddleware(r.tenantManager, r.jwtSecret)
 	tenantAdminMW := middleware.RequireTenantAdminMiddleware()
 
-	userGroup := r.echo.Group("/users", authMW, tenantAdminMW)
+	userGroup := v1.Group("/users", authMW, tenantAdminMW)
 	userGroup.POST("", r.handlers.TenantUser.Create)
 	userGroup.GET("", r.handlers.TenantUser.List)
 	userGroup.GET("/:id", r.handlers.TenantUser.Get)
 	userGroup.PUT("/:id", r.handlers.TenantUser.Update)
 	userGroup.DELETE("/:id", r.handlers.TenantUser.Delete)
 
-	customerGroup := r.echo.Group("/customers", authMW)
+	customerGroup := v1.Group("/customers", authMW)
 	customerGroup.POST("", r.handlers.Customer.Create)
 	customerGroup.GET("", r.handlers.Customer.List)
 	customerGroup.GET("/:id", r.handlers.Customer.Get)
 	customerGroup.PUT("/:id", r.handlers.Customer.Update)
 	customerGroup.DELETE("/:id", r.handlers.Customer.Delete)
 
-	planGroup := r.echo.Group("/plans", authMW)
+	planGroup := v1.Group("/plans", authMW)
 	planGroup.POST("", r.handlers.Plan.Create)
 	planGroup.GET("", r.handlers.Plan.List)
 	planGroup.GET("/:id", r.handlers.Plan.Get)
 	planGroup.PUT("/:id", r.handlers.Plan.Update)
 	planGroup.DELETE("/:id", r.handlers.Plan.Delete)
 
-	subGroup := r.echo.Group("/subscriptions", authMW)
+	subGroup := v1.Group("/subscriptions", authMW)
 	subGroup.POST("", r.handlers.Subscription.Create)
 	subGroup.GET("", r.handlers.Subscription.List)
 	subGroup.GET("/:id", r.handlers.Subscription.Get)
 	subGroup.PUT("/:id", r.handlers.Subscription.Update)
 	subGroup.DELETE("/:id", r.handlers.Subscription.Delete)
 
-	productGroup := r.echo.Group("/products", authMW)
+	productGroup := v1.Group("/products", authMW)
 	productGroup.POST("", r.handlers.Product.Create)
 	productGroup.GET("", r.handlers.Product.List)
 	productGroup.GET("/:id", r.handlers.Product.Get)
 	productGroup.PUT("/:id", r.handlers.Product.Update)
 	productGroup.DELETE("/:id", r.handlers.Product.Delete)
-
 }
