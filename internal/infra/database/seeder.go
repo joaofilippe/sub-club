@@ -72,7 +72,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 	_, err = client.Account.Create().
 		SetID(uuid.New()).
 		SetName("Demo").
-		SetEmail("demo@subclub.com").
+		SetEmail("demo@demo.com").
 		SetDocument("00.000.000/0001-00").
 		SetSlug(demoSlug).
 		SetAccountPlanID(plan.ID).
@@ -90,11 +90,11 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 		return
 	}
 
-	if err := manager.CreateTenantOwner(ctx, demoSlug, "demo@subclub.com", "Demo", "12345678"); err != nil {
+	if err := manager.CreateTenantOwner(ctx, demoSlug, "admin@demo.com", "Demo", "12345678"); err != nil {
 		log.Printf("[Seeder] Failed to create demo tenant owner: %v\n", err)
 	}
 
-	log.Println("[Seeder] Done! Admin: adm@adm.com / 12345678 | Tenant: demo@subclub.com / 12345678")
+	log.Println("[Seeder] Done! Admin: adm@adm.com / 12345678 | Tenant: admin@demo.com / 12345678")
 }
 
 // SeedTenant seeds a newly provisioned tenant schema with demo data.
