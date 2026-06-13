@@ -13,6 +13,7 @@ import (
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
+	tenantauthrepo "github.com/joaofilippe/subclub/internal/application/repository/tenantauth"
 	tenantuserrepo "github.com/joaofilippe/subclub/internal/application/repository/tenantuser"
 	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
 	accountsvc "github.com/joaofilippe/subclub/internal/application/service/account"
@@ -25,6 +26,7 @@ import (
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	tenantusersvc "github.com/joaofilippe/subclub/internal/application/service/tenantuser"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
+	authusecase "github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 
@@ -71,7 +73,12 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	accountRepo := accountrepo.NewAccountEntRepository(a.entClient)
 	accountDomainRepo := accountdomainrepo.NewAccountDomainEntRepository(a.entClient)
 
-	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, accountDomainRepo, a.TenantManager, []byte(cfg.JWTSecret))
+	jwtSecret := []byte(cfg.JWTSecret)
+	tenantAuthRepo := tenantauthrepo.NewTenantAuthEntRepository(a.TenantManager)
+	a.AuthService = authsvc.NewAuthService(
+		authusecase.NewLoginUseCase(userRepo, accountRepo, tenantAuthRepo, jwtSecret),
+		authusecase.NewLookupUseCase(accountRepo, accountDomainRepo, tenantAuthRepo),
+	)
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
 	a.ModuleService = modulesvc.NewModuleService(modulerepo.NewModuleEntRepository(a.entClient))

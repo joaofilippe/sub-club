@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 
-	authsvc "github.com/joaofilippe/subclub/internal/application/service/auth"
+	authusecase "github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
 	"github.com/joaofilippe/subclub/internal/web/common"
 )
@@ -24,7 +24,7 @@ func RequireAdminMiddleware(jwtSecret []byte) echo.MiddlewareFunc {
 			}
 			raw := strings.TrimPrefix(header, "Bearer ")
 
-			claims := &authsvc.Claims{}
+			claims := &authusecase.Claims{}
 			token, err := jwt.ParseWithClaims(raw, claims, func(t *jwt.Token) (any, error) {
 				if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, jwt.ErrSignatureInvalid
