@@ -539,6 +539,29 @@ func HasAccountPlanWith(preds ...predicate.AccountPlan) predicate.Account {
 	})
 }
 
+// HasDomains applies the HasEdge predicate on the "domains" edge.
+func HasDomains() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DomainsTable, DomainsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDomainsWith applies the HasEdge predicate on the "domains" edge with a given conditions (other predicates).
+func HasDomainsWith(preds ...predicate.AccountDomain) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := newDomainsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Account) predicate.Account {
 	return predicate.Account(sql.AndPredicates(predicates...))

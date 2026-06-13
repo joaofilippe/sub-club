@@ -47,9 +47,11 @@ type Account struct {
 type AccountEdges struct {
 	// AccountPlan holds the value of the account_plan edge.
 	AccountPlan *AccountPlan `json:"account_plan,omitempty"`
+	// Domains holds the value of the domains edge.
+	Domains []*AccountDomain `json:"domains,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // AccountPlanOrErr returns the AccountPlan value or an error if the edge
@@ -61,6 +63,15 @@ func (e AccountEdges) AccountPlanOrErr() (*AccountPlan, error) {
 		return nil, &NotFoundError{label: accountplan.Label}
 	}
 	return nil, &NotLoadedError{edge: "account_plan"}
+}
+
+// DomainsOrErr returns the Domains value or an error if the edge
+// was not loaded in eager-loading.
+func (e AccountEdges) DomainsOrErr() ([]*AccountDomain, error) {
+	if e.loadedTypes[1] {
+		return e.Domains, nil
+	}
+	return nil, &NotLoadedError{edge: "domains"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -168,6 +179,11 @@ func (_m *Account) Value(name string) (ent.Value, error) {
 // QueryAccountPlan queries the "account_plan" edge of the Account entity.
 func (_m *Account) QueryAccountPlan() *AccountPlanQuery {
 	return NewAccountClient(_m.config).QueryAccountPlan(_m)
+}
+
+// QueryDomains queries the "domains" edge of the Account entity.
+func (_m *Account) QueryDomains() *AccountDomainQuery {
+	return NewAccountClient(_m.config).QueryDomains(_m)
 }
 
 // Update returns a builder for updating this Account.

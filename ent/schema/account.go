@@ -38,5 +38,6 @@ func (Account) Edges() []ent.Edge {
 			Ref("accounts").
 			Unique().
 			Field("account_plan_id"),
+		edge.To("domains", AccountDomain.Type),
 	}
 }

@@ -469,6 +469,131 @@
                 }
             }
         },
+        "/api/v1/auth/lookup": {
+            "post": {
+                "description": "Returns all accounts that have a user registered with the given email. Uses domain-based lookup first; falls back to a parallel tenant scan for generic domains (gmail, outlook, etc.)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Lookup accounts by email",
+                "parameters": [
+                    {
+                        "description": "Email to look up",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_auth.LookupRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_web_auth.AccountInfoDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/tenant-login": {
+            "post": {
+                "description": "Validates credentials against a specific tenant schema and returns a signed JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Authenticate tenant user",
+                "parameters": [
+                    {
+                        "description": "Tenant login credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_auth.TenantLoginRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_auth.TokenResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/customers": {
             "get": {
                 "description": "Get a paginated list of customers",
@@ -2029,9 +2154,42 @@
                 }
             }
         },
+        "internal_web_auth.AccountInfoDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_web_auth.LoginRequestDTO": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_auth.LookupRequestDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_auth.TenantLoginRequestDTO": {
+            "type": "object",
+            "properties": {
+                "account_slug": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },

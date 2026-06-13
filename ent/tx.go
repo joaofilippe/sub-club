@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
+	// AccountDomain is the client for interacting with the AccountDomain builders.
+	AccountDomain *AccountDomainClient
 	// AccountPlan is the client for interacting with the AccountPlan builders.
 	AccountPlan *AccountPlanClient
 	// Customer is the client for interacting with the Customer builders.
@@ -162,6 +164,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
+	tx.AccountDomain = NewAccountDomainClient(tx.config)
 	tx.AccountPlan = NewAccountPlanClient(tx.config)
 	tx.Customer = NewCustomerClient(tx.config)
 	tx.Module = NewModuleClient(tx.config)

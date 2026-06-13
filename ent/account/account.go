@@ -36,6 +36,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// EdgeAccountPlan holds the string denoting the account_plan edge name in mutations.
 	EdgeAccountPlan = "account_plan"
+	// EdgeDomains holds the string denoting the domains edge name in mutations.
+	EdgeDomains = "domains"
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
 	// AccountPlanTable is the table that holds the account_plan relation/edge.
@@ -45,6 +47,13 @@ const (
 	AccountPlanInverseTable = "account_plans"
 	// AccountPlanColumn is the table column denoting the account_plan relation/edge.
 	AccountPlanColumn = "account_plan_id"
+	// DomainsTable is the table that holds the domains relation/edge.
+	DomainsTable = "account_domains"
+	// DomainsInverseTable is the table name for the AccountDomain entity.
+	// It exists in this package in order to avoid circular dependency with the "accountdomain" package.
+	DomainsInverseTable = "account_domains"
+	// DomainsColumn is the table column denoting the domains relation/edge.
+	DomainsColumn = "account_id"
 )
 
 // Columns holds all SQL columns for account fields.
@@ -173,10 +182,31 @@ func ByAccountPlanField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAccountPlanStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByDomainsCount orders the results by domains count.
+func ByDomainsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDomainsStep(), opts...)
+	}
+}
+
+// ByDomains orders the results by domains terms.
+func ByDomains(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDomainsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAccountPlanStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AccountPlanInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, AccountPlanTable, AccountPlanColumn),
+	)
+}
+func newDomainsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DomainsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DomainsTable, DomainsColumn),
 	)
 }

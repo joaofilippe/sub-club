@@ -12,6 +12,7 @@ import (
 var PublicTables = []*entsqlschema.Table{
 	entmigrate.AccountsTable,
 	entmigrate.AccountPlansTable,
+	entmigrate.AccountDomainsTable,
 	entmigrate.SystemUsersTable,
 	entmigrate.ModulesTable,
 	entmigrate.AccountPlanModulesTable,

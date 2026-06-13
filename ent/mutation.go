@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountdomain"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/module"
@@ -34,15 +35,16 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAccount      = "Account"
-	TypeAccountPlan  = "AccountPlan"
-	TypeCustomer     = "Customer"
-	TypeModule       = "Module"
-	TypePlan         = "Plan"
-	TypeProduct      = "Product"
-	TypeSubscription = "Subscription"
-	TypeSystemUser   = "SystemUser"
-	TypeUser         = "User"
+	TypeAccount       = "Account"
+	TypeAccountDomain = "AccountDomain"
+	TypeAccountPlan   = "AccountPlan"
+	TypeCustomer      = "Customer"
+	TypeModule        = "Module"
+	TypePlan          = "Plan"
+	TypeProduct       = "Product"
+	TypeSubscription  = "Subscription"
+	TypeSystemUser    = "SystemUser"
+	TypeUser          = "User"
 )
 
 // AccountMutation represents an operation that mutates the Account nodes in the graph.
@@ -62,6 +64,9 @@ type AccountMutation struct {
 	clearedFields           map[string]struct{}
 	account_plan            *uuid.UUID
 	clearedaccount_plan     bool
+	domains                 map[uuid.UUID]struct{}
+	removeddomains          map[uuid.UUID]struct{}
+	cleareddomains          bool
 	done                    bool
 	oldValue                func(context.Context) (*Account, error)
 	predicates              []predicate.Account
@@ -561,6 +566,60 @@ func (m *AccountMutation) ResetAccountPlan() {
 	m.clearedaccount_plan = false
 }
 
+// AddDomainIDs adds the "domains" edge to the AccountDomain entity by ids.
+func (m *AccountMutation) AddDomainIDs(ids ...uuid.UUID) {
+	if m.domains == nil {
+		m.domains = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.domains[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDomains clears the "domains" edge to the AccountDomain entity.
+func (m *AccountMutation) ClearDomains() {
+	m.cleareddomains = true
+}
+
+// DomainsCleared reports if the "domains" edge to the AccountDomain entity was cleared.
+func (m *AccountMutation) DomainsCleared() bool {
+	return m.cleareddomains
+}
+
+// RemoveDomainIDs removes the "domains" edge to the AccountDomain entity by IDs.
+func (m *AccountMutation) RemoveDomainIDs(ids ...uuid.UUID) {
+	if m.removeddomains == nil {
+		m.removeddomains = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.domains, ids[i])
+		m.removeddomains[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDomains returns the removed IDs of the "domains" edge to the AccountDomain entity.
+func (m *AccountMutation) RemovedDomainsIDs() (ids []uuid.UUID) {
+	for id := range m.removeddomains {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DomainsIDs returns the "domains" edge IDs in the mutation.
+func (m *AccountMutation) DomainsIDs() (ids []uuid.UUID) {
+	for id := range m.domains {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDomains resets all changes to the "domains" edge.
+func (m *AccountMutation) ResetDomains() {
+	m.domains = nil
+	m.cleareddomains = false
+	m.removeddomains = nil
+}
+
 // Where appends a list predicates to the AccountMutation builder.
 func (m *AccountMutation) Where(ps ...predicate.Account) {
 	m.predicates = append(m.predicates, ps...)
@@ -851,9 +910,12 @@ func (m *AccountMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AccountMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.account_plan != nil {
 		edges = append(edges, account.EdgeAccountPlan)
+	}
+	if m.domains != nil {
+		edges = append(edges, account.EdgeDomains)
 	}
 	return edges
 }
@@ -866,27 +928,47 @@ func (m *AccountMutation) AddedIDs(name string) []ent.Value {
 		if id := m.account_plan; id != nil {
 			return []ent.Value{*id}
 		}
+	case account.EdgeDomains:
+		ids := make([]ent.Value, 0, len(m.domains))
+		for id := range m.domains {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AccountMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removeddomains != nil {
+		edges = append(edges, account.EdgeDomains)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AccountMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case account.EdgeDomains:
+		ids := make([]ent.Value, 0, len(m.removeddomains))
+		for id := range m.removeddomains {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AccountMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedaccount_plan {
 		edges = append(edges, account.EdgeAccountPlan)
+	}
+	if m.cleareddomains {
+		edges = append(edges, account.EdgeDomains)
 	}
 	return edges
 }
@@ -897,6 +979,8 @@ func (m *AccountMutation) EdgeCleared(name string) bool {
 	switch name {
 	case account.EdgeAccountPlan:
 		return m.clearedaccount_plan
+	case account.EdgeDomains:
+		return m.cleareddomains
 	}
 	return false
 }
@@ -919,8 +1003,451 @@ func (m *AccountMutation) ResetEdge(name string) error {
 	case account.EdgeAccountPlan:
 		m.ResetAccountPlan()
 		return nil
+	case account.EdgeDomains:
+		m.ResetDomains()
+		return nil
 	}
 	return fmt.Errorf("unknown Account edge %s", name)
+}
+
+// AccountDomainMutation represents an operation that mutates the AccountDomain nodes in the graph.
+type AccountDomainMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uuid.UUID
+	domain         *string
+	clearedFields  map[string]struct{}
+	account        *uuid.UUID
+	clearedaccount bool
+	done           bool
+	oldValue       func(context.Context) (*AccountDomain, error)
+	predicates     []predicate.AccountDomain
+}
+
+var _ ent.Mutation = (*AccountDomainMutation)(nil)
+
+// accountdomainOption allows management of the mutation configuration using functional options.
+type accountdomainOption func(*AccountDomainMutation)
+
+// newAccountDomainMutation creates new mutation for the AccountDomain entity.
+func newAccountDomainMutation(c config, op Op, opts ...accountdomainOption) *AccountDomainMutation {
+	m := &AccountDomainMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAccountDomain,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAccountDomainID sets the ID field of the mutation.
+func withAccountDomainID(id uuid.UUID) accountdomainOption {
+	return func(m *AccountDomainMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AccountDomain
+		)
+		m.oldValue = func(ctx context.Context) (*AccountDomain, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AccountDomain.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAccountDomain sets the old AccountDomain of the mutation.
+func withAccountDomain(node *AccountDomain) accountdomainOption {
+	return func(m *AccountDomainMutation) {
+		m.oldValue = func(context.Context) (*AccountDomain, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AccountDomainMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AccountDomainMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AccountDomain entities.
+func (m *AccountDomainMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AccountDomainMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AccountDomainMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AccountDomain.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetDomain sets the "domain" field.
+func (m *AccountDomainMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *AccountDomainMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the AccountDomain entity.
+// If the AccountDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountDomainMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *AccountDomainMutation) ResetDomain() {
+	m.domain = nil
+}
+
+// SetAccountID sets the "account_id" field.
+func (m *AccountDomainMutation) SetAccountID(u uuid.UUID) {
+	m.account = &u
+}
+
+// AccountID returns the value of the "account_id" field in the mutation.
+func (m *AccountDomainMutation) AccountID() (r uuid.UUID, exists bool) {
+	v := m.account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccountID returns the old "account_id" field's value of the AccountDomain entity.
+// If the AccountDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountDomainMutation) OldAccountID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccountID: %w", err)
+	}
+	return oldValue.AccountID, nil
+}
+
+// ResetAccountID resets all changes to the "account_id" field.
+func (m *AccountDomainMutation) ResetAccountID() {
+	m.account = nil
+}
+
+// ClearAccount clears the "account" edge to the Account entity.
+func (m *AccountDomainMutation) ClearAccount() {
+	m.clearedaccount = true
+	m.clearedFields[accountdomain.FieldAccountID] = struct{}{}
+}
+
+// AccountCleared reports if the "account" edge to the Account entity was cleared.
+func (m *AccountDomainMutation) AccountCleared() bool {
+	return m.clearedaccount
+}
+
+// AccountIDs returns the "account" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AccountID instead. It exists only for internal usage by the builders.
+func (m *AccountDomainMutation) AccountIDs() (ids []uuid.UUID) {
+	if id := m.account; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAccount resets all changes to the "account" edge.
+func (m *AccountDomainMutation) ResetAccount() {
+	m.account = nil
+	m.clearedaccount = false
+}
+
+// Where appends a list predicates to the AccountDomainMutation builder.
+func (m *AccountDomainMutation) Where(ps ...predicate.AccountDomain) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AccountDomainMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AccountDomainMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AccountDomain, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AccountDomainMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AccountDomainMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AccountDomain).
+func (m *AccountDomainMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AccountDomainMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.domain != nil {
+		fields = append(fields, accountdomain.FieldDomain)
+	}
+	if m.account != nil {
+		fields = append(fields, accountdomain.FieldAccountID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AccountDomainMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case accountdomain.FieldDomain:
+		return m.Domain()
+	case accountdomain.FieldAccountID:
+		return m.AccountID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AccountDomainMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case accountdomain.FieldDomain:
+		return m.OldDomain(ctx)
+	case accountdomain.FieldAccountID:
+		return m.OldAccountID(ctx)
+	}
+	return nil, fmt.Errorf("unknown AccountDomain field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountDomainMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case accountdomain.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
+		return nil
+	case accountdomain.FieldAccountID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccountID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountDomain field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AccountDomainMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AccountDomainMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountDomainMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown AccountDomain numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AccountDomainMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AccountDomainMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AccountDomainMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AccountDomain nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AccountDomainMutation) ResetField(name string) error {
+	switch name {
+	case accountdomain.FieldDomain:
+		m.ResetDomain()
+		return nil
+	case accountdomain.FieldAccountID:
+		m.ResetAccountID()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountDomain field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AccountDomainMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.account != nil {
+		edges = append(edges, accountdomain.EdgeAccount)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AccountDomainMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case accountdomain.EdgeAccount:
+		if id := m.account; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AccountDomainMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AccountDomainMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AccountDomainMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedaccount {
+		edges = append(edges, accountdomain.EdgeAccount)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AccountDomainMutation) EdgeCleared(name string) bool {
+	switch name {
+	case accountdomain.EdgeAccount:
+		return m.clearedaccount
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AccountDomainMutation) ClearEdge(name string) error {
+	switch name {
+	case accountdomain.EdgeAccount:
+		m.ClearAccount()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountDomain unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AccountDomainMutation) ResetEdge(name string) error {
+	switch name {
+	case accountdomain.EdgeAccount:
+		m.ResetAccount()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountDomain edge %s", name)
 }
 
 // AccountPlanMutation represents an operation that mutates the AccountPlan nodes in the graph.

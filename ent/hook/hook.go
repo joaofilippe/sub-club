@@ -21,6 +21,18 @@ func (f AccountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountMutation", m)
 }
 
+// The AccountDomainFunc type is an adapter to allow the use of ordinary
+// function as AccountDomain mutator.
+type AccountDomainFunc func(context.Context, *ent.AccountDomainMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountDomainFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountDomainMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountDomainMutation", m)
+}
+
 // The AccountPlanFunc type is an adapter to allow the use of ordinary
 // function as AccountPlan mutator.
 type AccountPlanFunc func(context.Context, *ent.AccountPlanMutation) (ent.Value, error)

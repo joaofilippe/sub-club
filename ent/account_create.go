@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountdomain"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 )
 
@@ -141,6 +142,21 @@ func (_c *AccountCreate) SetNillableID(v *uuid.UUID) *AccountCreate {
 // SetAccountPlan sets the "account_plan" edge to the AccountPlan entity.
 func (_c *AccountCreate) SetAccountPlan(v *AccountPlan) *AccountCreate {
 	return _c.SetAccountPlanID(v.ID)
+}
+
+// AddDomainIDs adds the "domains" edge to the AccountDomain entity by IDs.
+func (_c *AccountCreate) AddDomainIDs(ids ...uuid.UUID) *AccountCreate {
+	_c.mutation.AddDomainIDs(ids...)
+	return _c
+}
+
+// AddDomains adds the "domains" edges to the AccountDomain entity.
+func (_c *AccountCreate) AddDomains(v ...*AccountDomain) *AccountCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddDomainIDs(ids...)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -318,6 +334,22 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.AccountPlanID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.DomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

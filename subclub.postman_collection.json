@@ -67,6 +67,18 @@
           }
         },
         {
+          "name": "Lookup Accounts by Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@tenant.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/lookup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "lookup"] }
+          }
+        },
+        {
           "name": "Login Tenant",
           "event": [
             {
@@ -74,8 +86,8 @@
               "script": {
                 "exec": [
                   "var json = pm.response.json();",
-                  "if (json.token) {",
-                  "    pm.collectionVariables.set('tenantToken', json.token);",
+                  "if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('tenantToken', json.data.token);",
                   "    console.log('tenantToken salvo');",
                   "}"
                 ],
@@ -88,9 +100,9 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"usuario@tenant.com\",\n  \"password\": \"senha\"\n}"
+              "raw": "{\n  \"email\": \"usuario@tenant.com\",\n  \"password\": \"senha\",\n  \"account_slug\": \"meu-tenant\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/tenant-login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "tenant-login"] }
           }
         }
       ]

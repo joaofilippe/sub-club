@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -15,58 +14,56 @@ import (
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
 	"github.com/joaofilippe/subclub/ent/accountdomain"
-	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/predicate"
 )
 
-// AccountQuery is the builder for querying Account entities.
-type AccountQuery struct {
+// AccountDomainQuery is the builder for querying AccountDomain entities.
+type AccountDomainQuery struct {
 	config
-	ctx             *QueryContext
-	order           []account.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.Account
-	withAccountPlan *AccountPlanQuery
-	withDomains     *AccountDomainQuery
+	ctx         *QueryContext
+	order       []accountdomain.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.AccountDomain
+	withAccount *AccountQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the AccountQuery builder.
-func (_q *AccountQuery) Where(ps ...predicate.Account) *AccountQuery {
+// Where adds a new predicate for the AccountDomainQuery builder.
+func (_q *AccountDomainQuery) Where(ps ...predicate.AccountDomain) *AccountDomainQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *AccountQuery) Limit(limit int) *AccountQuery {
+func (_q *AccountDomainQuery) Limit(limit int) *AccountDomainQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *AccountQuery) Offset(offset int) *AccountQuery {
+func (_q *AccountDomainQuery) Offset(offset int) *AccountDomainQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *AccountQuery) Unique(unique bool) *AccountQuery {
+func (_q *AccountDomainQuery) Unique(unique bool) *AccountDomainQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *AccountQuery) Order(o ...account.OrderOption) *AccountQuery {
+func (_q *AccountDomainQuery) Order(o ...accountdomain.OrderOption) *AccountDomainQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// QueryAccountPlan chains the current query on the "account_plan" edge.
-func (_q *AccountQuery) QueryAccountPlan() *AccountPlanQuery {
-	query := (&AccountPlanClient{config: _q.config}).Query()
+// QueryAccount chains the current query on the "account" edge.
+func (_q *AccountDomainQuery) QueryAccount() *AccountQuery {
+	query := (&AccountClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,9 +73,9 @@ func (_q *AccountQuery) QueryAccountPlan() *AccountPlanQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(accountplan.Table, accountplan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, account.AccountPlanTable, account.AccountPlanColumn),
+			sqlgraph.From(accountdomain.Table, accountdomain.FieldID, selector),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, accountdomain.AccountTable, accountdomain.AccountColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -86,43 +83,21 @@ func (_q *AccountQuery) QueryAccountPlan() *AccountPlanQuery {
 	return query
 }
 
-// QueryDomains chains the current query on the "domains" edge.
-func (_q *AccountQuery) QueryDomains() *AccountDomainQuery {
-	query := (&AccountDomainClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(accountdomain.Table, accountdomain.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, account.DomainsTable, account.DomainsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first Account entity from the query.
-// Returns a *NotFoundError when no Account was found.
-func (_q *AccountQuery) First(ctx context.Context) (*Account, error) {
+// First returns the first AccountDomain entity from the query.
+// Returns a *NotFoundError when no AccountDomain was found.
+func (_q *AccountDomainQuery) First(ctx context.Context) (*AccountDomain, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{account.Label}
+		return nil, &NotFoundError{accountdomain.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *AccountQuery) FirstX(ctx context.Context) *Account {
+func (_q *AccountDomainQuery) FirstX(ctx context.Context) *AccountDomain {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -130,22 +105,22 @@ func (_q *AccountQuery) FirstX(ctx context.Context) *Account {
 	return node
 }
 
-// FirstID returns the first Account ID from the query.
-// Returns a *NotFoundError when no Account ID was found.
-func (_q *AccountQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+// FirstID returns the first AccountDomain ID from the query.
+// Returns a *NotFoundError when no AccountDomain ID was found.
+func (_q *AccountDomainQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{account.Label}
+		err = &NotFoundError{accountdomain.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AccountQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (_q *AccountDomainQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -153,10 +128,10 @@ func (_q *AccountQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// Only returns a single Account entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Account entity is found.
-// Returns a *NotFoundError when no Account entities are found.
-func (_q *AccountQuery) Only(ctx context.Context) (*Account, error) {
+// Only returns a single AccountDomain entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one AccountDomain entity is found.
+// Returns a *NotFoundError when no AccountDomain entities are found.
+func (_q *AccountDomainQuery) Only(ctx context.Context) (*AccountDomain, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -165,14 +140,14 @@ func (_q *AccountQuery) Only(ctx context.Context) (*Account, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{account.Label}
+		return nil, &NotFoundError{accountdomain.Label}
 	default:
-		return nil, &NotSingularError{account.Label}
+		return nil, &NotSingularError{accountdomain.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *AccountQuery) OnlyX(ctx context.Context) *Account {
+func (_q *AccountDomainQuery) OnlyX(ctx context.Context) *AccountDomain {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -180,10 +155,10 @@ func (_q *AccountQuery) OnlyX(ctx context.Context) *Account {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Account ID in the query.
-// Returns a *NotSingularError when more than one Account ID is found.
+// OnlyID is like Only, but returns the only AccountDomain ID in the query.
+// Returns a *NotSingularError when more than one AccountDomain ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AccountQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *AccountDomainQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -192,15 +167,15 @@ func (_q *AccountQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{account.Label}
+		err = &NotFoundError{accountdomain.Label}
 	default:
-		err = &NotSingularError{account.Label}
+		err = &NotSingularError{accountdomain.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AccountQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (_q *AccountDomainQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -208,18 +183,18 @@ func (_q *AccountQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// All executes the query and returns a list of Accounts.
-func (_q *AccountQuery) All(ctx context.Context) ([]*Account, error) {
+// All executes the query and returns a list of AccountDomains.
+func (_q *AccountDomainQuery) All(ctx context.Context) ([]*AccountDomain, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Account, *AccountQuery]()
-	return withInterceptors[[]*Account](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*AccountDomain, *AccountDomainQuery]()
+	return withInterceptors[[]*AccountDomain](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *AccountQuery) AllX(ctx context.Context) []*Account {
+func (_q *AccountDomainQuery) AllX(ctx context.Context) []*AccountDomain {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -227,20 +202,20 @@ func (_q *AccountQuery) AllX(ctx context.Context) []*Account {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Account IDs.
-func (_q *AccountQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+// IDs executes the query and returns a list of AccountDomain IDs.
+func (_q *AccountDomainQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(account.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(accountdomain.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AccountQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (_q *AccountDomainQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -249,16 +224,16 @@ func (_q *AccountQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (_q *AccountQuery) Count(ctx context.Context) (int, error) {
+func (_q *AccountDomainQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*AccountQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*AccountDomainQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *AccountQuery) CountX(ctx context.Context) int {
+func (_q *AccountDomainQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -267,7 +242,7 @@ func (_q *AccountQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *AccountQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *AccountDomainQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -280,7 +255,7 @@ func (_q *AccountQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *AccountQuery) ExistX(ctx context.Context) bool {
+func (_q *AccountDomainQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -288,45 +263,33 @@ func (_q *AccountQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the AccountQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the AccountDomainQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *AccountQuery) Clone() *AccountQuery {
+func (_q *AccountDomainQuery) Clone() *AccountDomainQuery {
 	if _q == nil {
 		return nil
 	}
-	return &AccountQuery{
-		config:          _q.config,
-		ctx:             _q.ctx.Clone(),
-		order:           append([]account.OrderOption{}, _q.order...),
-		inters:          append([]Interceptor{}, _q.inters...),
-		predicates:      append([]predicate.Account{}, _q.predicates...),
-		withAccountPlan: _q.withAccountPlan.Clone(),
-		withDomains:     _q.withDomains.Clone(),
+	return &AccountDomainQuery{
+		config:      _q.config,
+		ctx:         _q.ctx.Clone(),
+		order:       append([]accountdomain.OrderOption{}, _q.order...),
+		inters:      append([]Interceptor{}, _q.inters...),
+		predicates:  append([]predicate.AccountDomain{}, _q.predicates...),
+		withAccount: _q.withAccount.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
 }
 
-// WithAccountPlan tells the query-builder to eager-load the nodes that are connected to
-// the "account_plan" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AccountQuery) WithAccountPlan(opts ...func(*AccountPlanQuery)) *AccountQuery {
-	query := (&AccountPlanClient{config: _q.config}).Query()
+// WithAccount tells the query-builder to eager-load the nodes that are connected to
+// the "account" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AccountDomainQuery) WithAccount(opts ...func(*AccountQuery)) *AccountDomainQuery {
+	query := (&AccountClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withAccountPlan = query
-	return _q
-}
-
-// WithDomains tells the query-builder to eager-load the nodes that are connected to
-// the "domains" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AccountQuery) WithDomains(opts ...func(*AccountDomainQuery)) *AccountQuery {
-	query := (&AccountDomainClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withDomains = query
+	_q.withAccount = query
 	return _q
 }
 
@@ -336,19 +299,19 @@ func (_q *AccountQuery) WithDomains(opts ...func(*AccountDomainQuery)) *AccountQ
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Domain string `json:"domain,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Account.Query().
-//		GroupBy(account.FieldName).
+//	client.AccountDomain.Query().
+//		GroupBy(accountdomain.FieldDomain).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy {
+func (_q *AccountDomainQuery) GroupBy(field string, fields ...string) *AccountDomainGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &AccountGroupBy{build: _q}
+	grbuild := &AccountDomainGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = account.Label
+	grbuild.label = accountdomain.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -359,26 +322,26 @@ func (_q *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Domain string `json:"domain,omitempty"`
 //	}
 //
-//	client.Account.Query().
-//		Select(account.FieldName).
+//	client.AccountDomain.Query().
+//		Select(accountdomain.FieldDomain).
 //		Scan(ctx, &v)
-func (_q *AccountQuery) Select(fields ...string) *AccountSelect {
+func (_q *AccountDomainQuery) Select(fields ...string) *AccountDomainSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &AccountSelect{AccountQuery: _q}
-	sbuild.label = account.Label
+	sbuild := &AccountDomainSelect{AccountDomainQuery: _q}
+	sbuild.label = accountdomain.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a AccountSelect configured with the given aggregations.
-func (_q *AccountQuery) Aggregate(fns ...AggregateFunc) *AccountSelect {
+// Aggregate returns a AccountDomainSelect configured with the given aggregations.
+func (_q *AccountDomainQuery) Aggregate(fns ...AggregateFunc) *AccountDomainSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *AccountQuery) prepareQuery(ctx context.Context) error {
+func (_q *AccountDomainQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -390,7 +353,7 @@ func (_q *AccountQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !account.ValidColumn(f) {
+		if !accountdomain.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -404,20 +367,19 @@ func (_q *AccountQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Account, error) {
+func (_q *AccountDomainQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AccountDomain, error) {
 	var (
-		nodes       = []*Account{}
+		nodes       = []*AccountDomain{}
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
-			_q.withAccountPlan != nil,
-			_q.withDomains != nil,
+		loadedTypes = [1]bool{
+			_q.withAccount != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Account).scanValues(nil, columns)
+		return (*AccountDomain).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Account{config: _q.config}
+		node := &AccountDomain{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -431,27 +393,20 @@ func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withAccountPlan; query != nil {
-		if err := _q.loadAccountPlan(ctx, query, nodes, nil,
-			func(n *Account, e *AccountPlan) { n.Edges.AccountPlan = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withDomains; query != nil {
-		if err := _q.loadDomains(ctx, query, nodes,
-			func(n *Account) { n.Edges.Domains = []*AccountDomain{} },
-			func(n *Account, e *AccountDomain) { n.Edges.Domains = append(n.Edges.Domains, e) }); err != nil {
+	if query := _q.withAccount; query != nil {
+		if err := _q.loadAccount(ctx, query, nodes, nil,
+			func(n *AccountDomain, e *Account) { n.Edges.Account = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *AccountQuery) loadAccountPlan(ctx context.Context, query *AccountPlanQuery, nodes []*Account, init func(*Account), assign func(*Account, *AccountPlan)) error {
+func (_q *AccountDomainQuery) loadAccount(ctx context.Context, query *AccountQuery, nodes []*AccountDomain, init func(*AccountDomain), assign func(*AccountDomain, *Account)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Account)
+	nodeids := make(map[uuid.UUID][]*AccountDomain)
 	for i := range nodes {
-		fk := nodes[i].AccountPlanID
+		fk := nodes[i].AccountID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -460,7 +415,7 @@ func (_q *AccountQuery) loadAccountPlan(ctx context.Context, query *AccountPlanQ
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(accountplan.IDIn(ids...))
+	query.Where(account.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -468,7 +423,7 @@ func (_q *AccountQuery) loadAccountPlan(ctx context.Context, query *AccountPlanQ
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_plan_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -476,38 +431,8 @@ func (_q *AccountQuery) loadAccountPlan(ctx context.Context, query *AccountPlanQ
 	}
 	return nil
 }
-func (_q *AccountQuery) loadDomains(ctx context.Context, query *AccountDomainQuery, nodes []*Account, init func(*Account), assign func(*Account, *AccountDomain)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Account)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(accountdomain.FieldAccountID)
-	}
-	query.Where(predicate.AccountDomain(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(account.DomainsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AccountID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "account_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 
-func (_q *AccountQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *AccountDomainQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -516,8 +441,8 @@ func (_q *AccountQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *AccountQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(account.Table, account.Columns, sqlgraph.NewFieldSpec(account.FieldID, field.TypeUUID))
+func (_q *AccountDomainQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(accountdomain.Table, accountdomain.Columns, sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -526,14 +451,14 @@ func (_q *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, account.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, accountdomain.FieldID)
 		for i := range fields {
-			if fields[i] != account.FieldID {
+			if fields[i] != accountdomain.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withAccountPlan != nil {
-			_spec.Node.AddColumnOnce(account.FieldAccountPlanID)
+		if _q.withAccount != nil {
+			_spec.Node.AddColumnOnce(accountdomain.FieldAccountID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {
@@ -559,12 +484,12 @@ func (_q *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *AccountDomainQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(account.Table)
+	t1 := builder.Table(accountdomain.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = account.Columns
+		columns = accountdomain.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -591,28 +516,28 @@ func (_q *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// AccountGroupBy is the group-by builder for Account entities.
-type AccountGroupBy struct {
+// AccountDomainGroupBy is the group-by builder for AccountDomain entities.
+type AccountDomainGroupBy struct {
 	selector
-	build *AccountQuery
+	build *AccountDomainQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *AccountGroupBy) Aggregate(fns ...AggregateFunc) *AccountGroupBy {
+func (_g *AccountDomainGroupBy) Aggregate(fns ...AggregateFunc) *AccountDomainGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *AccountGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *AccountDomainGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AccountQuery, *AccountGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*AccountDomainQuery, *AccountDomainGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *AccountGroupBy) sqlScan(ctx context.Context, root *AccountQuery, v any) error {
+func (_g *AccountDomainGroupBy) sqlScan(ctx context.Context, root *AccountDomainQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -639,28 +564,28 @@ func (_g *AccountGroupBy) sqlScan(ctx context.Context, root *AccountQuery, v any
 	return sql.ScanSlice(rows, v)
 }
 
-// AccountSelect is the builder for selecting fields of Account entities.
-type AccountSelect struct {
-	*AccountQuery
+// AccountDomainSelect is the builder for selecting fields of AccountDomain entities.
+type AccountDomainSelect struct {
+	*AccountDomainQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *AccountSelect) Aggregate(fns ...AggregateFunc) *AccountSelect {
+func (_s *AccountDomainSelect) Aggregate(fns ...AggregateFunc) *AccountDomainSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *AccountSelect) Scan(ctx context.Context, v any) error {
+func (_s *AccountDomainSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AccountQuery, *AccountSelect](ctx, _s.AccountQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*AccountDomainQuery, *AccountDomainSelect](ctx, _s.AccountDomainQuery, _s, _s.inters, v)
 }
 
-func (_s *AccountSelect) sqlScan(ctx context.Context, root *AccountQuery, v any) error {
+func (_s *AccountDomainSelect) sqlScan(ctx context.Context, root *AccountDomainQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {

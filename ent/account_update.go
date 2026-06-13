@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountdomain"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/predicate"
 )
@@ -165,6 +166,21 @@ func (_u *AccountUpdate) SetAccountPlan(v *AccountPlan) *AccountUpdate {
 	return _u.SetAccountPlanID(v.ID)
 }
 
+// AddDomainIDs adds the "domains" edge to the AccountDomain entity by IDs.
+func (_u *AccountUpdate) AddDomainIDs(ids ...uuid.UUID) *AccountUpdate {
+	_u.mutation.AddDomainIDs(ids...)
+	return _u
+}
+
+// AddDomains adds the "domains" edges to the AccountDomain entity.
+func (_u *AccountUpdate) AddDomains(v ...*AccountDomain) *AccountUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDomainIDs(ids...)
+}
+
 // Mutation returns the AccountMutation object of the builder.
 func (_u *AccountUpdate) Mutation() *AccountMutation {
 	return _u.mutation
@@ -174,6 +190,27 @@ func (_u *AccountUpdate) Mutation() *AccountMutation {
 func (_u *AccountUpdate) ClearAccountPlan() *AccountUpdate {
 	_u.mutation.ClearAccountPlan()
 	return _u
+}
+
+// ClearDomains clears all "domains" edges to the AccountDomain entity.
+func (_u *AccountUpdate) ClearDomains() *AccountUpdate {
+	_u.mutation.ClearDomains()
+	return _u
+}
+
+// RemoveDomainIDs removes the "domains" edge to AccountDomain entities by IDs.
+func (_u *AccountUpdate) RemoveDomainIDs(ids ...uuid.UUID) *AccountUpdate {
+	_u.mutation.RemoveDomainIDs(ids...)
+	return _u
+}
+
+// RemoveDomains removes "domains" edges to AccountDomain entities.
+func (_u *AccountUpdate) RemoveDomains(v ...*AccountDomain) *AccountUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDomainIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -289,6 +326,51 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(accountplan.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDomainsIDs(); len(nodes) > 0 && !_u.mutation.DomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -451,6 +533,21 @@ func (_u *AccountUpdateOne) SetAccountPlan(v *AccountPlan) *AccountUpdateOne {
 	return _u.SetAccountPlanID(v.ID)
 }
 
+// AddDomainIDs adds the "domains" edge to the AccountDomain entity by IDs.
+func (_u *AccountUpdateOne) AddDomainIDs(ids ...uuid.UUID) *AccountUpdateOne {
+	_u.mutation.AddDomainIDs(ids...)
+	return _u
+}
+
+// AddDomains adds the "domains" edges to the AccountDomain entity.
+func (_u *AccountUpdateOne) AddDomains(v ...*AccountDomain) *AccountUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDomainIDs(ids...)
+}
+
 // Mutation returns the AccountMutation object of the builder.
 func (_u *AccountUpdateOne) Mutation() *AccountMutation {
 	return _u.mutation
@@ -460,6 +557,27 @@ func (_u *AccountUpdateOne) Mutation() *AccountMutation {
 func (_u *AccountUpdateOne) ClearAccountPlan() *AccountUpdateOne {
 	_u.mutation.ClearAccountPlan()
 	return _u
+}
+
+// ClearDomains clears all "domains" edges to the AccountDomain entity.
+func (_u *AccountUpdateOne) ClearDomains() *AccountUpdateOne {
+	_u.mutation.ClearDomains()
+	return _u
+}
+
+// RemoveDomainIDs removes the "domains" edge to AccountDomain entities by IDs.
+func (_u *AccountUpdateOne) RemoveDomainIDs(ids ...uuid.UUID) *AccountUpdateOne {
+	_u.mutation.RemoveDomainIDs(ids...)
+	return _u
+}
+
+// RemoveDomains removes "domains" edges to AccountDomain entities.
+func (_u *AccountUpdateOne) RemoveDomains(v ...*AccountDomain) *AccountUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDomainIDs(ids...)
 }
 
 // Where appends a list predicates to the AccountUpdate builder.
@@ -605,6 +723,51 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(accountplan.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDomainsIDs(); len(nodes) > 0 && !_u.mutation.DomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.DomainsTable,
+			Columns: []string{account.DomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountdomain.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
