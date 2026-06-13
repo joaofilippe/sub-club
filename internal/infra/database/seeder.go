@@ -72,7 +72,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 	_, err = client.Account.Create().
 		SetID(uuid.New()).
 		SetName("Demo").
-		SetEmail("demo@subclub.com").
+		SetEmail("demo@demo.com").
 		SetDocument("00.000.000/0001-00").
 		SetSlug(demoSlug).
 		SetAccountPlanID(plan.ID).
