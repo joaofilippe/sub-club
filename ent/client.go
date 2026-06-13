@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/joaofilippe/subclub/ent/account"
+	"github.com/joaofilippe/subclub/ent/accountdomain"
 	"github.com/joaofilippe/subclub/ent/accountplan"
 	"github.com/joaofilippe/subclub/ent/customer"
 	"github.com/joaofilippe/subclub/ent/module"
@@ -34,6 +35,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
+	// AccountDomain is the client for interacting with the AccountDomain builders.
+	AccountDomain *AccountDomainClient
 	// AccountPlan is the client for interacting with the AccountPlan builders.
 	AccountPlan *AccountPlanClient
 	// Customer is the client for interacting with the Customer builders.
@@ -62,6 +65,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
+	c.AccountDomain = NewAccountDomainClient(c.config)
 	c.AccountPlan = NewAccountPlanClient(c.config)
 	c.Customer = NewCustomerClient(c.config)
 	c.Module = NewModuleClient(c.config)
@@ -160,17 +164,18 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Account:      NewAccountClient(cfg),
-		AccountPlan:  NewAccountPlanClient(cfg),
-		Customer:     NewCustomerClient(cfg),
-		Module:       NewModuleClient(cfg),
-		Plan:         NewPlanClient(cfg),
-		Product:      NewProductClient(cfg),
-		Subscription: NewSubscriptionClient(cfg),
-		SystemUser:   NewSystemUserClient(cfg),
-		User:         NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Account:       NewAccountClient(cfg),
+		AccountDomain: NewAccountDomainClient(cfg),
+		AccountPlan:   NewAccountPlanClient(cfg),
+		Customer:      NewCustomerClient(cfg),
+		Module:        NewModuleClient(cfg),
+		Plan:          NewPlanClient(cfg),
+		Product:       NewProductClient(cfg),
+		Subscription:  NewSubscriptionClient(cfg),
+		SystemUser:    NewSystemUserClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
@@ -188,17 +193,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Account:      NewAccountClient(cfg),
-		AccountPlan:  NewAccountPlanClient(cfg),
-		Customer:     NewCustomerClient(cfg),
-		Module:       NewModuleClient(cfg),
-		Plan:         NewPlanClient(cfg),
-		Product:      NewProductClient(cfg),
-		Subscription: NewSubscriptionClient(cfg),
-		SystemUser:   NewSystemUserClient(cfg),
-		User:         NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Account:       NewAccountClient(cfg),
+		AccountDomain: NewAccountDomainClient(cfg),
+		AccountPlan:   NewAccountPlanClient(cfg),
+		Customer:      NewCustomerClient(cfg),
+		Module:        NewModuleClient(cfg),
+		Plan:          NewPlanClient(cfg),
+		Product:       NewProductClient(cfg),
+		Subscription:  NewSubscriptionClient(cfg),
+		SystemUser:    NewSystemUserClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
@@ -228,8 +234,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Account, c.AccountPlan, c.Customer, c.Module, c.Plan, c.Product,
-		c.Subscription, c.SystemUser, c.User,
+		c.Account, c.AccountDomain, c.AccountPlan, c.Customer, c.Module, c.Plan,
+		c.Product, c.Subscription, c.SystemUser, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -239,8 +245,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Account, c.AccountPlan, c.Customer, c.Module, c.Plan, c.Product,
-		c.Subscription, c.SystemUser, c.User,
+		c.Account, c.AccountDomain, c.AccountPlan, c.Customer, c.Module, c.Plan,
+		c.Product, c.Subscription, c.SystemUser, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -251,6 +257,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AccountMutation:
 		return c.Account.mutate(ctx, m)
+	case *AccountDomainMutation:
+		return c.AccountDomain.mutate(ctx, m)
 	case *AccountPlanMutation:
 		return c.AccountPlan.mutate(ctx, m)
 	case *CustomerMutation:
@@ -396,6 +404,22 @@ func (c *AccountClient) QueryAccountPlan(_m *Account) *AccountPlanQuery {
 	return query
 }
 
+// QueryDomains queries the domains edge of a Account.
+func (c *AccountClient) QueryDomains(_m *Account) *AccountDomainQuery {
+	query := (&AccountDomainClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(accountdomain.Table, accountdomain.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, account.DomainsTable, account.DomainsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AccountClient) Hooks() []Hook {
 	return c.hooks.Account
@@ -418,6 +442,155 @@ func (c *AccountClient) mutate(ctx context.Context, m *AccountMutation) (Value, 
 		return (&AccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Account mutation op: %q", m.Op())
+	}
+}
+
+// AccountDomainClient is a client for the AccountDomain schema.
+type AccountDomainClient struct {
+	config
+}
+
+// NewAccountDomainClient returns a client for the AccountDomain from the given config.
+func NewAccountDomainClient(c config) *AccountDomainClient {
+	return &AccountDomainClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountdomain.Hooks(f(g(h())))`.
+func (c *AccountDomainClient) Use(hooks ...Hook) {
+	c.hooks.AccountDomain = append(c.hooks.AccountDomain, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountdomain.Intercept(f(g(h())))`.
+func (c *AccountDomainClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountDomain = append(c.inters.AccountDomain, interceptors...)
+}
+
+// Create returns a builder for creating a AccountDomain entity.
+func (c *AccountDomainClient) Create() *AccountDomainCreate {
+	mutation := newAccountDomainMutation(c.config, OpCreate)
+	return &AccountDomainCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountDomain entities.
+func (c *AccountDomainClient) CreateBulk(builders ...*AccountDomainCreate) *AccountDomainCreateBulk {
+	return &AccountDomainCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountDomainClient) MapCreateBulk(slice any, setFunc func(*AccountDomainCreate, int)) *AccountDomainCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountDomainCreateBulk{err: fmt.Errorf("calling to AccountDomainClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountDomainCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountDomainCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountDomain.
+func (c *AccountDomainClient) Update() *AccountDomainUpdate {
+	mutation := newAccountDomainMutation(c.config, OpUpdate)
+	return &AccountDomainUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountDomainClient) UpdateOne(_m *AccountDomain) *AccountDomainUpdateOne {
+	mutation := newAccountDomainMutation(c.config, OpUpdateOne, withAccountDomain(_m))
+	return &AccountDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountDomainClient) UpdateOneID(id uuid.UUID) *AccountDomainUpdateOne {
+	mutation := newAccountDomainMutation(c.config, OpUpdateOne, withAccountDomainID(id))
+	return &AccountDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountDomain.
+func (c *AccountDomainClient) Delete() *AccountDomainDelete {
+	mutation := newAccountDomainMutation(c.config, OpDelete)
+	return &AccountDomainDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountDomainClient) DeleteOne(_m *AccountDomain) *AccountDomainDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountDomainClient) DeleteOneID(id uuid.UUID) *AccountDomainDeleteOne {
+	builder := c.Delete().Where(accountdomain.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountDomainDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountDomain.
+func (c *AccountDomainClient) Query() *AccountDomainQuery {
+	return &AccountDomainQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountDomain},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountDomain entity by its id.
+func (c *AccountDomainClient) Get(ctx context.Context, id uuid.UUID) (*AccountDomain, error) {
+	return c.Query().Where(accountdomain.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountDomainClient) GetX(ctx context.Context, id uuid.UUID) *AccountDomain {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccount queries the account edge of a AccountDomain.
+func (c *AccountDomainClient) QueryAccount(_m *AccountDomain) *AccountQuery {
+	query := (&AccountClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(accountdomain.Table, accountdomain.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, accountdomain.AccountTable, accountdomain.AccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AccountDomainClient) Hooks() []Hook {
+	return c.hooks.AccountDomain
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountDomainClient) Interceptors() []Interceptor {
+	return c.inters.AccountDomain
+}
+
+func (c *AccountDomainClient) mutate(ctx context.Context, m *AccountDomainMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountDomainCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountDomainUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountDomainDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountDomain mutation op: %q", m.Op())
 	}
 }
 
@@ -1600,11 +1773,11 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, AccountPlan, Customer, Module, Plan, Product, Subscription, SystemUser,
-		User []ent.Hook
+		Account, AccountDomain, AccountPlan, Customer, Module, Plan, Product,
+		Subscription, SystemUser, User []ent.Hook
 	}
 	inters struct {
-		Account, AccountPlan, Customer, Module, Plan, Product, Subscription, SystemUser,
-		User []ent.Interceptor
+		Account, AccountDomain, AccountPlan, Customer, Module, Plan, Product,
+		Subscription, SystemUser, User []ent.Interceptor
 	}
 )

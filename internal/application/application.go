@@ -6,6 +6,7 @@ import (
 
 	"github.com/joaofilippe/subclub/ent"
 	accountrepo "github.com/joaofilippe/subclub/internal/application/repository/account"
+	accountdomainrepo "github.com/joaofilippe/subclub/internal/application/repository/accountdomain"
 	accountplanrepo "github.com/joaofilippe/subclub/internal/application/repository/accountplan"
 	customerrepo "github.com/joaofilippe/subclub/internal/application/repository/customer"
 	modulerepo "github.com/joaofilippe/subclub/internal/application/repository/module"
@@ -68,8 +69,9 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 
 	userRepo := userrepo.NewUserEntRepository(a.entClient)
 	accountRepo := accountrepo.NewAccountEntRepository(a.entClient)
+	accountDomainRepo := accountdomainrepo.NewAccountDomainEntRepository(a.entClient)
 
-	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, []byte(cfg.JWTSecret))
+	a.AuthService = authsvc.NewAuthService(userRepo, accountRepo, accountDomainRepo, a.TenantManager, []byte(cfg.JWTSecret))
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
 	a.ModuleService = modulesvc.NewModuleService(modulerepo.NewModuleEntRepository(a.entClient))

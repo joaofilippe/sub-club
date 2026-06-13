@@ -9,6 +9,9 @@ import (
 // Account is the predicate function for account builders.
 type Account func(*sql.Selector)
 
+// AccountDomain is the predicate function for accountdomain builders.
+type AccountDomain func(*sql.Selector)
+
 // AccountPlan is the predicate function for accountplan builders.
 type AccountPlan func(*sql.Selector)
 

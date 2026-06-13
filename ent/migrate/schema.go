@@ -35,6 +35,26 @@ var (
 			},
 		},
 	}
+	// AccountDomainsColumns holds the columns for the "account_domains" table.
+	AccountDomainsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "domain", Type: field.TypeString, Unique: true},
+		{Name: "account_id", Type: field.TypeUUID},
+	}
+	// AccountDomainsTable holds the schema information for the "account_domains" table.
+	AccountDomainsTable = &schema.Table{
+		Name:       "account_domains",
+		Columns:    AccountDomainsColumns,
+		PrimaryKey: []*schema.Column{AccountDomainsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_domains_accounts_domains",
+				Columns:    []*schema.Column{AccountDomainsColumns[2]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// AccountPlansColumns holds the columns for the "account_plans" table.
 	AccountPlansColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -216,6 +236,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
+		AccountDomainsTable,
 		AccountPlansTable,
 		CustomersTable,
 		ModulesTable,
@@ -230,6 +251,7 @@ var (
 
 func init() {
 	AccountsTable.ForeignKeys[0].RefTable = AccountPlansTable
+	AccountDomainsTable.ForeignKeys[0].RefTable = AccountsTable
 	SubscriptionsTable.ForeignKeys[0].RefTable = CustomersTable
 	SubscriptionsTable.ForeignKeys[1].RefTable = PlansTable
 	AccountPlanModulesTable.ForeignKeys[0].RefTable = AccountPlansTable
