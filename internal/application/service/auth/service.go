@@ -3,20 +3,20 @@ package service
 import (
 	"context"
 
-	authdomain "github.com/joaofilippe/subclub/internal/domain/auth"
 	authmodel "github.com/joaofilippe/subclub/internal/domain/auth/model"
+	"github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 )
 
 type AuthService struct {
-	loginUC       authdomain.LoginUseCase
-	tenantLoginUC authdomain.TenantLoginUseCase
-	lookupUC      authdomain.LookupUseCase
+	loginUC       *usecase.LoginUseCase
+	tenantLoginUC *usecase.TenantLoginUseCase
+	lookupUC      *usecase.LookupUseCase
 }
 
 func NewAuthService(
-	loginUC authdomain.LoginUseCase,
-	tenantLoginUC authdomain.TenantLoginUseCase,
-	lookupUC authdomain.LookupUseCase,
+	loginUC *usecase.LoginUseCase,
+	tenantLoginUC *usecase.TenantLoginUseCase,
+	lookupUC *usecase.LookupUseCase,
 ) *AuthService {
 	return &AuthService{
 		loginUC:       loginUC,

@@ -27,3 +27,9 @@ type AccountInfo struct {
 type TokenOutput struct {
 	Token string `json:"token"`
 }
+
+type TenantAuthUser struct {
+	ID           string
+	PasswordHash string
+	Role         string
+}

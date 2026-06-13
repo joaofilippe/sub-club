@@ -1,4 +1,4 @@
-package authusecase
+package usecase
 
 import (
 	"context"
@@ -6,28 +6,27 @@ import (
 	"strings"
 	"sync"
 
-	entuser "github.com/joaofilippe/subclub/ent/user"
 	"github.com/joaofilippe/subclub/internal/domain/account"
 	"github.com/joaofilippe/subclub/internal/domain/accountdomain"
+	authdomain "github.com/joaofilippe/subclub/internal/domain/auth"
 	authmodel "github.com/joaofilippe/subclub/internal/domain/auth/model"
-	"github.com/joaofilippe/subclub/internal/infra/database"
 )
 
 type LookupUseCase struct {
 	accountRepo       account.Repository
 	accountDomainRepo accountdomain.Repository
-	tenantManager     *database.TenantClientManager
+	tenantRepo        authdomain.TenantRepository
 }
 
 func NewLookupUseCase(
 	accountRepo account.Repository,
 	accountDomainRepo accountdomain.Repository,
-	tenantManager *database.TenantClientManager,
+	tenantRepo authdomain.TenantRepository,
 ) *LookupUseCase {
 	return &LookupUseCase{
 		accountRepo:       accountRepo,
 		accountDomainRepo: accountDomainRepo,
-		tenantManager:     tenantManager,
+		tenantRepo:        tenantRepo,
 	}
 }
 
@@ -57,14 +56,7 @@ func (uc *LookupUseCase) Execute(ctx context.Context, input authmodel.LookupInpu
 		wg.Add(1)
 		go func(slug, name string) {
 			defer wg.Done()
-			client, err := uc.tenantManager.GetOrCreate(slug)
-			if err != nil {
-				results <- hit{}
-				return
-			}
-			exists, err := client.User.Query().
-				Where(entuser.EmailEQ(input.Email), entuser.DeletedAtIsNil()).
-				Exist(ctx)
+			exists, err := uc.tenantRepo.UserExistsByEmailAndSlug(ctx, slug, input.Email)
 			if err != nil || !exists {
 				results <- hit{}
 				return

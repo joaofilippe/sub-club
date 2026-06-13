@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 
-	authusecase "github.com/joaofilippe/subclub/internal/application/usecase/auth"
+	authusecase "github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
 	"github.com/joaofilippe/subclub/internal/web/common"
 )

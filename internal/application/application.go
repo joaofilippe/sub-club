@@ -13,6 +13,7 @@ import (
 	planrepo "github.com/joaofilippe/subclub/internal/application/repository/plan"
 	productrepo "github.com/joaofilippe/subclub/internal/application/repository/product"
 	subrepo "github.com/joaofilippe/subclub/internal/application/repository/subscription"
+	tenantauthrepo "github.com/joaofilippe/subclub/internal/application/repository/tenantauth"
 	tenantuserrepo "github.com/joaofilippe/subclub/internal/application/repository/tenantuser"
 	userrepo "github.com/joaofilippe/subclub/internal/application/repository/user"
 	accountsvc "github.com/joaofilippe/subclub/internal/application/service/account"
@@ -25,7 +26,7 @@ import (
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	tenantusersvc "github.com/joaofilippe/subclub/internal/application/service/tenantuser"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
-	authusecase "github.com/joaofilippe/subclub/internal/application/usecase/auth"
+	authusecase "github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 
@@ -73,10 +74,11 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	accountDomainRepo := accountdomainrepo.NewAccountDomainEntRepository(a.entClient)
 
 	jwtSecret := []byte(cfg.JWTSecret)
+	tenantAuthRepo := tenantauthrepo.NewTenantAuthEntRepository(a.TenantManager)
 	a.AuthService = authsvc.NewAuthService(
 		authusecase.NewLoginUseCase(userRepo, accountRepo, jwtSecret),
-		authusecase.NewTenantLoginUseCase(a.TenantManager, jwtSecret),
-		authusecase.NewLookupUseCase(accountRepo, accountDomainRepo, a.TenantManager),
+		authusecase.NewTenantLoginUseCase(tenantAuthRepo, jwtSecret),
+		authusecase.NewLookupUseCase(accountRepo, accountDomainRepo, tenantAuthRepo),
 	)
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)
 	a.AccountPlanService = accountplansvc.NewAccountPlanService(accountplanrepo.NewAccountPlanEntRepository(a.entClient))
