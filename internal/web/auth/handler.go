@@ -30,7 +30,7 @@ func NewAuthHandler(service authdomain.Service) *AuthHandler {
 // @Failure      400   {object}  common.Response
 // @Failure      401   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /auth/login [post]
+// @Router       /api/v1/auth/login [post]
 func (h *AuthHandler) Login(c echo.Context) error {
 	var req LoginRequestDTO
 	if err := c.Bind(&req); err != nil {

@@ -57,7 +57,7 @@ func NewProductHandler(s domain.Service) *ProductHandler {
 // @Success      201      {object}  ProductDTO
 // @Failure      400      {object}  common.Response
 // @Failure      500      {object}  common.Response
-// @Router       /products [post]
+// @Router       /api/v1/products [post]
 func (h *ProductHandler) Create(c echo.Context) error {
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -92,7 +92,7 @@ func (h *ProductHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Product ID"
 // @Success      200  {object}  ProductDTO
 // @Failure      404  {object}  common.Response
-// @Router       /products/{id} [get]
+// @Router       /api/v1/products/{id} [get]
 func (h *ProductHandler) Get(c echo.Context) error {
 	product, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -113,7 +113,7 @@ func (h *ProductHandler) Get(c echo.Context) error {
 // @Failure      400      {object}  common.Response
 // @Failure      404      {object}  common.Response
 // @Failure      500      {object}  common.Response
-// @Router       /products/{id} [put]
+// @Router       /api/v1/products/{id} [put]
 func (h *ProductHandler) Update(c echo.Context) error {
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -152,7 +152,7 @@ func (h *ProductHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Product ID"
 // @Success      200  {string}  string  "OK"
 // @Failure      500  {object}  common.Response
-// @Router       /products/{id} [delete]
+// @Router       /api/v1/products/{id} [delete]
 func (h *ProductHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
@@ -172,7 +172,7 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 // @Param        pageSize  query     int     false  "Page size"
 // @Success      200       {object}  PaginatedProductResponse
 // @Failure      500       {object}  common.Response
-// @Router       /products [get]
+// @Router       /api/v1/products [get]
 func (h *ProductHandler) List(c echo.Context) error {
 	filter := model.Filter{}
 	if s := c.QueryParam("search"); s != "" {

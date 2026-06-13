@@ -418,7 +418,7 @@ info:
   title: SubClub API
   version: "1.0"
 paths:
-  /account-plans:
+  /api/v1/account-plans:
     get:
       description: Returns all active SubClub subscription plans
       produces:
@@ -466,7 +466,7 @@ paths:
       summary: Create an account plan
       tags:
       - account-plans
-  /account-plans/{id}:
+  /api/v1/account-plans/{id}:
     delete:
       description: Soft deletes an account plan by ID
       parameters:
@@ -549,7 +549,7 @@ paths:
       summary: Update an account plan
       tags:
       - account-plans
-  /accounts:
+  /api/v1/accounts:
     get:
       description: Returns all accounts
       produces:
@@ -597,7 +597,7 @@ paths:
       summary: Create an account
       tags:
       - accounts
-  /accounts/{id}:
+  /api/v1/accounts/{id}:
     delete:
       description: Soft deletes an account by ID
       parameters:
@@ -680,7 +680,7 @@ paths:
       summary: Update an account
       tags:
       - accounts
-  /auth/login:
+  /api/v1/auth/login:
     post:
       consumes:
       - application/json
@@ -719,7 +719,7 @@ paths:
       summary: Authenticate
       tags:
       - auth
-  /customers:
+  /api/v1/customers:
     get:
       description: Get a paginated list of customers
       parameters:
@@ -782,7 +782,7 @@ paths:
       summary: Create a customer
       tags:
       - customers
-  /customers/{id}:
+  /api/v1/customers/{id}:
     delete:
       description: Soft deletes a customer by ID
       parameters:
@@ -865,7 +865,7 @@ paths:
       summary: Update a customer
       tags:
       - customers
-  /modules:
+  /api/v1/modules:
     get:
       description: Returns all active modules
       produces:
@@ -913,7 +913,7 @@ paths:
       summary: Create a module
       tags:
       - modules
-  /modules/{id}:
+  /api/v1/modules/{id}:
     delete:
       description: Soft deletes a module by ID
       parameters:
@@ -994,7 +994,7 @@ paths:
       summary: Update a module
       tags:
       - modules
-  /plans:
+  /api/v1/plans:
     get:
       description: Get a paginated list of plans
       parameters:
@@ -1057,7 +1057,7 @@ paths:
       summary: Create a plan
       tags:
       - plans
-  /plans/{id}:
+  /api/v1/plans/{id}:
     delete:
       description: Soft deletes a plan by ID
       parameters:
@@ -1140,7 +1140,7 @@ paths:
       summary: Update a plan
       tags:
       - plans
-  /products:
+  /api/v1/products:
     get:
       description: Get a paginated list of products
       parameters:
@@ -1207,7 +1207,7 @@ paths:
       summary: Create a product
       tags:
       - products
-  /products/{id}:
+  /api/v1/products/{id}:
     delete:
       description: Soft deletes a product by ID
       parameters:
@@ -1290,7 +1290,7 @@ paths:
       summary: Update a product
       tags:
       - products
-  /subscriptions:
+  /api/v1/subscriptions:
     get:
       description: Get a paginated list of subscriptions
       parameters:
@@ -1353,7 +1353,7 @@ paths:
       summary: Create a subscription
       tags:
       - subscriptions
-  /subscriptions/{id}:
+  /api/v1/subscriptions/{id}:
     delete:
       description: Soft deletes a subscription by ID
       parameters:
@@ -1436,30 +1436,7 @@ paths:
       summary: Update a subscription
       tags:
       - subscriptions
-  /users:
-    get:
-      description: Returns all active users for the current tenant. Requires tenant
-        admin role.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
-            type: array
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-      summary: List tenant users
-      tags:
-      - users
+  /api/v1/system-users:
     post:
       consumes:
       - application/json
@@ -1494,7 +1471,65 @@ paths:
       summary: Create a user
       tags:
       - users
-  /users/{id}:
+  /api/v1/users:
+    get:
+      description: Returns all active users for the current tenant. Requires tenant
+        admin role.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: List tenant users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user (admin, operations, etc.) for the current tenant.
+        Requires tenant admin role.
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_tenantuser.TenantUserInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Create a tenant user
+      tags:
+      - users
+  /api/v1/users/{id}:
     delete:
       description: Soft deletes a tenant user by ID. Requires tenant admin role.
       parameters:

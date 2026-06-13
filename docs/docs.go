@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/account-plans": {
+        "/api/v1/account-plans": {
             "get": {
                 "description": "Returns all active SubClub subscription plans",
                 "produces": [
@@ -88,7 +88,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/account-plans/{id}": {
+        "/api/v1/account-plans/{id}": {
             "get": {
                 "description": "Retrieves a SubClub subscription plan by UUID",
                 "produces": [
@@ -213,7 +213,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/accounts": {
+        "/api/v1/accounts": {
             "get": {
                 "description": "Returns all accounts",
                 "produces": [
@@ -286,7 +286,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/accounts/{id}": {
+        "/api/v1/accounts/{id}": {
             "get": {
                 "description": "Retrieves an account by UUID",
                 "produces": [
@@ -411,7 +411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/login": {
+        "/api/v1/auth/login": {
             "post": {
                 "description": "Validates credentials and returns a signed JWT token",
                 "consumes": [
@@ -475,7 +475,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/customers": {
+        "/api/v1/customers": {
             "get": {
                 "description": "Get a paginated list of customers",
                 "produces": [
@@ -571,7 +571,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/customers/{id}": {
+        "/api/v1/customers/{id}": {
             "get": {
                 "description": "Retrieves a customer by their UUID",
                 "produces": [
@@ -696,7 +696,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/modules": {
+        "/api/v1/modules": {
             "get": {
                 "description": "Returns all active modules",
                 "produces": [
@@ -769,7 +769,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/modules/{id}": {
+        "/api/v1/modules/{id}": {
             "get": {
                 "description": "Retrieves a module by its UUID",
                 "produces": [
@@ -891,7 +891,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/plans": {
+        "/api/v1/plans": {
             "get": {
                 "description": "Get a paginated list of plans",
                 "produces": [
@@ -987,7 +987,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/plans/{id}": {
+        "/api/v1/plans/{id}": {
             "get": {
                 "description": "Retrieves a plan by its UUID",
                 "produces": [
@@ -1112,7 +1112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/products": {
+        "/api/v1/products": {
             "get": {
                 "description": "Get a paginated list of products",
                 "produces": [
@@ -1214,7 +1214,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/products/{id}": {
+        "/api/v1/products/{id}": {
             "get": {
                 "description": "Retrieves a product by its UUID",
                 "produces": [
@@ -1339,7 +1339,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/subscriptions": {
+        "/api/v1/subscriptions": {
             "get": {
                 "description": "Get a paginated list of subscriptions",
                 "produces": [
@@ -1435,7 +1435,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/subscriptions/{id}": {
+        "/api/v1/subscriptions/{id}": {
             "get": {
                 "description": "Retrieves a subscription by its UUID",
                 "produces": [
@@ -1560,40 +1560,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
-            "get": {
-                "description": "Returns all active users for the current tenant. Requires tenant admin role.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "List tenant users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                        }
-                    }
-                }
-            },
+        "/api/v1/system-users": {
             "post": {
                 "description": "Creates a new administrative user",
                 "consumes": [
@@ -1646,7 +1613,92 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/api/v1/users": {
+            "get": {
+                "description": "Returns all active users for the current tenant. Requires tenant admin role.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "List tenant users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new user (admin, operations, etc.) for the current tenant. Requires tenant admin role.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create a tenant user",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{id}": {
             "get": {
                 "description": "Returns a tenant user by ID. Requires tenant admin role.",
                 "produces": [
