@@ -30,7 +30,7 @@ func stubApp() *application.Application {
 }
 
 func TestServer_AllRoutesPresent(t *testing.T) {
-	srv := server.NewServer(web.NewHandlers(stubApp()), nil, []byte("test-secret"))
+	srv := server.NewServer(web.NewHandlers(stubApp()), nil, []byte("test-secret"), false)
 
 	registered := map[string]bool{}
 	for _, r := range srv.GetEcho().Routes() {

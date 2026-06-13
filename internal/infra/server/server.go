@@ -3,6 +3,7 @@ package server
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/middleware"
@@ -17,7 +18,7 @@ type Server struct {
 	router *router
 }
 
-func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManager, jwtSecret []byte) *Server {
+func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManager, jwtSecret []byte, isDev bool) *Server {
 	logger := slog.Default()
 	e := echo.New()
 
@@ -29,6 +30,17 @@ func NewServer(handlers *web.Handlers, tenantManager *database.TenantClientManag
 
 	e.Use(middleware.ConfigureLogger(s.logger))
 	e.Use(echoMiddleware.Recover())
+
+	corsConfig := echoMiddleware.CORSConfig{
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAuthorization},
+	}
+	if isDev {
+		corsConfig.AllowOriginFunc = func(origin string) (bool, error) {
+			return strings.HasPrefix(origin, "http://localhost") || strings.HasPrefix(origin, "https://localhost"), nil
+		}
+	}
+	e.Use(echoMiddleware.CORSWithConfig(corsConfig))
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
