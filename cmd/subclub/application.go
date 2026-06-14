@@ -31,6 +31,10 @@ func startApplication() {
 	}
 
 	ctx := context.Background()
+	if err := database.EnsureDatabase(ctx, cfg.DatabaseURL); err != nil {
+		log.Fatalf("Could not ensure database exists: %v", err)
+	}
+
 	dbConnection, err := database.NewConnection(ctx, cfg.DatabaseDriver, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v", err)
