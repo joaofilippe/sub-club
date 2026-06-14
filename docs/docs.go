@@ -413,7 +413,7 @@ const docTemplate = `{
         },
         "/api/v1/auth/login": {
             "post": {
-                "description": "Validates credentials and returns a signed JWT token",
+                "description": "Validates email + password and returns a signed JWT. If the email belongs to a single tenant the user is logged into that tenant automatically. If it matches multiple tenants a 409 is returned instructing the client to use the username + account_slug login instead.",
                 "consumes": [
                     "application/json"
                 ],
@@ -423,7 +423,7 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Authenticate",
+                "summary": "Authenticate by email",
                 "parameters": [
                     {
                         "description": "Login credentials",
@@ -432,6 +432,76 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/internal_web_auth.LoginRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_auth.TokenResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login/username": {
+            "post": {
+                "description": "Validates username + account_slug + password for a tenant user. Use this when the email-based login returns 409 (multiple accounts found).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Authenticate by username and account slug",
+                "parameters": [
+                    {
+                        "description": "Username login credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_web_auth.UsernameLoginRequestDTO"
                         }
                     }
                 ],
@@ -523,70 +593,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/tenant-login": {
-            "post": {
-                "description": "Validates credentials against a specific tenant schema and returns a signed JWT",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Authenticate tenant user",
-                "parameters": [
-                    {
-                        "description": "Tenant login credentials",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_web_auth.TenantLoginRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_web_auth.TokenResponseDTO"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
@@ -2190,24 +2196,24 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_web_auth.TenantLoginRequestDTO": {
+        "internal_web_auth.TokenResponseDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_web_auth.UsernameLoginRequestDTO": {
             "type": "object",
             "properties": {
                 "account_slug": {
                     "type": "string"
                 },
-                "email": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "internal_web_auth.TokenResponseDTO": {
-            "type": "object",
-            "properties": {
-                "token": {
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -2597,6 +2603,9 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -2613,6 +2622,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

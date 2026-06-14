@@ -8,5 +8,6 @@ import (
 
 type Service interface {
 	Login(ctx context.Context, input authmodel.LoginInput) (*authmodel.TokenOutput, error)
+	LoginByUsername(ctx context.Context, input authmodel.UsernameLoginInput) (*authmodel.TokenOutput, error)
 	Lookup(ctx context.Context, input authmodel.LookupInput) ([]authmodel.AccountInfo, error)
 }

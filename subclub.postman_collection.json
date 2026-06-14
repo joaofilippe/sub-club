@@ -2,7 +2,7 @@
   "info": {
     "name": "SubClub API",
     "_postman_id": "subclub-api-collection",
-    "description": "Collection completa da API SubClub.\n\n**Fluxo recomendado:**\n1. Execute `Auth / Login Admin` → token salvo automaticamente em `adminToken`\n2. Crie um Account Plan, depois uma Account\n3. Execute `Auth / Login Tenant` com um usuário vinculado à account → token salvo em `tenantToken`\n4. Use as rotas de Customers, Plans, Products e Subscriptions",
+    "description": "Collection completa da API SubClub.\n\n**Fluxo de autenticação:**\n- `Auth / Login (email)` — envia email + password. Se o email pertencer a um único tenant, retorna token direto. Se retornar 409, use o fluxo abaixo.\n- `Auth / Login (username + slug)` — fallback quando o email aparece em múltiplos tenants: envie username + account_slug + password.\n\n**Fluxo de setup recomendado:**\n1. Execute `Auth / Login (email)` com adm@adm.com → token salvo em `adminToken`\n2. Crie um Account Plan, depois uma Account\n3. Execute `Auth / Login (email) — Demo Tenant` ou `Auth / Login (username + slug)` → token salvo em `tenantToken`\n4. Use as rotas de Customers, Plans, Products e Subscriptions",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -40,15 +40,15 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Login Admin",
+          "name": "Login (email)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
                   "var json = pm.response.json();",
-                  "if (json.token) {",
-                  "    pm.collectionVariables.set('adminToken', json.token);",
+                  "if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('adminToken', json.data.token);",
                   "    console.log('adminToken salvo');",
                   "}"
                 ],
@@ -63,23 +63,11 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"adm@adm.com\",\n  \"password\": \"12345678\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
           }
         },
         {
-          "name": "Lookup Accounts by Email",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"usuario@tenant.com\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/v1/auth/lookup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "lookup"] }
-          }
-        },
-        {
-          "name": "Login Tenant",
+          "name": "Login (email) — Demo Tenant",
           "event": [
             {
               "listen": "test",
@@ -100,9 +88,48 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"usuario@tenant.com\",\n  \"password\": \"senha\",\n  \"account_slug\": \"meu-tenant\"\n}"
+              "raw": "{\n  \"email\": \"admin@demo.com\",\n  \"password\": \"12345678\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/auth/tenant-login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "tenant-login"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (username + slug)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('tenantToken', json.data.token);",
+                  "    console.log('tenantToken salvo');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"account_slug\": \"demo\",\n  \"password\": \"12345678\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login/username", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login", "username"] }
+          }
+        },
+        {
+          "name": "Lookup Accounts by Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@tenant.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/lookup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "lookup"] }
           }
         }
       ]
@@ -322,7 +349,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Barista João\",\n  \"email\": \"joao@cafeorigem.com.br\",\n  \"password\": \"senha123\",\n  \"role\": \"operations\"\n}"
+              "raw": "{\n  \"name\": \"Barista João\",\n  \"username\": \"joao.barista\",\n  \"email\": \"joao@cafeorigem.com.br\",\n  \"password\": \"senha123\",\n  \"role\": \"operations\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["users"] }
           }

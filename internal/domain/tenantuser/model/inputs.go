@@ -6,6 +6,7 @@ var ErrNotFound = errors.New("tenant user not found")
 
 type CreateTenantUserInput struct {
 	Name     string
+	Username string
 	Email    string
 	Password string
 	Role     Role

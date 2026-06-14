@@ -90,7 +90,7 @@ func SeedAll(ctx context.Context, client *ent.Client, cfg *config.Config, manage
 		return
 	}
 
-	if err := manager.CreateTenantOwner(ctx, demoSlug, "admin@demo.com", "Demo", "12345678"); err != nil {
+	if err := manager.CreateTenantOwner(ctx, demoSlug, "admin@demo.com", "Demo", "admin", "12345678"); err != nil {
 		log.Printf("[Seeder] Failed to create demo tenant owner: %v\n", err)
 	}
 

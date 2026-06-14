@@ -35,6 +35,24 @@ func (r *TenantAuthEntRepository) FindUserByEmailAndSlug(ctx context.Context, sl
 	}, nil
 }
 
+func (r *TenantAuthEntRepository) FindUserByUsernameAndSlug(ctx context.Context, slug, username string) (*authmodel.TenantAuthUser, error) {
+	client, err := r.manager.GetOrCreate(slug)
+	if err != nil {
+		return nil, err
+	}
+	u, err := client.User.Query().
+		Where(entuser.UsernameEQ(username), entuser.DeletedAtIsNil()).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &authmodel.TenantAuthUser{
+		ID:           u.ID.String(),
+		PasswordHash: u.Password,
+		Role:         string(u.Role),
+	}, nil
+}
+
 func (r *TenantAuthEntRepository) UserExistsByEmailAndSlug(ctx context.Context, slug, email string) (bool, error) {
 	client, err := r.manager.GetOrCreate(slug)
 	if err != nil {

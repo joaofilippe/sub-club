@@ -1,9 +1,14 @@
 package auth
 
 type LoginRequestDTO struct {
-	Email       string `json:"email"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UsernameLoginRequestDTO struct {
+	Username    string `json:"username"`
+	AccountSlug string `json:"account_slug"`
 	Password    string `json:"password"`
-	AccountSlug string `json:"account_slug"` // optional — empty means system login
 }
 
 type LookupRequestDTO struct {

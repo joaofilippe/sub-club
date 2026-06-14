@@ -3,6 +3,7 @@ package tenantuser
 type TenantUserDTO struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
+	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Role      string `json:"role"`
 	CreatedAt string `json:"createdAt"`
@@ -11,6 +12,7 @@ type TenantUserDTO struct {
 
 type TenantUserInputDTO struct {
 	Name     string `json:"name"`
+	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Role     string `json:"role"`

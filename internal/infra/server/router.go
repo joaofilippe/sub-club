@@ -25,6 +25,7 @@ func (r *router) registerRoutes() {
 
 	v1 := r.echo.Group("/api/v1")
 	v1.POST("/auth/login", r.handlers.Auth.Login)
+	v1.POST("/auth/login/username", r.handlers.Auth.LoginByUsername)
 	v1.POST("/auth/lookup", r.handlers.Auth.Lookup)
 
 	adminMW := middleware.RequireAdminMiddleware(r.jwtSecret)

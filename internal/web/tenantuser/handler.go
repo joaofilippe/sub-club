@@ -36,12 +36,13 @@ func (h *TenantUserHandler) Create(c echo.Context) error {
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
 	}
-	if input.Name == "" || input.Email == "" || input.Password == "" || input.Role == "" {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "name, email, password and role are required"})
+	if input.Name == "" || input.Username == "" || input.Email == "" || input.Password == "" || input.Role == "" {
+		return c.JSON(http.StatusBadRequest, common.Response{Message: "name, username, email, password and role are required"})
 	}
 
 	result, err := h.service.Create(c.Request().Context(), model.CreateTenantUserInput{
 		Name:     input.Name,
+		Username: input.Username,
 		Email:    input.Email,
 		Password: input.Password,
 		Role:     model.Role(input.Role),
@@ -146,6 +147,7 @@ func mapToDTO(u *model.TenantUser) TenantUserDTO {
 	return TenantUserDTO{
 		ID:        u.ID,
 		Name:      u.Name,
+		Username:  u.Username,
 		Email:     u.Email,
 		Role:      string(u.Role),
 		CreatedAt: u.CreatedAt.Format(time.RFC3339),
