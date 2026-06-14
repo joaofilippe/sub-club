@@ -76,7 +76,8 @@ func (a *Application) initServices(ctx context.Context, client *ent.Client, cfg 
 	jwtSecret := []byte(cfg.JWTSecret)
 	tenantAuthRepo := tenantauthrepo.NewTenantAuthEntRepository(a.TenantManager)
 	a.AuthService = authsvc.NewAuthService(
-		authusecase.NewLoginUseCase(userRepo, accountRepo, tenantAuthRepo, jwtSecret),
+		authusecase.NewLoginUseCase(userRepo, accountRepo, accountDomainRepo, tenantAuthRepo, jwtSecret),
+		authusecase.NewLoginByUsernameUseCase(tenantAuthRepo, jwtSecret),
 		authusecase.NewLookupUseCase(accountRepo, accountDomainRepo, tenantAuthRepo),
 	)
 	a.AccountService = accountsvc.NewAccountService(accountRepo, a.TenantManager)

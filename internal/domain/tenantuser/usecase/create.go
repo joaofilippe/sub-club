@@ -27,6 +27,7 @@ func (uc *CreateTenantUserUseCase) Execute(ctx context.Context, input model.Crea
 	u := &model.TenantUser{
 		ID:        uuid.New().String(),
 		Name:      input.Name,
+		Username:  input.Username,
 		Email:     input.Email,
 		Role:      input.Role,
 		CreatedAt: time.Now(),

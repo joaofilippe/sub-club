@@ -125,7 +125,7 @@ func (m *TenantClientManager) CreateTenantSchema(ctx context.Context, slug strin
 
 // CreateTenantOwner creates the first admin User inside the tenant schema.
 // The password is hashed with bcrypt before storing.
-func (m *TenantClientManager) CreateTenantOwner(ctx context.Context, slug, email, name, password string) error {
+func (m *TenantClientManager) CreateTenantOwner(ctx context.Context, slug, email, name, username, password string) error {
 	tenantClient, err := m.GetOrCreate(slug)
 	if err != nil {
 		return fmt.Errorf("get tenant client for %q: %w", slug, err)
@@ -139,6 +139,7 @@ func (m *TenantClientManager) CreateTenantOwner(ctx context.Context, slug, email
 	_, err = tenantClient.User.Create().
 		SetID(uuid.New()).
 		SetName(name).
+		SetUsername(username).
 		SetEmail(email).
 		SetPassword(string(hash)).
 		SetRole("admin").

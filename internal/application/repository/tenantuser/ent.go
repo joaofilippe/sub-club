@@ -35,6 +35,7 @@ func (r *TenantUserEntRepository) Create(ctx context.Context, u *model.TenantUse
 	_, err = r.tenantClient(ctx).User.Create().
 		SetID(id).
 		SetName(u.Name).
+		SetUsername(u.Username).
 		SetEmail(u.Email).
 		SetPassword(passwordHash).
 		SetRole(entuser.Role(u.Role)).
@@ -99,6 +100,7 @@ func mapEntUserToDomain(u *ent.User) *model.TenantUser {
 	tu := &model.TenantUser{
 		ID:        u.ID.String(),
 		Name:      u.Name,
+		Username:  u.Username,
 		Email:     u.Email,
 		Role:      model.Role(u.Role),
 		CreatedAt: u.CreatedAt,

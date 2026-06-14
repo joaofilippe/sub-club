@@ -20,15 +20,16 @@ func NewAuthHandler(service authdomain.Service) *AuthHandler {
 }
 
 // Login godoc
-// @Summary      Authenticate
-// @Description  Validates credentials and returns a signed JWT token. Pass account_slug to authenticate as a tenant user; omit it for system login.
+// @Summary      Authenticate by email
+// @Description  Validates email + password and returns a signed JWT. If the email belongs to a single tenant the user is logged into that tenant automatically. If it matches multiple tenants a 409 is returned instructing the client to use the username + account_slug login instead.
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        body  body      LoginRequestDTO          true  "Login credentials"
+// @Param        body  body      LoginRequestDTO                      true  "Login credentials"
 // @Success      200   {object}  common.Response{data=TokenResponseDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      401   {object}  common.Response
+// @Failure      409   {object}  common.Response
 // @Failure      500   {object}  common.Response
 // @Router       /api/v1/auth/login [post]
 func (h *AuthHandler) Login(c echo.Context) error {
@@ -41,13 +42,51 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	}
 
 	out, err := h.service.Login(c.Request().Context(), authmodel.LoginInput{
-		Email:       req.Email,
-		Password:    req.Password,
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		if errors.Is(err, authmodel.ErrMultipleAccountsFound) {
+			return common.Error(c, http.StatusConflict, err.Error())
+		}
+		if errors.Is(err, authmodel.ErrInvalidCredentials) {
+			return common.Error(c, http.StatusUnauthorized, "Invalid email or password")
+		}
+		return common.Error(c, http.StatusInternalServerError, "Authentication failed")
+	}
+
+	return common.Success(c, http.StatusOK, "Login successful", TokenResponseDTO{Token: out.Token})
+}
+
+// LoginByUsername godoc
+// @Summary      Authenticate by username and account slug
+// @Description  Validates username + account_slug + password for a tenant user. Use this when the email-based login returns 409 (multiple accounts found).
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      UsernameLoginRequestDTO              true  "Username login credentials"
+// @Success      200   {object}  common.Response{data=TokenResponseDTO}
+// @Failure      400   {object}  common.Response
+// @Failure      401   {object}  common.Response
+// @Failure      500   {object}  common.Response
+// @Router       /api/v1/auth/login/username [post]
+func (h *AuthHandler) LoginByUsername(c echo.Context) error {
+	var req UsernameLoginRequestDTO
+	if err := c.Bind(&req); err != nil {
+		return common.Error(c, http.StatusBadRequest, "Invalid request payload")
+	}
+	if req.Username == "" || req.AccountSlug == "" || req.Password == "" {
+		return common.Error(c, http.StatusBadRequest, "Username, account_slug and password are required")
+	}
+
+	out, err := h.service.LoginByUsername(c.Request().Context(), authmodel.UsernameLoginInput{
+		Username:    req.Username,
 		AccountSlug: req.AccountSlug,
+		Password:    req.Password,
 	})
 	if err != nil {
 		if errors.Is(err, authmodel.ErrInvalidCredentials) {
-			return common.Error(c, http.StatusUnauthorized, "Invalid email or password")
+			return common.Error(c, http.StatusUnauthorized, "Invalid username, account or password")
 		}
 		return common.Error(c, http.StatusInternalServerError, "Authentication failed")
 	}

@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/joaofilippe/subclub/internal/domain/account"
 	"github.com/joaofilippe/subclub/internal/domain/account/model"
@@ -48,7 +49,8 @@ func (s *AccountService) Create(ctx context.Context, input model.CreateAccountIn
 		return nil, "", fmt.Errorf("generating temp password: %w", err)
 	}
 
-	if err := s.schemaCreator.CreateTenantOwner(ctx, acc.Slug, acc.Email, acc.Name, password); err != nil {
+	username := strings.SplitN(acc.Email, "@", 2)[0]
+	if err := s.schemaCreator.CreateTenantOwner(ctx, acc.Slug, acc.Email, acc.Name, username, password); err != nil {
 		return nil, "", fmt.Errorf("creating tenant owner: %w", err)
 	}
 

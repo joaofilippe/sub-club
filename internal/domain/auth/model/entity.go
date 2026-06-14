@@ -2,12 +2,20 @@ package model
 
 import "errors"
 
-var ErrInvalidCredentials = errors.New("invalid email or password")
+var (
+	ErrInvalidCredentials   = errors.New("invalid credentials")
+	ErrMultipleAccountsFound = errors.New("multiple accounts found for this email — use username and account slug to login")
+)
 
 type LoginInput struct {
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	AccountSlug string `json:"account_slug"` // optional — empty means system login
+	Email    string
+	Password string
+}
+
+type UsernameLoginInput struct {
+	Username    string
+	AccountSlug string
+	Password    string
 }
 
 type LookupInput struct {

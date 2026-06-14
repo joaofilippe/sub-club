@@ -12,6 +12,7 @@ const (
 type TenantUser struct {
 	ID        string
 	Name      string
+	Username  string
 	Email     string
 	Role      Role
 	CreatedAt time.Time

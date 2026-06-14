@@ -147,18 +147,18 @@ definitions:
       email:
         type: string
     type: object
-  internal_web_auth.TenantLoginRequestDTO:
-    properties:
-      account_slug:
-        type: string
-      email:
-        type: string
-      password:
-        type: string
-    type: object
   internal_web_auth.TokenResponseDTO:
     properties:
       token:
+        type: string
+    type: object
+  internal_web_auth.UsernameLoginRequestDTO:
+    properties:
+      account_slug:
+        type: string
+      password:
+        type: string
+      username:
         type: string
     type: object
   internal_web_customer.AddressDTO:
@@ -413,6 +413,8 @@ definitions:
         type: string
       updatedAt:
         type: string
+      username:
+        type: string
     type: object
   internal_web_tenantuser.TenantUserInputDTO:
     properties:
@@ -423,6 +425,8 @@ definitions:
       password:
         type: string
       role:
+        type: string
+      username:
         type: string
     type: object
   internal_web_tenantuser.UpdateTenantUserInputDTO:
@@ -705,7 +709,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Validates credentials and returns a signed JWT token
+      description: Validates email + password and returns a signed JWT. If the email
+        belongs to a single tenant the user is logged into that tenant automatically.
+        If it matches multiple tenants a 409 is returned instructing the client to
+        use the username + account_slug login instead.
       parameters:
       - description: Login credentials
         in: body
@@ -733,11 +740,55 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-      summary: Authenticate
+      summary: Authenticate by email
+      tags:
+      - auth
+  /api/v1/auth/login/username:
+    post:
+      consumes:
+      - application/json
+      description: Validates username + account_slug + password for a tenant user.
+        Use this when the email-based login returns 409 (multiple accounts found).
+      parameters:
+      - description: Username login credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_web_auth.UsernameLoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_auth.TokenResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+      summary: Authenticate by username and account slug
       tags:
       - auth
   /api/v1/auth/lookup:
@@ -777,46 +828,6 @@ paths:
           schema:
             $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
       summary: Lookup accounts by email
-      tags:
-      - auth
-  /api/v1/auth/tenant-login:
-    post:
-      consumes:
-      - application/json
-      description: Validates credentials against a specific tenant schema and returns
-        a signed JWT
-      parameters:
-      - description: Tenant login credentials
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/internal_web_auth.TenantLoginRequestDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/internal_web_auth.TokenResponseDTO'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
-      summary: Authenticate tenant user
       tags:
       - auth
   /api/v1/customers:

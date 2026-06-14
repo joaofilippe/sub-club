@@ -18,7 +18,7 @@ import (
 
 func stubApp() *application.Application {
 	return &application.Application{
-		AuthService:         authsvc.NewAuthService(nil, nil),
+		AuthService:         authsvc.NewAuthService(nil, nil, nil),
 		AccountService:      accountsvc.NewAccountService(nil, nil),
 		AccountPlanService:  accountplansvc.NewAccountPlanService(nil),
 		UserService:         usersvc.NewUserService(nil),
@@ -40,6 +40,7 @@ func TestServer_AllRoutesPresent(t *testing.T) {
 	want := []struct{ method, path string }{
 		// public
 		{"POST", "/api/v1/auth/login"},
+		{"POST", "/api/v1/auth/login/username"},
 		{"POST", "/api/v1/auth/lookup"},
 		// admin-only
 		{"POST", "/api/v1/accounts"},

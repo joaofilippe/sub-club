@@ -11,6 +11,7 @@ import (
 	modulemodel "github.com/joaofilippe/subclub/internal/domain/module/model"
 	planmodel "github.com/joaofilippe/subclub/internal/domain/plan/model"
 	productmodel "github.com/joaofilippe/subclub/internal/domain/product/model"
+	tenantuserdomain "github.com/joaofilippe/subclub/internal/domain/tenantuser/model"
 	usermodel "github.com/joaofilippe/subclub/internal/domain/user/model"
 )
 
@@ -53,7 +54,7 @@ func FakeAccount() *accountmodel.Account {
 	}
 }
 
-// FakeUser generates a fake user model
+// FakeUser generates a fake system user model
 func FakeUser() *usermodel.User {
 	return &usermodel.User{
 		ID:        uuid.New().String(),
@@ -62,6 +63,19 @@ func FakeUser() *usermodel.User {
 		Password:  gofakeit.Password(true, true, true, true, false, 12),
 		Type:      usermodel.UserTypeIndividual,
 		Role:      usermodel.UserRoleOperations,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+}
+
+// FakeTenantUser generates a fake tenant user model
+func FakeTenantUser() *tenantuserdomain.TenantUser {
+	return &tenantuserdomain.TenantUser{
+		ID:        uuid.New().String(),
+		Name:      gofakeit.Name(),
+		Username:  gofakeit.Username(),
+		Email:     gofakeit.Email(),
+		Role:      tenantuserdomain.RoleOperations,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
