@@ -29,10 +29,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -70,7 +82,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -111,7 +135,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -156,7 +192,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_accountplan.AccountPlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -201,7 +249,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -227,10 +275,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_web_account.AccountDTO"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_web_account.AccountDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -268,7 +328,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -309,7 +381,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -354,7 +438,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_account.AccountDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -399,7 +495,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -646,7 +742,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_customer.PaginatedCustomerResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_customer.PaginatedCustomerResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -684,7 +792,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -725,7 +845,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -770,7 +902,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_customer.CustomerDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -815,7 +959,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -841,10 +985,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_web_module.ModuleDTO"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -882,7 +1038,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -923,7 +1091,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -968,7 +1148,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_module.ModuleDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1010,8 +1202,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -1062,7 +1257,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_plan.PaginatedPlanResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_plan.PaginatedPlanResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -1100,7 +1307,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1141,7 +1360,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -1186,7 +1417,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_plan.PlanDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1231,7 +1474,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -1289,7 +1532,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_product.PaginatedProductResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_product.PaginatedProductResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -1327,7 +1582,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1368,7 +1635,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -1413,7 +1692,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_product.ProductDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1458,7 +1749,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -1510,7 +1801,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_subscription.PaginatedSubscriptionResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_subscription.PaginatedSubscriptionResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -1548,7 +1851,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1589,7 +1904,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -1634,7 +1961,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_subscription.SubscriptionDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1679,7 +2018,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "500": {
@@ -1758,10 +2097,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
@@ -1805,7 +2156,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1852,7 +2215,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "403": {
@@ -1903,7 +2278,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_web_tenantuser.TenantUserDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1954,7 +2341,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response"
                         }
                     },
                     "403": {
@@ -2015,10 +2402,21 @@ const docTemplate = `{
                 "UserTypeSystem"
             ]
         },
+        "github_com_joaofilippe_subclub_internal_web_common.ErrorDetail": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_joaofilippe_subclub_internal_web_common.Response": {
             "type": "object",
             "properties": {
                 "data": {},
+                "error": {
+                    "$ref": "#/definitions/github_com_joaofilippe_subclub_internal_web_common.ErrorDetail"
+                },
                 "message": {
                     "type": "string"
                 }

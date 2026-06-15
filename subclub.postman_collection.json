@@ -2,25 +2,21 @@
   "info": {
     "name": "SubClub API",
     "_postman_id": "subclub-api-collection",
-    "description": "Collection completa da API SubClub.\n\n**Fluxo de autenticação:**\n- `Auth / Login (email)` — envia email + password. Se o email pertencer a um único tenant, retorna token direto. Se retornar 409, use o fluxo abaixo.\n- `Auth / Login (username + slug)` — fallback quando o email aparece em múltiplos tenants: envie username + account_slug + password.\n\n**Fluxo de setup recomendado:**\n1. Execute `Auth / Login (email)` com adm@adm.com → token salvo em `adminToken`\n2. Crie um Account Plan, depois uma Account\n3. Execute `Auth / Login (email) — Demo Tenant` ou `Auth / Login (username + slug)` → token salvo em `tenantToken`\n4. Use as rotas de Customers, Plans, Products e Subscriptions",
+    "description": "Collection completa da API SubClub.\n\n**Envelope de resposta padrão:**\n```json\n{ \"message\": \"...\", \"data\": {}, \"error\": {} }\n```\nSucesso popula `data`; erro popula `error`. Apenas um dos dois estará presente.\n\n**Fluxo de autenticação:**\n- `Auth / Login (email)` — envia email + password. Se o email pertencer a um único tenant, retorna token direto. Se retornar 409, use o fluxo abaixo.\n- `Auth / Login (username + slug)` — fallback quando o email aparece em múltiplos tenants.\n\n**Fluxo de setup recomendado:**\n1. `Auth / Login (email)` com adm@adm.com → `adminToken` salvo automaticamente\n2. `Account Plans / Create` → `accountPlanId` salvo automaticamente\n3. `Accounts / Create` → `accountId` salvo automaticamente\n4. `Auth / Login (email) — Demo Tenant` → `tenantToken` salvo automaticamente\n5. Use as rotas de Customers, Plans, Products e Subscriptions — IDs são salvos nos creates",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080",
-      "type": "string"
-    },
-    {
-      "key": "adminToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "tenantToken",
-      "value": "",
-      "type": "string"
-    }
+    { "key": "baseUrl",        "value": "http://localhost:8080", "type": "string" },
+    { "key": "adminToken",     "value": "", "type": "string" },
+    { "key": "tenantToken",    "value": "", "type": "string" },
+    { "key": "accountPlanId",  "value": "", "type": "string" },
+    { "key": "accountId",      "value": "", "type": "string" },
+    { "key": "moduleId",       "value": "", "type": "string" },
+    { "key": "customerId",     "value": "", "type": "string" },
+    { "key": "planId",         "value": "", "type": "string" },
+    { "key": "productId",      "value": "", "type": "string" },
+    { "key": "subscriptionId", "value": "", "type": "string" },
+    { "key": "tenantUserId",   "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -28,6 +24,15 @@
       "item": [
         {
           "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Status 200\", () => pm.response.to.have.status(200));"],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -46,7 +51,12 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => {",
+                  "    pm.expect(json).to.have.property('message');",
+                  "    pm.expect(json).to.have.property('data');",
+                  "});",
                   "if (json.data && json.data.token) {",
                   "    pm.collectionVariables.set('adminToken', json.data.token);",
                   "    console.log('adminToken salvo');",
@@ -73,7 +83,12 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => {",
+                  "    pm.expect(json).to.have.property('message');",
+                  "    pm.expect(json).to.have.property('data');",
+                  "});",
                   "if (json.data && json.data.token) {",
                   "    pm.collectionVariables.set('tenantToken', json.data.token);",
                   "    console.log('tenantToken salvo');",
@@ -88,7 +103,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@demo.com\",\n  \"password\": \"12345678\"\n}"
+              "raw": "{\n  \"email\": \"demo@demo.com\",\n  \"password\": \"12345678\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
           }
@@ -100,6 +115,7 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "var json = pm.response.json();",
                   "if (json.data && json.data.token) {",
                   "    pm.collectionVariables.set('tenantToken', json.data.token);",
@@ -122,6 +138,19 @@
         },
         {
           "name": "Lookup Accounts by Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -140,6 +169,26 @@
       "item": [
         {
           "name": "Create Account Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => {",
+                  "    pm.expect(json).to.have.property('message');",
+                  "    pm.expect(json).to.have.property('data');",
+                  "});",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('accountPlanId', json.data.id);",
+                  "    console.log('accountPlanId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -150,27 +199,66 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Starter\",\n  \"description\": \"Plano inicial para pequenas cafeterias\",\n  \"price\": 99.90,\n  \"maxCustomers\": 100,\n  \"maxPlans\": 3,\n  \"maxProducts\": 10,\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/account-plans", "host": ["{{baseUrl}}"], "path": ["account-plans"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/account-plans", "host": ["{{baseUrl}}"], "path": ["api", "v1", "account-plans"] }
           }
         },
         {
           "name": "List Account Plans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/account-plans", "host": ["{{baseUrl}}"], "path": ["account-plans"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/account-plans", "host": ["{{baseUrl}}"], "path": ["api", "v1", "account-plans"] }
           }
         },
         {
           "name": "Get Account Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/:id", "host": ["{{baseUrl}}"], "path": ["account-plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/{{accountPlanId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "account-plans", "{{accountPlanId}}"] }
           }
         },
         {
           "name": "Update Account Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -181,15 +269,28 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Starter Plus\",\n  \"description\": \"Plano inicial atualizado\",\n  \"price\": 129.90,\n  \"maxCustomers\": 200,\n  \"maxPlans\": 5,\n  \"maxProducts\": 20,\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/:id", "host": ["{{baseUrl}}"], "path": ["account-plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/{{accountPlanId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "account-plans", "{{accountPlanId}}"] }
           }
         },
         {
           "name": "Delete Account Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/:id", "host": ["{{baseUrl}}"], "path": ["account-plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/account-plans/{{accountPlanId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "account-plans", "{{accountPlanId}}"] }
           }
         }
       ]
@@ -200,6 +301,26 @@
       "item": [
         {
           "name": "Create Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => {",
+                  "    pm.expect(json).to.have.property('message');",
+                  "    pm.expect(json).to.have.property('data');",
+                  "});",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('accountId', json.data.id);",
+                  "    console.log('accountId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -208,29 +329,68 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Café Origem\",\n  \"email\": \"contato@cafeorigem.com.br\",\n  \"document\": \"12.345.678/0001-90\",\n  \"slug\": \"cafe-origem\",\n  \"accountPlanId\": \"<uuid-do-account-plan>\"\n}"
+              "raw": "{\n  \"name\": \"Café Origem\",\n  \"email\": \"contato@cafeorigem.com.br\",\n  \"document\": \"12.345.678/0001-90\",\n  \"slug\": \"cafe-origem\",\n  \"accountPlanId\": \"{{accountPlanId}}\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/accounts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts"] }
           }
         },
         {
           "name": "List Accounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/accounts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts"] }
           }
         },
         {
           "name": "Get Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts", "{{accountId}}"] }
           }
         },
         {
           "name": "Update Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -239,17 +399,30 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Café Origem Atualizado\",\n  \"email\": \"novo@cafeorigem.com.br\",\n  \"document\": \"12.345.678/0001-90\",\n  \"accountPlanId\": \"<uuid-do-account-plan>\",\n  \"subscriptionStatus\": \"active\",\n  \"subscriptionExpiresAt\": \"2027-01-01T00:00:00Z\",\n  \"active\": true\n}"
+              "raw": "{\n  \"name\": \"Café Origem Atualizado\",\n  \"email\": \"novo@cafeorigem.com.br\",\n  \"document\": \"12.345.678/0001-90\",\n  \"accountPlanId\": \"{{accountPlanId}}\",\n  \"subscriptionStatus\": \"active\",\n  \"subscriptionExpiresAt\": \"2027-01-01T00:00:00Z\",\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts", "{{accountId}}"] }
           }
         },
         {
           "name": "Delete Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "accounts", "{{accountId}}"] }
           }
         }
       ]
@@ -260,6 +433,23 @@
       "item": [
         {
           "name": "Create Module",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('moduleId', json.data.id);",
+                  "    console.log('moduleId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -270,27 +460,66 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Gestão de Assinaturas\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/modules", "host": ["{{baseUrl}}"], "path": ["modules"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/modules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "modules"] }
           }
         },
         {
           "name": "List Modules",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/modules", "host": ["{{baseUrl}}"], "path": ["modules"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/modules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "modules"] }
           }
         },
         {
           "name": "Get Module",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/modules/:id", "host": ["{{baseUrl}}"], "path": ["modules", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/modules/{{moduleId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "modules", "{{moduleId}}"] }
           }
         },
         {
           "name": "Update Module",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -301,15 +530,28 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Gestão de Assinaturas Pro\",\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/modules/:id", "host": ["{{baseUrl}}"], "path": ["modules", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/modules/{{moduleId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "modules", "{{moduleId}}"] }
           }
         },
         {
           "name": "Delete Module",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/modules/:id", "host": ["{{baseUrl}}"], "path": ["modules", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/modules/{{moduleId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "modules", "{{moduleId}}"] }
           }
         }
       ]
@@ -320,6 +562,19 @@
       "item": [
         {
           "name": "Create System User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -330,7 +585,7 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"operador@subclub.com\",\n  \"password\": \"senha123\",\n  \"type\": \"individual\",\n  \"role\": \"admin\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/system-users", "host": ["{{baseUrl}}"], "path": ["system-users"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/system-users", "host": ["{{baseUrl}}"], "path": ["api", "v1", "system-users"] }
           }
         }
       ]
@@ -341,6 +596,23 @@
       "item": [
         {
           "name": "Create Tenant User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('tenantUserId', json.data.id);",
+                  "    console.log('tenantUserId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -351,27 +623,66 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Barista João\",\n  \"username\": \"joao.barista\",\n  \"email\": \"joao@cafeorigem.com.br\",\n  \"password\": \"senha123\",\n  \"role\": \"operations\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users"] }
           }
         },
         {
           "name": "List Tenant Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users"] }
           }
         },
         {
           "name": "Get Tenant User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/users/:id", "host": ["{{baseUrl}}"], "path": ["users", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{tenantUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{tenantUserId}}"] }
           }
         },
         {
           "name": "Update Tenant User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -382,15 +693,28 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Barista João Atualizado\",\n  \"role\": \"admin\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/users/:id", "host": ["{{baseUrl}}"], "path": ["users", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{tenantUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{tenantUserId}}"] }
           }
         },
         {
           "name": "Delete Tenant User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/users/:id", "host": ["{{baseUrl}}"], "path": ["users", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{tenantUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{tenantUserId}}"] }
           }
         }
       ]
@@ -401,6 +725,23 @@
       "item": [
         {
           "name": "Create Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('customerId', json.data.id);",
+                  "    console.log('customerId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -411,27 +752,76 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"phone\": \"(11) 99999-9999\",\n  \"document\": \"123.456.789-00\",\n  \"active\": true,\n  \"address\": {\n    \"zipCode\": \"01310-100\",\n    \"street\": \"Av. Paulista\",\n    \"number\": \"1000\",\n    \"complement\": \"Apto 42\",\n    \"neighborhood\": \"Bela Vista\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\"\n  }\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/customers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers"] }
           }
         },
         {
           "name": "List Customers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customers?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customers"],
+              "query": [
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "active", "value": "true", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
           }
         },
         {
           "name": "Get Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "{{customerId}}"] }
           }
         },
         {
           "name": "Update Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -442,15 +832,28 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"João Silva Atualizado\",\n  \"email\": \"joao.novo@email.com\",\n  \"phone\": \"(11) 88888-8888\",\n  \"document\": \"123.456.789-00\",\n  \"active\": true,\n  \"address\": {\n    \"zipCode\": \"01310-100\",\n    \"street\": \"Av. Paulista\",\n    \"number\": \"1000\",\n    \"complement\": \"Apto 42\",\n    \"neighborhood\": \"Bela Vista\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\"\n  }\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "{{customerId}}"] }
           }
         },
         {
           "name": "Delete Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers", "{{customerId}}"] }
           }
         }
       ]
@@ -461,6 +864,23 @@
       "item": [
         {
           "name": "Create Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('planId', json.data.id);",
+                  "    console.log('planId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -469,20 +889,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico\",\n  \"description\": \"1 café especial por mês\",\n  \"productValue\": 50.00,\n  \"discountValue\": 5.00,\n  \"price\": 45.00,\n  \"intervalDays\": 30,\n  \"active\": true,\n  \"imageUrl\": null\n}"
+              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico\",\n  \"description\": \"1 café especial por mês\",\n  \"productValue\": 50.00,\n  \"discountValue\": 5.00,\n  \"price\": 45.00,\n  \"intervalDays\": 30,\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/plans", "host": ["{{baseUrl}}"], "path": ["plans"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/plans", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans"] }
           }
         },
         {
           "name": "List Plans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
             "url": {
               "raw": "{{baseUrl}}/api/v1/plans?page=1&pageSize=10",
               "host": ["{{baseUrl}}"],
-              "path": ["plans"],
+              "path": ["api", "v1", "plans"],
               "query": [
                 { "key": "search", "value": "", "disabled": true },
                 { "key": "active", "value": "true", "disabled": true },
@@ -494,14 +927,40 @@
         },
         {
           "name": "Get Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/plans/:id", "host": ["{{baseUrl}}"], "path": ["plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans", "{{planId}}"] }
           }
         },
         {
           "name": "Update Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -510,17 +969,30 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico Atualizado\",\n  \"description\": \"2 cafés especiais por mês\",\n  \"productValue\": 100.00,\n  \"discountValue\": 10.00,\n  \"price\": 90.00,\n  \"intervalDays\": 30,\n  \"active\": true,\n  \"imageUrl\": null\n}"
+              "raw": "{\n  \"code\": \"BASICO\",\n  \"name\": \"Plano Básico Atualizado\",\n  \"description\": \"2 cafés especiais por mês\",\n  \"productValue\": 100.00,\n  \"discountValue\": 10.00,\n  \"price\": 90.00,\n  \"intervalDays\": 30,\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/plans/:id", "host": ["{{baseUrl}}"], "path": ["plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans", "{{planId}}"] }
           }
         },
         {
           "name": "Delete Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/plans/:id", "host": ["{{baseUrl}}"], "path": ["plans", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans", "{{planId}}"] }
           }
         }
       ]
@@ -531,6 +1003,23 @@
       "item": [
         {
           "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('productId', json.data.id);",
+                  "    console.log('productId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -539,20 +1028,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo\",\n  \"description\": \"Café especial da região do Cerrado\",\n  \"costPrice\": 35.00,\n  \"category\": \"especial\",\n  \"active\": true,\n  \"imageUrl\": null\n}"
+              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo\",\n  \"description\": \"Café especial da região do Cerrado\",\n  \"costPrice\": 35.00,\n  \"category\": \"especial\",\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
           }
         },
         {
           "name": "List Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
             "url": {
               "raw": "{{baseUrl}}/api/v1/products?page=1&pageSize=10",
               "host": ["{{baseUrl}}"],
-              "path": ["products"],
+              "path": ["api", "v1", "products"],
               "query": [
                 { "key": "search", "value": "", "disabled": true },
                 { "key": "category", "value": "", "disabled": true },
@@ -565,14 +1067,40 @@
         },
         {
           "name": "Get Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "{{productId}}"] }
           }
         },
         {
           "name": "Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -581,17 +1109,30 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo Premium\",\n  \"description\": \"Café especial da região do Cerrado - safra 2025\",\n  \"costPrice\": 45.00,\n  \"category\": \"especial\",\n  \"active\": true,\n  \"imageUrl\": null\n}"
+              "raw": "{\n  \"code\": \"CAFE-001\",\n  \"name\": \"Café Bourbon Amarelo Premium\",\n  \"description\": \"Café especial da região do Cerrado - safra 2025\",\n  \"costPrice\": 45.00,\n  \"category\": \"especial\",\n  \"active\": true\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "{{productId}}"] }
           }
         },
         {
           "name": "Delete Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "{{productId}}"] }
           }
         }
       ]
@@ -602,6 +1143,23 @@
       "item": [
         {
           "name": "Create Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('subscriptionId', json.data.id);",
+                  "    console.log('subscriptionId salvo:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -610,20 +1168,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerId\": \"<uuid-do-customer>\",\n  \"planId\": \"<uuid-do-plan>\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"PENDING\",\n  \"startDate\": \"2026-06-01T00:00:00Z\",\n  \"nextBillingDate\": null,\n  \"nextShipmentDate\": null\n}"
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"planId\": \"{{planId}}\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"PENDING\",\n  \"startDate\": \"2026-06-01T00:00:00Z\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions", "host": ["{{baseUrl}}"], "path": ["subscriptions"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions", "host": ["{{baseUrl}}"], "path": ["api", "v1", "subscriptions"] }
           }
         },
         {
           "name": "List Subscriptions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
             "url": {
               "raw": "{{baseUrl}}/api/v1/subscriptions?page=1&pageSize=10",
               "host": ["{{baseUrl}}"],
-              "path": ["subscriptions"],
+              "path": ["api", "v1", "subscriptions"],
               "query": [
                 { "key": "customerId", "value": "", "disabled": true },
                 { "key": "status", "value": "", "disabled": true },
@@ -635,14 +1206,40 @@
         },
         {
           "name": "Get Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/:id", "host": ["{{baseUrl}}"], "path": ["subscriptions", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "subscriptions", "{{subscriptionId}}"] }
           }
         },
         {
           "name": "Update Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Envelope correto\", () => pm.expect(json).to.have.property('data'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -651,22 +1248,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerId\": \"<uuid-do-customer>\",\n  \"planId\": \"<uuid-do-plan>\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"SHIPPED\",\n  \"startDate\": \"2026-06-01T00:00:00Z\",\n  \"nextBillingDate\": \"2026-07-01T00:00:00Z\",\n  \"nextShipmentDate\": \"2026-07-01T00:00:00Z\"\n}"
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"planId\": \"{{planId}}\",\n  \"status\": \"ACTIVE\",\n  \"shipmentStatus\": \"SHIPPED\",\n  \"startDate\": \"2026-06-01T00:00:00Z\",\n  \"nextBillingDate\": \"2026-07-01T00:00:00Z\",\n  \"nextShipmentDate\": \"2026-07-01T00:00:00Z\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/:id", "host": ["{{baseUrl}}"], "path": ["subscriptions", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "subscriptions", "{{subscriptionId}}"] }
           }
         },
         {
           "name": "Delete Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Mensagem de delete\", () => pm.expect(json.message).to.include('deleted'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{tenantToken}}" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/:id", "host": ["{{baseUrl}}"], "path": ["subscriptions", ":id"], "variable": [{ "key": "id", "value": "" }] }
+            "url": { "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "subscriptions", "{{subscriptionId}}"] }
           }
         }
       ]
     }
   ]
 }
-
-

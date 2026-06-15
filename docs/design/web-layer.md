@@ -137,3 +137,67 @@ HTTP Request
     → Repository (internal/application/repository/<domínio>)
     → Ent ORM → PostgreSQL
 ```
+
+## Padrão de Response
+
+Toda resposta da API segue o mesmo envelope JSON, definido em `internal/web/common/response.go`:
+
+```go
+type ErrorDetail struct {
+    Message string `json:"message"`
+}
+
+type Response struct {
+    Message string       `json:"message"`
+    Data    any          `json:"data,omitempty"`
+    Error   *ErrorDetail `json:"error,omitempty"`
+}
+```
+
+Os campos `data` e `error` usam `omitempty` — apenas um deles estará presente por resposta.
+
+### Resposta de sucesso
+
+```json
+{
+  "message": "Customer created",
+  "data": {
+    "id": "a1b2c3d4-...",
+    "name": "João Silva",
+    "email": "joao@email.com"
+  }
+}
+```
+
+### Resposta de erro
+
+```json
+{
+  "message": "invalid request body",
+  "error": {
+    "message": "invalid request body"
+  }
+}
+```
+
+### Helpers obrigatórios
+
+Todos os handlers devem usar exclusivamente os helpers abaixo. Chamadas diretas a `c.JSON` são proibidas fora do pacote `common`.
+
+```go
+// Sucesso — popula data, omite error
+common.Success(c, http.StatusOK, "mensagem", dto)
+
+// Erro — popula error, omite data
+common.Error(c, http.StatusBadRequest, "mensagem de erro")
+```
+
+### Convenções de mensagem
+
+| Operação | Mensagem de sucesso |
+|---|---|
+| `POST` (create) | `"<Recurso> created"` — ex: `"Customer created"` |
+| `GET` | `"OK"` |
+| `PUT` (update) | `"<Recurso> updated"` — ex: `"Plan updated"` |
+| `DELETE` | `"<Recurso> deleted"` — ex: `"Account deleted"` |
+| `GET` (list) | `"OK"` |

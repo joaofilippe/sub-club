@@ -29,9 +29,16 @@ definitions:
     - UserTypeIndividual
     - UserTypeCorporate
     - UserTypeSystem
+  github_com_joaofilippe_subclub_internal_web_common.ErrorDetail:
+    properties:
+      message:
+        type: string
+    type: object
   github_com_joaofilippe_subclub_internal_web_common.Response:
     properties:
       data: {}
+      error:
+        $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.ErrorDetail'
       message:
         type: string
     type: object
@@ -452,9 +459,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
-            type: array
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -479,7 +491,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -506,7 +523,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -528,7 +545,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -558,7 +580,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_accountplan.AccountPlanDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -583,9 +610,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_web_account.AccountDTO'
-            type: array
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_web_account.AccountDTO'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -610,7 +642,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_account.AccountDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_account.AccountDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -637,7 +674,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -659,7 +696,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_account.AccountDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_account.AccountDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -689,7 +731,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_account.AccountDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_account.AccountDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -856,7 +903,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_customer.PaginatedCustomerResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_customer.PaginatedCustomerResponse'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -881,7 +933,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_customer.CustomerDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -908,7 +965,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -930,7 +987,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_customer.CustomerDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -960,7 +1022,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_customer.CustomerDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_customer.CustomerDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -985,9 +1052,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_web_module.ModuleDTO'
-            type: array
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_web_module.ModuleDTO'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -1012,7 +1084,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_module.ModuleDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_module.ModuleDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1036,8 +1113,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -1059,7 +1138,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_module.ModuleDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_module.ModuleDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1089,7 +1173,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_module.ModuleDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_module.ModuleDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1131,7 +1220,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_plan.PaginatedPlanResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_plan.PaginatedPlanResponse'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -1156,7 +1250,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_plan.PlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_plan.PlanDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1183,7 +1282,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -1205,7 +1304,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_plan.PlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_plan.PlanDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1235,7 +1339,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_plan.PlanDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_plan.PlanDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1281,7 +1390,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_product.PaginatedProductResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_product.PaginatedProductResponse'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -1306,7 +1420,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_product.ProductDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_product.ProductDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1333,7 +1452,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -1355,7 +1474,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_product.ProductDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_product.ProductDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1385,7 +1509,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_product.ProductDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_product.ProductDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1427,7 +1556,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_subscription.PaginatedSubscriptionResponse'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_subscription.PaginatedSubscriptionResponse'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -1452,7 +1586,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1479,7 +1618,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -1501,7 +1640,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1531,7 +1675,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_subscription.SubscriptionDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1592,9 +1741,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
-            type: array
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+                  type: array
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -1624,7 +1778,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1655,7 +1814,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
         "403":
           description: Forbidden
           schema:
@@ -1681,7 +1840,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+              type: object
         "403":
           description: Forbidden
           schema:
@@ -1716,7 +1880,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+            allOf:
+            - $ref: '#/definitions/github_com_joaofilippe_subclub_internal_web_common.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_web_tenantuser.TenantUserDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
