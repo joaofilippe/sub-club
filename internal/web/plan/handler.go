@@ -58,14 +58,14 @@ func NewPlanHandler(s domain.Service) *PlanHandler {
 // @Accept       json
 // @Produce      json
 // @Param        plan  body      PlanInputDTO  true  "Plan data"
-// @Success      201   {object}  PlanDTO
+// @Success      201   {object}  common.Response{data=PlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      500   {object}  common.Response
 // @Router       /api/v1/plans [post]
 func (h *PlanHandler) Create(c echo.Context) error {
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	img := ""
@@ -85,9 +85,9 @@ func (h *PlanHandler) Create(c echo.Context) error {
 		ImageURL:      img,
 	})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(p))
+	return common.Success(c, http.StatusCreated, "Plan created", mapDomainToDTO(p))
 }
 
 // Get godoc
@@ -96,15 +96,15 @@ func (h *PlanHandler) Create(c echo.Context) error {
 // @Tags         plans
 // @Produce      json
 // @Param        id   path      string  true  "Plan ID"
-// @Success      200  {object}  PlanDTO
+// @Success      200  {object}  common.Response{data=PlanDTO}
 // @Failure      404  {object}  common.Response
 // @Router       /api/v1/plans/{id} [get]
 func (h *PlanHandler) Get(c echo.Context) error {
 	p, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+		return common.Error(c, http.StatusNotFound, "not found")
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(p))
+	return common.Success(c, http.StatusOK, "OK", mapDomainToDTO(p))
 }
 
 // Update godoc
@@ -115,7 +115,7 @@ func (h *PlanHandler) Get(c echo.Context) error {
 // @Produce      json
 // @Param        id    path      string        true  "Plan ID"
 // @Param        plan  body      PlanInputDTO  true  "Updated plan data"
-// @Success      200   {object}  PlanDTO
+// @Success      200   {object}  common.Response{data=PlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      404   {object}  common.Response
 // @Failure      500   {object}  common.Response
@@ -123,7 +123,7 @@ func (h *PlanHandler) Get(c echo.Context) error {
 func (h *PlanHandler) Update(c echo.Context) error {
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	img := ""
@@ -145,11 +145,11 @@ func (h *PlanHandler) Update(c echo.Context) error {
 	})
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+			return common.Error(c, http.StatusNotFound, "not found")
 		}
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(p))
+	return common.Success(c, http.StatusOK, "Plan updated", mapDomainToDTO(p))
 }
 
 // Delete godoc
@@ -158,14 +158,14 @@ func (h *PlanHandler) Update(c echo.Context) error {
 // @Tags         plans
 // @Produce      json
 // @Param        id   path      string  true  "Plan ID"
-// @Success      200  {string}  string  "OK"
+// @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/plans/{id} [delete]
 func (h *PlanHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusOK)
+	return common.Success(c, http.StatusOK, "Plan deleted", nil)
 }
 
 // List godoc
@@ -177,7 +177,7 @@ func (h *PlanHandler) Delete(c echo.Context) error {
 // @Param        active    query     bool    false  "Filter by active status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {object}  PaginatedPlanResponse
+// @Success      200       {object}  common.Response{data=PaginatedPlanResponse}
 // @Failure      500       {object}  common.Response
 // @Router       /api/v1/plans [get]
 func (h *PlanHandler) List(c echo.Context) error {
@@ -205,7 +205,7 @@ func (h *PlanHandler) List(c echo.Context) error {
 
 	list, err := h.service.List(c.Request().Context(), filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	response := PaginatedPlanResponse{
@@ -215,7 +215,7 @@ func (h *PlanHandler) List(c echo.Context) error {
 	for _, p := range list.Items {
 		response.Items = append(response.Items, mapDomainToDTO(p))
 	}
-	return c.JSON(http.StatusOK, response)
+	return common.Success(c, http.StatusOK, "OK", response)
 }
 
 func mapDomainToDTO(p *model.Plan) PlanDTO {

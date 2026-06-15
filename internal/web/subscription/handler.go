@@ -57,14 +57,14 @@ func NewSubscriptionHandler(s domain.Service) *SubscriptionHandler {
 // @Accept       json
 // @Produce      json
 // @Param        subscription  body      SubscriptionInputDTO  true  "Subscription data"
-// @Success      201           {object}  SubscriptionDTO
+// @Success      201           {object}  common.Response{data=SubscriptionDTO}
 // @Failure      400           {object}  common.Response
 // @Failure      500           {object}  common.Response
 // @Router       /api/v1/subscriptions [post]
 func (h *SubscriptionHandler) Create(c echo.Context) error {
 	var input SubscriptionInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	startDate, _ := time.Parse(time.RFC3339, input.StartDate)
@@ -93,9 +93,9 @@ func (h *SubscriptionHandler) Create(c echo.Context) error {
 
 	sub, err := h.service.Create(c.Request().Context(), ucInput)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(sub))
+	return common.Success(c, http.StatusCreated, "Subscription created", mapDomainToDTO(sub))
 }
 
 // Get godoc
@@ -104,15 +104,15 @@ func (h *SubscriptionHandler) Create(c echo.Context) error {
 // @Tags         subscriptions
 // @Produce      json
 // @Param        id   path      string  true  "Subscription ID"
-// @Success      200  {object}  SubscriptionDTO
+// @Success      200  {object}  common.Response{data=SubscriptionDTO}
 // @Failure      404  {object}  common.Response
 // @Router       /api/v1/subscriptions/{id} [get]
 func (h *SubscriptionHandler) Get(c echo.Context) error {
 	sub, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+		return common.Error(c, http.StatusNotFound, "not found")
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(sub))
+	return common.Success(c, http.StatusOK, "OK", mapDomainToDTO(sub))
 }
 
 // Update godoc
@@ -123,7 +123,7 @@ func (h *SubscriptionHandler) Get(c echo.Context) error {
 // @Produce      json
 // @Param        id            path      string                true  "Subscription ID"
 // @Param        subscription  body      SubscriptionInputDTO  true  "Updated subscription data"
-// @Success      200           {object}  SubscriptionDTO
+// @Success      200           {object}  common.Response{data=SubscriptionDTO}
 // @Failure      400           {object}  common.Response
 // @Failure      404           {object}  common.Response
 // @Failure      500           {object}  common.Response
@@ -131,7 +131,7 @@ func (h *SubscriptionHandler) Get(c echo.Context) error {
 func (h *SubscriptionHandler) Update(c echo.Context) error {
 	var input SubscriptionInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	ucInput := model.UpdateSubscriptionInput{
@@ -154,11 +154,11 @@ func (h *SubscriptionHandler) Update(c echo.Context) error {
 	sub, err := h.service.Update(c.Request().Context(), ucInput)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+			return common.Error(c, http.StatusNotFound, "not found")
 		}
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(sub))
+	return common.Success(c, http.StatusOK, "Subscription updated", mapDomainToDTO(sub))
 }
 
 // Delete godoc
@@ -167,14 +167,14 @@ func (h *SubscriptionHandler) Update(c echo.Context) error {
 // @Tags         subscriptions
 // @Produce      json
 // @Param        id   path      string  true  "Subscription ID"
-// @Success      200  {string}  string  "OK"
+// @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/subscriptions/{id} [delete]
 func (h *SubscriptionHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusOK)
+	return common.Success(c, http.StatusOK, "Subscription deleted", nil)
 }
 
 // List godoc
@@ -186,7 +186,7 @@ func (h *SubscriptionHandler) Delete(c echo.Context) error {
 // @Param        status    query     string  false  "Filter by Status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {object}  PaginatedSubscriptionResponse
+// @Success      200       {object}  common.Response{data=PaginatedSubscriptionResponse}
 // @Failure      500       {object}  common.Response
 // @Router       /api/v1/subscriptions [get]
 func (h *SubscriptionHandler) List(c echo.Context) error {
@@ -215,7 +215,7 @@ func (h *SubscriptionHandler) List(c echo.Context) error {
 
 	paginatedList, err := h.service.List(c.Request().Context(), filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	response := PaginatedSubscriptionResponse{
@@ -226,7 +226,7 @@ func (h *SubscriptionHandler) List(c echo.Context) error {
 		response.Items = append(response.Items, mapDomainToDTO(item))
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return common.Success(c, http.StatusOK, "OK", response)
 }
 
 func mapDomainToDTO(s *model.Subscription) SubscriptionDTO {

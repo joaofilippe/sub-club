@@ -54,14 +54,14 @@ func NewProductHandler(s domain.Service) *ProductHandler {
 // @Accept       json
 // @Produce      json
 // @Param        product  body      ProductInputDTO  true  "Product data"
-// @Success      201      {object}  ProductDTO
+// @Success      201      {object}  common.Response{data=ProductDTO}
 // @Failure      400      {object}  common.Response
 // @Failure      500      {object}  common.Response
 // @Router       /api/v1/products [post]
 func (h *ProductHandler) Create(c echo.Context) error {
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	img := ""
@@ -79,9 +79,9 @@ func (h *ProductHandler) Create(c echo.Context) error {
 		Active:      input.Active,
 	})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(product))
+	return common.Success(c, http.StatusCreated, "Product created", mapDomainToDTO(product))
 }
 
 // Get godoc
@@ -90,15 +90,15 @@ func (h *ProductHandler) Create(c echo.Context) error {
 // @Tags         products
 // @Produce      json
 // @Param        id   path      string  true  "Product ID"
-// @Success      200  {object}  ProductDTO
+// @Success      200  {object}  common.Response{data=ProductDTO}
 // @Failure      404  {object}  common.Response
 // @Router       /api/v1/products/{id} [get]
 func (h *ProductHandler) Get(c echo.Context) error {
 	product, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+		return common.Error(c, http.StatusNotFound, "not found")
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(product))
+	return common.Success(c, http.StatusOK, "OK", mapDomainToDTO(product))
 }
 
 // Update godoc
@@ -109,7 +109,7 @@ func (h *ProductHandler) Get(c echo.Context) error {
 // @Produce      json
 // @Param        id       path      string           true  "Product ID"
 // @Param        product  body      ProductInputDTO  true  "Updated product data"
-// @Success      200      {object}  ProductDTO
+// @Success      200      {object}  common.Response{data=ProductDTO}
 // @Failure      400      {object}  common.Response
 // @Failure      404      {object}  common.Response
 // @Failure      500      {object}  common.Response
@@ -117,7 +117,7 @@ func (h *ProductHandler) Get(c echo.Context) error {
 func (h *ProductHandler) Update(c echo.Context) error {
 	var input ProductInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	img := ""
@@ -137,11 +137,11 @@ func (h *ProductHandler) Update(c echo.Context) error {
 	})
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "not found"})
+			return common.Error(c, http.StatusNotFound, "not found")
 		}
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(product))
+	return common.Success(c, http.StatusOK, "Product updated", mapDomainToDTO(product))
 }
 
 // Delete godoc
@@ -150,14 +150,14 @@ func (h *ProductHandler) Update(c echo.Context) error {
 // @Tags         products
 // @Produce      json
 // @Param        id   path      string  true  "Product ID"
-// @Success      200  {string}  string  "OK"
+// @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/products/{id} [delete]
 func (h *ProductHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusOK)
+	return common.Success(c, http.StatusOK, "Product deleted", nil)
 }
 
 // List godoc
@@ -170,7 +170,7 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 // @Param        active    query     bool    false  "Filter by active status"
 // @Param        page      query     int     false  "Page number"
 // @Param        pageSize  query     int     false  "Page size"
-// @Success      200       {object}  PaginatedProductResponse
+// @Success      200       {object}  common.Response{data=PaginatedProductResponse}
 // @Failure      500       {object}  common.Response
 // @Router       /api/v1/products [get]
 func (h *ProductHandler) List(c echo.Context) error {
@@ -201,7 +201,7 @@ func (h *ProductHandler) List(c echo.Context) error {
 
 	list, err := h.service.List(c.Request().Context(), filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	response := PaginatedProductResponse{
@@ -211,7 +211,7 @@ func (h *ProductHandler) List(c echo.Context) error {
 	for _, p := range list.Items {
 		response.Items = append(response.Items, mapDomainToDTO(p))
 	}
-	return c.JSON(http.StatusOK, response)
+	return common.Success(c, http.StatusOK, "OK", response)
 }
 
 func mapDomainToDTO(p *model.Product) ProductDTO {
