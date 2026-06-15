@@ -26,14 +26,14 @@ func NewAccountPlanHandler(service domain.Service) *AccountPlanHandler {
 // @Accept       json
 // @Produce      json
 // @Param        plan  body      AccountPlanInputDTO  true  "Account plan data"
-// @Success      201   {object}  AccountPlanDTO
+// @Success      201   {object}  common.Response{data=AccountPlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      500   {object}  common.Response
 // @Router       /api/v1/account-plans [post]
 func (h *AccountPlanHandler) Create(c echo.Context) error {
 	var input AccountPlanInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
+		return common.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 
 	result, err := h.service.Create(c.Request().Context(), model.CreateAccountPlanInput{
@@ -45,9 +45,9 @@ func (h *AccountPlanHandler) Create(c echo.Context) error {
 		MaxProducts:  input.MaxProducts,
 	})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, mapDomainToDTO(result))
+	return common.Success(c, http.StatusCreated, "Account plan created", mapDomainToDTO(result))
 }
 
 // Get godoc
@@ -56,15 +56,15 @@ func (h *AccountPlanHandler) Create(c echo.Context) error {
 // @Tags         account-plans
 // @Produce      json
 // @Param        id   path      string  true  "Account Plan ID"
-// @Success      200  {object}  AccountPlanDTO
+// @Success      200  {object}  common.Response{data=AccountPlanDTO}
 // @Failure      404  {object}  common.Response
 // @Router       /api/v1/account-plans/{id} [get]
 func (h *AccountPlanHandler) Get(c echo.Context) error {
 	result, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "account plan not found"})
+		return common.Error(c, http.StatusNotFound, "account plan not found")
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(result))
+	return common.Success(c, http.StatusOK, "OK", mapDomainToDTO(result))
 }
 
 // Update godoc
@@ -75,7 +75,7 @@ func (h *AccountPlanHandler) Get(c echo.Context) error {
 // @Produce      json
 // @Param        id    path      string               true  "Account Plan ID"
 // @Param        plan  body      AccountPlanInputDTO  true  "Updated plan data"
-// @Success      200   {object}  AccountPlanDTO
+// @Success      200   {object}  common.Response{data=AccountPlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      404   {object}  common.Response
 // @Failure      500   {object}  common.Response
@@ -83,7 +83,7 @@ func (h *AccountPlanHandler) Get(c echo.Context) error {
 func (h *AccountPlanHandler) Update(c echo.Context) error {
 	var input AccountPlanInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
+		return common.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 
 	result, err := h.service.Update(c.Request().Context(), model.UpdateAccountPlanInput{
@@ -98,11 +98,11 @@ func (h *AccountPlanHandler) Update(c echo.Context) error {
 	})
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "account plan not found"})
+			return common.Error(c, http.StatusNotFound, "account plan not found")
 		}
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, mapDomainToDTO(result))
+	return common.Success(c, http.StatusOK, "Account plan updated", mapDomainToDTO(result))
 }
 
 // Delete godoc
@@ -111,14 +111,14 @@ func (h *AccountPlanHandler) Update(c echo.Context) error {
 // @Tags         account-plans
 // @Produce      json
 // @Param        id   path      string  true  "Account Plan ID"
-// @Success      200  {string}  string  "OK"
+// @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/account-plans/{id} [delete]
 func (h *AccountPlanHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusOK)
+	return common.Success(c, http.StatusOK, "Account plan deleted", nil)
 }
 
 // List godoc
@@ -126,19 +126,19 @@ func (h *AccountPlanHandler) Delete(c echo.Context) error {
 // @Description  Returns all active SubClub subscription plans
 // @Tags         account-plans
 // @Produce      json
-// @Success      200  {array}   AccountPlanDTO
+// @Success      200  {object}  common.Response{data=[]AccountPlanDTO}
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/account-plans [get]
 func (h *AccountPlanHandler) List(c echo.Context) error {
 	results, err := h.service.List(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	dtos := make([]AccountPlanDTO, 0, len(results))
 	for _, p := range results {
 		dtos = append(dtos, mapDomainToDTO(p))
 	}
-	return c.JSON(http.StatusOK, dtos)
+	return common.Success(c, http.StatusOK, "OK", dtos)
 }
 
 func mapDomainToDTO(p *model.AccountPlan) AccountPlanDTO {

@@ -25,7 +25,7 @@ func NewModuleHandler(service domain.Service) *ModuleHandler {
 // @Accept       json
 // @Produce      json
 // @Param        module  body      ModuleInputDTO  true  "Module data"
-// @Success      201     {object}  ModuleDTO
+// @Success      201     {object}  common.Response{data=ModuleDTO}
 // @Failure      400     {object}  common.Response
 // @Failure      500     {object}  common.Response
 // @Router       /api/v1/modules [post]
@@ -40,7 +40,7 @@ func (h *ModuleHandler) Create(c echo.Context) error {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusCreated, mapToDTO(m))
+	return common.Success(c, http.StatusCreated, "Module created", mapToDTO(m))
 }
 
 // Get godoc
@@ -49,7 +49,7 @@ func (h *ModuleHandler) Create(c echo.Context) error {
 // @Tags         modules
 // @Produce      json
 // @Param        id   path      string  true  "Module ID"
-// @Success      200  {object}  ModuleDTO
+// @Success      200  {object}  common.Response{data=ModuleDTO}
 // @Failure      404  {object}  common.Response
 // @Router       /api/v1/modules/{id} [get]
 func (h *ModuleHandler) Get(c echo.Context) error {
@@ -57,7 +57,7 @@ func (h *ModuleHandler) Get(c echo.Context) error {
 	if err != nil {
 		return common.Error(c, http.StatusNotFound, "module not found")
 	}
-	return c.JSON(http.StatusOK, mapToDTO(m))
+	return common.Success(c, http.StatusOK, "OK", mapToDTO(m))
 }
 
 // Update godoc
@@ -68,7 +68,7 @@ func (h *ModuleHandler) Get(c echo.Context) error {
 // @Produce      json
 // @Param        id      path      string                true  "Module ID"
 // @Param        module  body      UpdateModuleInputDTO  true  "Updated module data"
-// @Success      200     {object}  ModuleDTO
+// @Success      200     {object}  common.Response{data=ModuleDTO}
 // @Failure      400     {object}  common.Response
 // @Failure      404     {object}  common.Response
 // @Failure      500     {object}  common.Response
@@ -88,7 +88,7 @@ func (h *ModuleHandler) Update(c echo.Context) error {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, mapToDTO(m))
+	return common.Success(c, http.StatusOK, "Module updated", mapToDTO(m))
 }
 
 // Delete godoc
@@ -97,14 +97,14 @@ func (h *ModuleHandler) Update(c echo.Context) error {
 // @Tags         modules
 // @Produce      json
 // @Param        id   path      string  true  "Module ID"
-// @Success      204  "No Content"
+// @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/modules/{id} [delete]
 func (h *ModuleHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusNoContent)
+	return common.Success(c, http.StatusOK, "Module deleted", nil)
 }
 
 // List godoc
@@ -112,7 +112,7 @@ func (h *ModuleHandler) Delete(c echo.Context) error {
 // @Description  Returns all active modules
 // @Tags         modules
 // @Produce      json
-// @Success      200  {array}   ModuleDTO
+// @Success      200  {object}  common.Response{data=[]ModuleDTO}
 // @Failure      500  {object}  common.Response
 // @Router       /api/v1/modules [get]
 func (h *ModuleHandler) List(c echo.Context) error {
@@ -125,7 +125,7 @@ func (h *ModuleHandler) List(c echo.Context) error {
 	for _, m := range modules {
 		result = append(result, mapToDTO(m))
 	}
-	return c.JSON(http.StatusOK, result)
+	return common.Success(c, http.StatusOK, "OK", result)
 }
 
 func mapToDTO(m *model.Module) ModuleDTO {

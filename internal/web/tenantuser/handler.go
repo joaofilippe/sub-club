@@ -26,7 +26,7 @@ func NewTenantUserHandler(service domain.Service) *TenantUserHandler {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      TenantUserInputDTO  true  "User data"
-// @Success      201   {object}  TenantUserDTO
+// @Success      201   {object}  common.Response{data=TenantUserDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      403   {object}  common.Response
 // @Failure      500   {object}  common.Response
@@ -34,10 +34,10 @@ func NewTenantUserHandler(service domain.Service) *TenantUserHandler {
 func (h *TenantUserHandler) Create(c echo.Context) error {
 	var input TenantUserInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
+		return common.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 	if input.Name == "" || input.Username == "" || input.Email == "" || input.Password == "" || input.Role == "" {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "name, username, email, password and role are required"})
+		return common.Error(c, http.StatusBadRequest, "name, username, email, password and role are required")
 	}
 
 	result, err := h.service.Create(c.Request().Context(), model.CreateTenantUserInput{
@@ -48,9 +48,9 @@ func (h *TenantUserHandler) Create(c echo.Context) error {
 		Role:     model.Role(input.Role),
 	})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, mapToDTO(result))
+	return common.Success(c, http.StatusCreated, "User created", mapToDTO(result))
 }
 
 // Get godoc
@@ -59,16 +59,16 @@ func (h *TenantUserHandler) Create(c echo.Context) error {
 // @Tags         users
 // @Produce      json
 // @Param        id  path      string  true  "User ID"
-// @Success      200 {object}  TenantUserDTO
+// @Success      200 {object}  common.Response{data=TenantUserDTO}
 // @Failure      403 {object}  common.Response
 // @Failure      404 {object}  common.Response
 // @Router       /api/v1/users/{id} [get]
 func (h *TenantUserHandler) Get(c echo.Context) error {
 	result, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, common.Response{Message: "user not found"})
+		return common.Error(c, http.StatusNotFound, "user not found")
 	}
-	return c.JSON(http.StatusOK, mapToDTO(result))
+	return common.Success(c, http.StatusOK, "OK", mapToDTO(result))
 }
 
 // List godoc
@@ -76,20 +76,20 @@ func (h *TenantUserHandler) Get(c echo.Context) error {
 // @Description  Returns all active users for the current tenant. Requires tenant admin role.
 // @Tags         users
 // @Produce      json
-// @Success      200 {array}   TenantUserDTO
+// @Success      200 {object}  common.Response{data=[]TenantUserDTO}
 // @Failure      403 {object}  common.Response
 // @Failure      500 {object}  common.Response
 // @Router       /api/v1/users [get]
 func (h *TenantUserHandler) List(c echo.Context) error {
 	results, err := h.service.List(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	dtos := make([]TenantUserDTO, len(results))
 	for i, u := range results {
 		dtos[i] = mapToDTO(u)
 	}
-	return c.JSON(http.StatusOK, dtos)
+	return common.Success(c, http.StatusOK, "OK", dtos)
 }
 
 // Update godoc
@@ -100,7 +100,7 @@ func (h *TenantUserHandler) List(c echo.Context) error {
 // @Produce      json
 // @Param        id    path      string                    true  "User ID"
 // @Param        user  body      UpdateTenantUserInputDTO  true  "Updated user data"
-// @Success      200   {object}  TenantUserDTO
+// @Success      200   {object}  common.Response{data=TenantUserDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      403   {object}  common.Response
 // @Failure      404   {object}  common.Response
@@ -109,7 +109,7 @@ func (h *TenantUserHandler) List(c echo.Context) error {
 func (h *TenantUserHandler) Update(c echo.Context) error {
 	var input UpdateTenantUserInputDTO
 	if err := c.Bind(&input); err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{Message: "invalid request body"})
+		return common.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 
 	result, err := h.service.Update(c.Request().Context(), model.UpdateTenantUserInput{
@@ -119,11 +119,11 @@ func (h *TenantUserHandler) Update(c echo.Context) error {
 	})
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound, common.Response{Message: "user not found"})
+			return common.Error(c, http.StatusNotFound, "user not found")
 		}
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, mapToDTO(result))
+	return common.Success(c, http.StatusOK, "User updated", mapToDTO(result))
 }
 
 // Delete godoc
@@ -132,15 +132,15 @@ func (h *TenantUserHandler) Update(c echo.Context) error {
 // @Tags         users
 // @Produce      json
 // @Param        id  path      string  true  "User ID"
-// @Success      200 {string}  string  "OK"
+// @Success      200 {object}  common.Response
 // @Failure      403 {object}  common.Response
 // @Failure      500 {object}  common.Response
 // @Router       /api/v1/users/{id} [delete]
 func (h *TenantUserHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
-		return c.JSON(http.StatusInternalServerError, common.Response{Message: err.Error()})
+		return common.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusOK)
+	return common.Success(c, http.StatusOK, "User deleted", nil)
 }
 
 func mapToDTO(u *model.TenantUser) TenantUserDTO {
