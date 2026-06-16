@@ -60,7 +60,7 @@ func NewSubscriptionHandler(s domain.Service) *SubscriptionHandler {
 // @Success      201           {object}  common.Response{data=SubscriptionDTO}
 // @Failure      400           {object}  common.Response
 // @Failure      500           {object}  common.Response
-// @Router       /api/v1/subscriptions [post]
+// @Router       /v1/subscriptions [post]
 func (h *SubscriptionHandler) Create(c echo.Context) error {
 	var input SubscriptionInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -106,7 +106,7 @@ func (h *SubscriptionHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Subscription ID"
 // @Success      200  {object}  common.Response{data=SubscriptionDTO}
 // @Failure      404  {object}  common.Response
-// @Router       /api/v1/subscriptions/{id} [get]
+// @Router       /v1/subscriptions/{id} [get]
 func (h *SubscriptionHandler) Get(c echo.Context) error {
 	sub, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -127,7 +127,7 @@ func (h *SubscriptionHandler) Get(c echo.Context) error {
 // @Failure      400           {object}  common.Response
 // @Failure      404           {object}  common.Response
 // @Failure      500           {object}  common.Response
-// @Router       /api/v1/subscriptions/{id} [put]
+// @Router       /v1/subscriptions/{id} [put]
 func (h *SubscriptionHandler) Update(c echo.Context) error {
 	var input SubscriptionInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -169,7 +169,7 @@ func (h *SubscriptionHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Subscription ID"
 // @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
-// @Router       /api/v1/subscriptions/{id} [delete]
+// @Router       /v1/subscriptions/{id} [delete]
 func (h *SubscriptionHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
@@ -188,7 +188,7 @@ func (h *SubscriptionHandler) Delete(c echo.Context) error {
 // @Param        pageSize  query     int     false  "Page size"
 // @Success      200       {object}  common.Response{data=PaginatedSubscriptionResponse}
 // @Failure      500       {object}  common.Response
-// @Router       /api/v1/subscriptions [get]
+// @Router       /v1/subscriptions [get]
 func (h *SubscriptionHandler) List(c echo.Context) error {
 	filter := model.Filter{}
 	if s := c.QueryParam("search"); s != "" {

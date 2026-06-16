@@ -29,7 +29,7 @@ func NewUserHandler(service domain.Service) *UserHandler {
 // @Success      201   {object}  map[string]interface{}
 // @Failure      400   {object}  map[string]string
 // @Failure      500   {object}  map[string]string
-// @Router       /api/v1/system-users [post]
+// @Router       /v1/system-users [post]
 func (h *UserHandler) Create(c echo.Context) error {
 	var input model.CreateUserInput
 	if err := c.Bind(&input); err != nil {
