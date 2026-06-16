@@ -30,7 +30,7 @@ func NewCustomerHandler(customerService domain.Service) *CustomerHandler {
 // @Success      201       {object}  common.Response{data=CustomerDTO}
 // @Failure      400       {object}  common.Response
 // @Failure      500       {object}  common.Response
-// @Router       /api/v1/customers [post]
+// @Router       /v1/customers [post]
 func (h *CustomerHandler) Create(c echo.Context) error {
 	var input CustomerInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -62,7 +62,7 @@ func (h *CustomerHandler) Create(c echo.Context) error {
 // @Param        id      path      string  true  "Customer ID"
 // @Success      200     {object}  common.Response{data=CustomerDTO}
 // @Failure      404     {object}  common.Response
-// @Router       /api/v1/customers/{id} [get]
+// @Router       /v1/customers/{id} [get]
 func (h *CustomerHandler) Get(c echo.Context) error {
 	cust, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *CustomerHandler) Get(c echo.Context) error {
 // @Failure      400       {object}  common.Response
 // @Failure      404       {object}  common.Response
 // @Failure      500       {object}  common.Response
-// @Router       /api/v1/customers/{id} [put]
+// @Router       /v1/customers/{id} [put]
 func (h *CustomerHandler) Update(c echo.Context) error {
 	var input CustomerInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -119,7 +119,7 @@ func (h *CustomerHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Customer ID"
 // @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
-// @Router       /api/v1/customers/{id} [delete]
+// @Router       /v1/customers/{id} [delete]
 func (h *CustomerHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
@@ -138,7 +138,7 @@ func (h *CustomerHandler) Delete(c echo.Context) error {
 // @Param        pageSize  query     int     false  "Page size"
 // @Success      200       {object}  common.Response{data=PaginatedCustomerResponse}
 // @Failure      500       {object}  common.Response
-// @Router       /api/v1/customers [get]
+// @Router       /v1/customers [get]
 func (h *CustomerHandler) List(c echo.Context) error {
 	filter := model.Filter{}
 

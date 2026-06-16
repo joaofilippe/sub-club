@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/account-plans": {
+        "/v1/account-plans": {
             "get": {
                 "description": "Returns all active SubClub subscription plans",
                 "produces": [
@@ -112,7 +112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/account-plans/{id}": {
+        "/v1/account-plans/{id}": {
             "get": {
                 "description": "Retrieves a SubClub subscription plan by UUID",
                 "produces": [
@@ -261,7 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts": {
+        "/v1/accounts": {
             "get": {
                 "description": "Returns all accounts",
                 "produces": [
@@ -358,7 +358,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{id}": {
+        "/v1/accounts/{id}": {
             "get": {
                 "description": "Retrieves an account by UUID",
                 "produces": [
@@ -507,7 +507,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/auth/login": {
+        "/v1/auth/login": {
             "post": {
                 "description": "Validates email + password and returns a signed JWT. If the email belongs to a single tenant the user is logged into that tenant automatically. If it matches multiple tenants a 409 is returned instructing the client to use the username + account_slug login instead.",
                 "consumes": [
@@ -577,7 +577,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/auth/login/username": {
+        "/v1/auth/login/username": {
             "post": {
                 "description": "Validates username + account_slug + password for a tenant user. Use this when the email-based login returns 409 (multiple accounts found).",
                 "consumes": [
@@ -641,7 +641,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/auth/lookup": {
+        "/v1/auth/lookup": {
             "post": {
                 "description": "Returns all accounts that have a user registered with the given email. Uses domain-based lookup first; falls back to a parallel tenant scan for generic domains (gmail, outlook, etc.)",
                 "consumes": [
@@ -702,7 +702,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/customers": {
+        "/v1/customers": {
             "get": {
                 "description": "Get a paginated list of customers",
                 "produces": [
@@ -822,7 +822,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/customers/{id}": {
+        "/v1/customers/{id}": {
             "get": {
                 "description": "Retrieves a customer by their UUID",
                 "produces": [
@@ -971,7 +971,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/modules": {
+        "/v1/modules": {
             "get": {
                 "description": "Returns all active modules",
                 "produces": [
@@ -1068,7 +1068,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/modules/{id}": {
+        "/v1/modules/{id}": {
             "get": {
                 "description": "Retrieves a module by its UUID",
                 "produces": [
@@ -1217,7 +1217,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/plans": {
+        "/v1/plans": {
             "get": {
                 "description": "Get a paginated list of plans",
                 "produces": [
@@ -1337,7 +1337,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/plans/{id}": {
+        "/v1/plans/{id}": {
             "get": {
                 "description": "Retrieves a plan by its UUID",
                 "produces": [
@@ -1486,7 +1486,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/products": {
+        "/v1/products": {
             "get": {
                 "description": "Get a paginated list of products",
                 "produces": [
@@ -1612,7 +1612,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/products/{id}": {
+        "/v1/products/{id}": {
             "get": {
                 "description": "Retrieves a product by its UUID",
                 "produces": [
@@ -1761,7 +1761,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/subscriptions": {
+        "/v1/subscriptions": {
             "get": {
                 "description": "Get a paginated list of subscriptions",
                 "produces": [
@@ -1881,7 +1881,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/subscriptions/{id}": {
+        "/v1/subscriptions/{id}": {
             "get": {
                 "description": "Retrieves a subscription by its UUID",
                 "produces": [
@@ -2030,7 +2030,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/system-users": {
+        "/v1/system-users": {
             "post": {
                 "description": "Creates a new administrative user",
                 "consumes": [
@@ -2083,7 +2083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users": {
+        "/v1/users": {
             "get": {
                 "description": "Returns all active users for the current tenant. Requires tenant admin role.",
                 "produces": [
@@ -2192,7 +2192,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{id}": {
+        "/v1/users/{id}": {
             "get": {
                 "description": "Returns a tenant user by ID. Requires tenant admin role.",
                 "produces": [

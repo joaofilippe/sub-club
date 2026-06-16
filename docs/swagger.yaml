@@ -450,7 +450,7 @@ info:
   title: SubClub API
   version: "1.0"
 paths:
-  /api/v1/account-plans:
+  /v1/account-plans:
     get:
       description: Returns all active SubClub subscription plans
       produces:
@@ -508,7 +508,7 @@ paths:
       summary: Create an account plan
       tags:
       - account-plans
-  /api/v1/account-plans/{id}:
+  /v1/account-plans/{id}:
     delete:
       description: Soft deletes an account plan by ID
       parameters:
@@ -601,7 +601,7 @@ paths:
       summary: Update an account plan
       tags:
       - account-plans
-  /api/v1/accounts:
+  /v1/accounts:
     get:
       description: Returns all accounts
       produces:
@@ -659,7 +659,7 @@ paths:
       summary: Create an account
       tags:
       - accounts
-  /api/v1/accounts/{id}:
+  /v1/accounts/{id}:
     delete:
       description: Soft deletes an account by ID
       parameters:
@@ -752,7 +752,7 @@ paths:
       summary: Update an account
       tags:
       - accounts
-  /api/v1/auth/login:
+  /v1/auth/login:
     post:
       consumes:
       - application/json
@@ -798,7 +798,7 @@ paths:
       summary: Authenticate by email
       tags:
       - auth
-  /api/v1/auth/login/username:
+  /v1/auth/login/username:
     post:
       consumes:
       - application/json
@@ -838,7 +838,7 @@ paths:
       summary: Authenticate by username and account slug
       tags:
       - auth
-  /api/v1/auth/lookup:
+  /v1/auth/lookup:
     post:
       consumes:
       - application/json
@@ -877,7 +877,7 @@ paths:
       summary: Lookup accounts by email
       tags:
       - auth
-  /api/v1/customers:
+  /v1/customers:
     get:
       description: Get a paginated list of customers
       parameters:
@@ -950,7 +950,7 @@ paths:
       summary: Create a customer
       tags:
       - customers
-  /api/v1/customers/{id}:
+  /v1/customers/{id}:
     delete:
       description: Soft deletes a customer by ID
       parameters:
@@ -1043,7 +1043,7 @@ paths:
       summary: Update a customer
       tags:
       - customers
-  /api/v1/modules:
+  /v1/modules:
     get:
       description: Returns all active modules
       produces:
@@ -1101,7 +1101,7 @@ paths:
       summary: Create a module
       tags:
       - modules
-  /api/v1/modules/{id}:
+  /v1/modules/{id}:
     delete:
       description: Soft deletes a module by ID
       parameters:
@@ -1194,7 +1194,7 @@ paths:
       summary: Update a module
       tags:
       - modules
-  /api/v1/plans:
+  /v1/plans:
     get:
       description: Get a paginated list of plans
       parameters:
@@ -1267,7 +1267,7 @@ paths:
       summary: Create a plan
       tags:
       - plans
-  /api/v1/plans/{id}:
+  /v1/plans/{id}:
     delete:
       description: Soft deletes a plan by ID
       parameters:
@@ -1360,7 +1360,7 @@ paths:
       summary: Update a plan
       tags:
       - plans
-  /api/v1/products:
+  /v1/products:
     get:
       description: Get a paginated list of products
       parameters:
@@ -1437,7 +1437,7 @@ paths:
       summary: Create a product
       tags:
       - products
-  /api/v1/products/{id}:
+  /v1/products/{id}:
     delete:
       description: Soft deletes a product by ID
       parameters:
@@ -1530,7 +1530,7 @@ paths:
       summary: Update a product
       tags:
       - products
-  /api/v1/subscriptions:
+  /v1/subscriptions:
     get:
       description: Get a paginated list of subscriptions
       parameters:
@@ -1603,7 +1603,7 @@ paths:
       summary: Create a subscription
       tags:
       - subscriptions
-  /api/v1/subscriptions/{id}:
+  /v1/subscriptions/{id}:
     delete:
       description: Soft deletes a subscription by ID
       parameters:
@@ -1696,7 +1696,7 @@ paths:
       summary: Update a subscription
       tags:
       - subscriptions
-  /api/v1/system-users:
+  /v1/system-users:
     post:
       consumes:
       - application/json
@@ -1731,7 +1731,7 @@ paths:
       summary: Create a user
       tags:
       - users
-  /api/v1/users:
+  /v1/users:
     get:
       description: Returns all active users for the current tenant. Requires tenant
         admin role.
@@ -1799,7 +1799,7 @@ paths:
       summary: Create a tenant user
       tags:
       - users
-  /api/v1/users/{id}:
+  /v1/users/{id}:
     delete:
       description: Soft deletes a tenant user by ID. Requires tenant admin role.
       parameters:

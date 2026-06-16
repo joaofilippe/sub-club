@@ -29,7 +29,7 @@ func NewAccountPlanHandler(service domain.Service) *AccountPlanHandler {
 // @Success      201   {object}  common.Response{data=AccountPlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/account-plans [post]
+// @Router       /v1/account-plans [post]
 func (h *AccountPlanHandler) Create(c echo.Context) error {
 	var input AccountPlanInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -58,7 +58,7 @@ func (h *AccountPlanHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Account Plan ID"
 // @Success      200  {object}  common.Response{data=AccountPlanDTO}
 // @Failure      404  {object}  common.Response
-// @Router       /api/v1/account-plans/{id} [get]
+// @Router       /v1/account-plans/{id} [get]
 func (h *AccountPlanHandler) Get(c echo.Context) error {
 	result, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -79,7 +79,7 @@ func (h *AccountPlanHandler) Get(c echo.Context) error {
 // @Failure      400   {object}  common.Response
 // @Failure      404   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/account-plans/{id} [put]
+// @Router       /v1/account-plans/{id} [put]
 func (h *AccountPlanHandler) Update(c echo.Context) error {
 	var input AccountPlanInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -113,7 +113,7 @@ func (h *AccountPlanHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Account Plan ID"
 // @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
-// @Router       /api/v1/account-plans/{id} [delete]
+// @Router       /v1/account-plans/{id} [delete]
 func (h *AccountPlanHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
@@ -128,7 +128,7 @@ func (h *AccountPlanHandler) Delete(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  common.Response{data=[]AccountPlanDTO}
 // @Failure      500  {object}  common.Response
-// @Router       /api/v1/account-plans [get]
+// @Router       /v1/account-plans [get]
 func (h *AccountPlanHandler) List(c echo.Context) error {
 	results, err := h.service.List(c.Request().Context())
 	if err != nil {
