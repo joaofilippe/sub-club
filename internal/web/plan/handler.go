@@ -61,7 +61,7 @@ func NewPlanHandler(s domain.Service) *PlanHandler {
 // @Success      201   {object}  common.Response{data=PlanDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/plans [post]
+// @Router       /v1/plans [post]
 func (h *PlanHandler) Create(c echo.Context) error {
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -98,7 +98,7 @@ func (h *PlanHandler) Create(c echo.Context) error {
 // @Param        id   path      string  true  "Plan ID"
 // @Success      200  {object}  common.Response{data=PlanDTO}
 // @Failure      404  {object}  common.Response
-// @Router       /api/v1/plans/{id} [get]
+// @Router       /v1/plans/{id} [get]
 func (h *PlanHandler) Get(c echo.Context) error {
 	p, err := h.service.GetByID(c.Request().Context(), c.Param("id"))
 	if err != nil {
@@ -119,7 +119,7 @@ func (h *PlanHandler) Get(c echo.Context) error {
 // @Failure      400   {object}  common.Response
 // @Failure      404   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/plans/{id} [put]
+// @Router       /v1/plans/{id} [put]
 func (h *PlanHandler) Update(c echo.Context) error {
 	var input PlanInputDTO
 	if err := c.Bind(&input); err != nil {
@@ -160,7 +160,7 @@ func (h *PlanHandler) Update(c echo.Context) error {
 // @Param        id   path      string  true  "Plan ID"
 // @Success      200  {object}  common.Response
 // @Failure      500  {object}  common.Response
-// @Router       /api/v1/plans/{id} [delete]
+// @Router       /v1/plans/{id} [delete]
 func (h *PlanHandler) Delete(c echo.Context) error {
 	if err := h.service.Delete(c.Request().Context(), c.Param("id")); err != nil {
 		return common.Error(c, http.StatusInternalServerError, err.Error())
@@ -179,7 +179,7 @@ func (h *PlanHandler) Delete(c echo.Context) error {
 // @Param        pageSize  query     int     false  "Page size"
 // @Success      200       {object}  common.Response{data=PaginatedPlanResponse}
 // @Failure      500       {object}  common.Response
-// @Router       /api/v1/plans [get]
+// @Router       /v1/plans [get]
 func (h *PlanHandler) List(c echo.Context) error {
 	filter := model.Filter{}
 	if s := c.QueryParam("search"); s != "" {

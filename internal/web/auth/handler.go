@@ -31,7 +31,7 @@ func NewAuthHandler(service authdomain.Service) *AuthHandler {
 // @Failure      401   {object}  common.Response
 // @Failure      409   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/auth/login [post]
+// @Router       /v1/auth/login [post]
 func (h *AuthHandler) Login(c echo.Context) error {
 	var req LoginRequestDTO
 	if err := c.Bind(&req); err != nil {
@@ -69,7 +69,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 // @Failure      400   {object}  common.Response
 // @Failure      401   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/auth/login/username [post]
+// @Router       /v1/auth/login/username [post]
 func (h *AuthHandler) LoginByUsername(c echo.Context) error {
 	var req UsernameLoginRequestDTO
 	if err := c.Bind(&req); err != nil {
@@ -104,7 +104,7 @@ func (h *AuthHandler) LoginByUsername(c echo.Context) error {
 // @Success      200   {object}  common.Response{data=[]AccountInfoDTO}
 // @Failure      400   {object}  common.Response
 // @Failure      500   {object}  common.Response
-// @Router       /api/v1/auth/lookup [post]
+// @Router       /v1/auth/lookup [post]
 func (h *AuthHandler) Lookup(c echo.Context) error {
 	var req LookupRequestDTO
 	if err := c.Bind(&req); err != nil {

@@ -23,7 +23,7 @@ func newRouter(e *echo.Echo, handlers *web.Handlers, tenantManager *database.Ten
 func (r *router) registerRoutes() {
 	r.echo.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	v1 := r.echo.Group("/api/v1")
+	v1 := r.echo.Group("/v1")
 	v1.POST("/auth/login", r.handlers.Auth.Login)
 	v1.POST("/auth/login/username", r.handlers.Auth.LoginByUsername)
 	v1.POST("/auth/lookup", r.handlers.Auth.Lookup)
