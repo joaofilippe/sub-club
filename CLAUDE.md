@@ -13,7 +13,7 @@ Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, s
    ```
 2. **Commitar** ao fim de cada tarefa concluída, com mensagem em inglês seguindo Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`).
 3. **Não fazer push nem abrir PR** sem o usuário pedir explicitamente.
-4. **Após cada commit**, criar `docs/changes/<branch-name>.md` com descrição no estilo PR para o agente de front-end, cobrindo: o que mudou e por quê, endpoints novos ou alterados (método, rota, payload, response), contratos quebrados ou campos renomeados, e qualquer detalhe que o front precise saber.
+4. **Após cada commit**, criar `docs/changes/<YYMMDDHHMM>-<branch-name>.md` com descrição no estilo PR para o agente de front-end, cobrindo: o que mudou e por quê, endpoints novos ou alterados (método, rota, payload, response), contratos quebrados ou campos renomeados, e qualquer detalhe que o front precise saber. O prefixo `YYMMDDHHMM` é o timestamp do momento da criação do arquivo, garantindo ordenação cronológica.
 5. **Verificar `/docs`**: após qualquer mudança de código, avaliar se algum documento em `docs/` precisa ser atualizado para refletir a nova realidade — arquitetura, contratos, convenções, seeder, etc. Se sim, atualizar e incluir no mesmo commit ou num commit imediatamente seguinte.
 6. **Atualizar Swagger e Postman**: após qualquer mudança que afete endpoints (novo handler, rota alterada, payload ou response modificado), executar `make swagger` para regenerar o OpenAPI e atualizar o `postman_collection.json` correspondente. Incluir ambos no mesmo commit da mudança.
 
