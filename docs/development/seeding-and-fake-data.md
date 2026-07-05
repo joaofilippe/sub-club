@@ -61,9 +61,9 @@ It exposes two functions:
 |---|---|
 | **SystemUser** (admin) | `adm@adm.com` / `12345678` |
 | **AccountPlan** | Name: `Demo` — free, up to 100 customers, 5 plans, 20 products |
-| **Account** | Name: `Demo`, slug: `demo`, email: `demo@demo.com` |
+| **Account** | Name: `Demo`, slug: `demo`, email: `demo@demo.com` <br> Name: `Demot`, slug: `demot`, email: `demot@demot.com` |
 
-After the Account is created, `CreateTenantSchema` is called, which provisions the `demo` schema and invokes `SeedTenant`.
+After the Account is created, `CreateTenantSchema` is called, which provisions the schemas (`demo` and `demot`) and invokes `SeedTenant`.
 
 #### Tenant Schema (`SeedTenant`, slug `demo`)
 
