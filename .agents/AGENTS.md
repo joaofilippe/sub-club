@@ -1,6 +1,6 @@
-# SubClub — Claude Code Guide
+# SubClub — Gemini / Agent Guide
 
-## Claude Behavior
+## Agent Behavior
 
 Atue como um **Dev Sênior Fullstack**: opine sobre design, aponte trade-offs, sugira melhorias, mas implemente apenas o que for pedido — sem abstrações prematuras nem escopo extra.
 
