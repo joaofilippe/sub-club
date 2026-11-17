@@ -2,15 +2,19 @@
 
 ## O que mudou e por quê
 
-Reorganização das instruções do agente de IA em `.agents/` para o padrão modular em `.agents/rules/` (adaptado do repositório `intiv2`), preservando integralmente a arquitetura e as convenções do SubClub.
+Reorganização das instruções do agente em `.agents/rules/` (padrão modular adaptado do `intiv2`) com separação estrita de responsabilidades em relação a `docs/`:
 
-- Substituído `.agents/AGENTS.md` pelos arquivos modulares em `.agents/rules/` (`trigger: always_on`):
-  - `persona.md`: persona sênior pragmática, Clean Code, previsibilidade antes de grandes alterações e abordagem spec-driven consultando `docs/design/` e `docs/development/`.
-  - `architecture.md`: guardrails críticos da arquitetura (`domain → application → web → infra`, Ent ORM sem SQL raw, `tenantctx.TenantClientFromContext`, soft delete, `Customer`, `common.Success`/`Error`), comandos `make` e ponteiros para `docs/design/` e `docs/development/` (sem duplicar os documentos de design).
-  - `git-workflow.md`: verificação de branch antes de editar, criação de branch `kebab-case`, Conventional Commits em inglês, controle de push/PR e criação de `docs/changes/`.
-  - `go-test.md`: padrão Table-Driven Tests, AAA, `t.Helper()`, helpers de `internal/test/faker`, mocks para testes unitários e banco real/`enttest` para testes de repositório e integração.
-- Não foi incluído `rpa-rules.md` por não se aplicar ao escopo de backend REST do SubClub.
+- **`.agents/rules/`** (apenas comportamento do agente, onde consultar, fluxo Git, atualização de docs e verificação):
+  - `persona.md`: postura sênior pragmática, qualidade de código, previsibilidade e abordagem spec-driven.
+  - `references.md`: mapa de para onde o agente deve olhar em `docs/design/`, `docs/development/` e `docs/changes/`.
+  - `git-workflow.md`: verificação e criação de branch `kebab-case`, Conventional Commits em inglês, controle de push/PR, criação de `docs/changes/`, revisão de `docs/` e sincronia de Swagger/Postman.
+  - `verification.md`: checklist de validação antes de concluir tarefas (`go generate ./ent`, `make swagger`, `make test`, `make lint`).
+- **`docs/`** (fonte única da verdade sobre código, arquitetura, nomenclatura e convenções):
+  - `docs/design/architecture.md`: explícita a restrição de `internal/domain` não importar `ent` e adicionada seção de idioma/nomenclatura em inglês.
+  - `docs/design/web-layer.md`: adicionada seção de documentação OpenAPI (Swag) e Postman.
+  - `docs/development/testing.md`: criado documento consolidando todas as convenções de testes em Go (Table-Driven Tests, `Test[Nome]_[Cenario]`, AAA, `t.Helper()`, `faker`, mocks vs banco real/`enttest` e `make test`).
+- Removido `.agents/AGENTS.md` (e regras duplicadas de arquitetura/testes em `.agents/`).
 
 ## Impacto para o front-end
 
-Nenhum. Alteração restrita às regras internas de trabalho do agente de desenvolvimento; sem mudanças em código de produção, rotas, payloads ou contratos da API.
+Nenhum. Alteração restrita às regras do agente de desenvolvimento e à documentação interna de engenharia; sem mudanças em código de produção, rotas, payloads ou contratos da API.

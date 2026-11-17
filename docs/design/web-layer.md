@@ -201,3 +201,12 @@ common.Error(c, http.StatusBadRequest, "mensagem de erro")
 | `PUT` (update) | `"<Recurso> updated"` — ex: `"Plan updated"` |
 | `DELETE` | `"<Recurso> deleted"` — ex: `"Account deleted"` |
 | `GET` (list) | `"OK"` |
+
+---
+
+## Documentação OpenAPI (Swag) e Postman
+
+- Todos os handlers HTTP devem conter anotações Swag completas e atualizadas (`// @Summary`, `// @Description`, `// @Tags`, `// @Accept`, `// @Produce`, `// @Param`, `// @Success`, `// @Failure`, `// @Router`).
+- Sempre que um endpoint for criado ou alterado (rota, método, payload ou response):
+  1. Execute `make swagger` para regenerar `docs/docs.go`, `docs/swagger.json` e `docs/swagger.yaml`.
+  2. Atualize a collection `docs/subclub.postman_collection.json` para mantê-la em sincronia com o código.

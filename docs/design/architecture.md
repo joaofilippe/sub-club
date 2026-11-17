@@ -24,7 +24,7 @@ internal/domain/<entidade>/
     usecase/        → implementações dos casos de uso (create, list, get_by_id, update, delete)
 ```
 
-Essa camada não conhece SQL, JSON ou qualquer framework externo.
+Essa camada não conhece SQL, JSON ou qualquer framework externo — **nunca** deve importar `application`, `web`, `infra` ou `ent`.
 
 ### 2. Application (`internal/application`)
 
@@ -51,9 +51,18 @@ Ferramentas e serviços de suporte, organizados em sub-pacotes:
 
 ---
 
+## Convenções de Código e Nomenclatura
+
+- **Idioma**: Todo o código (pacotes, structs, interfaces, métodos, funções e variáveis) deve ser escrito em **inglês**.
+- **Comentários**: Comente apenas o "porquê" não-óbvio; preserve docstrings/comentários existentes não relacionados à alteração.
+- **Modelagem no Domínio**: Inputs/outputs tipados vivem em `internal/domain/<entidade>/model/` e IDs seguem o padrão UUID usado pelo projeto.
+
+---
+
 ## Documentos relacionados
 
 - [ORM & Convenções de Banco](orm.md)
 - [Camada Web](web-layer.md)
 - [Multi-tenant](multi-tenant.md)
 - [Auth / Roles](auth_levels.md)
+- [Padrões de Testes em Go](../development/testing.md)
