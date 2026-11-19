@@ -2,16 +2,16 @@ package web
 
 import (
 	"github.com/joaofilippe/subclub/internal/application"
-	authhandler "github.com/joaofilippe/subclub/internal/web/auth"
-	"github.com/joaofilippe/subclub/internal/web/account"
-	"github.com/joaofilippe/subclub/internal/web/accountplan"
-	"github.com/joaofilippe/subclub/internal/web/customer"
-	"github.com/joaofilippe/subclub/internal/web/module"
-	"github.com/joaofilippe/subclub/internal/web/plan"
-	"github.com/joaofilippe/subclub/internal/web/product"
-	"github.com/joaofilippe/subclub/internal/web/subscription"
-	tenantuserweb "github.com/joaofilippe/subclub/internal/web/tenantuser"
-	userhandler "github.com/joaofilippe/subclub/internal/web/user"
+	authhandler "github.com/joaofilippe/subclub/internal/application/web/auth"
+	"github.com/joaofilippe/subclub/internal/application/web/account"
+	"github.com/joaofilippe/subclub/internal/application/web/accountplan"
+	"github.com/joaofilippe/subclub/internal/application/web/customer"
+	"github.com/joaofilippe/subclub/internal/application/web/module"
+	"github.com/joaofilippe/subclub/internal/application/web/plan"
+	"github.com/joaofilippe/subclub/internal/application/web/product"
+	"github.com/joaofilippe/subclub/internal/application/web/subscription"
+	tenantuserweb "github.com/joaofilippe/subclub/internal/application/web/tenantuser"
+	userhandler "github.com/joaofilippe/subclub/internal/application/web/user"
 )
 
 type Handlers struct {

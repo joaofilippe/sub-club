@@ -8,7 +8,7 @@ import (
 
 	authdomain "github.com/joaofilippe/subclub/internal/domain/auth"
 	authmodel "github.com/joaofilippe/subclub/internal/domain/auth/model"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 type AuthHandler struct {

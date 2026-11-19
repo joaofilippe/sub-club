@@ -10,7 +10,7 @@ Antes de propor ou alterar código, leia o documento correspondente ao escopo da
 
 | Assunto / Tarefa | Onde olhar |
 |---|---|
-| Arquitetura, camadas (`domain → application → web → infra`), idioma e nomenclatura | `docs/design/architecture.md` |
+| Arquitetura, camadas (`domain → application → infra`), idioma e nomenclatura | `docs/design/architecture.md` |
 | Ent ORM, schemas, soft delete, `Customer` e passo a passo de nova entidade | `docs/design/orm.md` |
 | Camada HTTP, handlers, DTOs, `common.Success`/`Error`, Swag e Postman | `docs/design/web-layer.md` |
 | Multi-tenancy (`Schema-per-Tenant`), `TenantClientFromContext` e rotas | `docs/design/multi-tenant.md` |

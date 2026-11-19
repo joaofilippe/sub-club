@@ -8,7 +8,7 @@ import (
 	"github.com/joaofilippe/subclub/internal/config"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/server"
-	"github.com/joaofilippe/subclub/internal/web"
+	"github.com/joaofilippe/subclub/internal/application/web"
 	"github.com/spf13/cobra"
 )
 

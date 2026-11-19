@@ -9,7 +9,7 @@ import (
 
 	authusecase "github.com/joaofilippe/subclub/internal/domain/auth/usecase"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 // RequireAdminMiddleware validates the JWT and rejects requests whose role

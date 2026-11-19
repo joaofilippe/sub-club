@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	domain "github.com/joaofilippe/subclub/internal/domain/accountplan"
 	"github.com/joaofilippe/subclub/internal/domain/accountplan/model"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 type AccountPlanHandler struct {

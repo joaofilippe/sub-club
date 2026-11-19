@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	domain "github.com/joaofilippe/subclub/internal/domain/customer"
 	"github.com/joaofilippe/subclub/internal/domain/customer/model"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 type CustomerHandler struct {

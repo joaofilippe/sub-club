@@ -10,12 +10,12 @@ A entrega HTTP da aplicação é dividida entre dois pacotes com responsabilidad
 
 | Pacote | Responsabilidade |
 |---|---|
-| `internal/web` | Handlers HTTP e DTOs — lógica de apresentação da API |
+| `internal/application/web` | Handlers HTTP e DTOs — lógica de apresentação da API |
 | `internal/infra/server` | Servidor Echo, middleware e registro de rotas |
 
 ---
 
-## `internal/web` — Handlers e DTOs
+## `internal/application/web` — Handlers e DTOs
 
 ### Struct `Handlers`
 
@@ -37,14 +37,14 @@ type Handlers struct {
 func NewHandlers(app *application.Application) *Handlers
 ```
 
-É o único ponto onde a camada `web` conhece a camada `application`. Cada handler recebe apenas o service de que precisa, sem acesso ao `Application` inteiro.
+É o único ponto onde o pacote `web` referencia a struct `application.Application`. Cada handler recebe apenas o service de que precisa, sem acesso ao `Application` inteiro.
 
 ### Handlers por domínio
 
-Cada subpacote de `internal/web` cuida de um domínio:
+Cada subpacote de `internal/application/web` cuida de um domínio:
 
 ```
-internal/web/
+internal/application/web/
     handlers.go              → agrega todos os handlers
     account/
         handler.go           → CRUD de accounts (rotas admin)
@@ -132,7 +132,7 @@ cmd/subclub/application.go
 HTTP Request
     → Echo (infra/server)
     → Middleware (logger, recover)
-    → Handler (internal/web/<domínio>)
+    → Handler (internal/application/web/<domínio>)
     → Service (internal/application/service/<domínio>)
     → Repository (internal/application/repository/<domínio>)
     → Ent ORM → PostgreSQL
@@ -140,7 +140,7 @@ HTTP Request
 
 ## Padrão de Response
 
-Toda resposta da API segue o mesmo envelope JSON, definido em `internal/web/common/response.go`:
+Toda resposta da API segue o mesmo envelope JSON, definido em `internal/application/web/common/response.go`:
 
 ```go
 type ErrorDetail struct {

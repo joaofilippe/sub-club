@@ -4,7 +4,7 @@ import (
 	_ "github.com/joaofilippe/subclub/docs"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/middleware"
-	"github.com/joaofilippe/subclub/internal/web"
+	"github.com/joaofilippe/subclub/internal/application/web"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )

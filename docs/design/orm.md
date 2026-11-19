@@ -24,7 +24,7 @@ O nome `client` é palavra reservada pelo gerador Ent — é usado em `ent.Clien
 
 - Domain: `internal/domain/customer`
 - ORM: `ent/schema/customer.go`
-- Web: `internal/web/customer`
+- Web: `internal/application/web/customer`
 - Rotas HTTP: `/customers`
 
 ### Pool TCP via `*sql.DB`
@@ -60,7 +60,7 @@ Toda query deve filtrar registros deletados:
 4. Defina as interfaces em `internal/domain/<entidade>/repository.go` e `service.go`.
 5. Implemente os casos de uso em `internal/domain/<entidade>/usecase/`.
 6. Implemente o service em `internal/application/service/<entidade>/service.go`.
-7. Crie o handler e DTOs em `internal/web/<entidade>/`.
-8. Registre o handler em `internal/web/handlers.go` e a rota em `internal/infra/server/router.go`.
+7. Crie o handler e DTOs em `internal/application/web/<entidade>/`.
+8. Registre o handler em `internal/application/web/handlers.go` e a rota em `internal/infra/server/router.go`.
 
 > Se a entidade pertencer ao schema de tenant (não ao `public`), **não** adicione edges a partir de `Account` ou `AccountPlan`. Veja [multi-tenant.md](multi-tenant.md) para detalhes.

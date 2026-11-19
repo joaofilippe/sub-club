@@ -1,9 +1,9 @@
 # Arquitetura
 
-O SubClub adere ao padrão de **Clean Architecture** (Arquitetura Limpa), dividindo o sistema em quatro camadas bem definidas que garantem o isolamento entre regras de negócio centralizadas e adaptadores externos (como bancos de dados e requisições HTTP):
+O SubClub adere ao padrão de **Clean Architecture** (Arquitetura Limpa), dividindo o sistema em camadas bem definidas que garantem o isolamento entre regras de negócio centralizadas e adaptadores externos (como bancos de dados e requisições HTTP):
 
 ```
-domain → application → web → infra
+domain → application (service / repository / web) → infra
 ```
 
 As dependências sempre apontam para dentro — camadas externas nunca são importadas pelas internas.
@@ -24,22 +24,17 @@ internal/domain/<entidade>/
     usecase/        → implementações dos casos de uso (create, list, get_by_id, update, delete)
 ```
 
-Essa camada não conhece SQL, JSON ou qualquer framework externo — **nunca** deve importar `application`, `web`, `infra` ou `ent`.
+Essa camada não conhece SQL, JSON ou qualquer framework externo — **nunca** deve importar `application`, `infra` ou `ent`.
 
 ### 2. Application (`internal/application`)
 
-Implementações concretas das interfaces do Domain, divididas em dois sub-pacotes:
+Implementações concretas das interfaces do Domain e apresentação HTTP, divididas em três sub-pacotes:
 
 - `service/` — orquestração dos fluxos de negócio (ex.: `service/customer`, `service/auth`).
 - `repository/` — acesso ao banco de dados via Ent ORM (ex.: `repository/customer`, `repository/plan`).
+- `web/` — camada de apresentação HTTP: _Handlers_ (controladores de rotas REST), _DTOs_ (contratos de entrada e saída em JSON), helpers de resposta (`common/`) e a struct `Handlers` em `internal/application/web/handlers.go`, que agrega e inicializa todos os handlers a partir dos services da camada Application. Para detalhes, veja [web-layer.md](web-layer.md).
 
-### 3. Web (`internal/web`)
-
-Camada de apresentação HTTP. Contém os _Handlers_ (controladores de rotas REST), os _DTOs_ (contratos de entrada e saída em JSON) e a struct `Handlers` em `internal/web/handlers.go`, que agrega e inicializa todos os handlers a partir dos services da camada Application.
-
-Para detalhes de organização e fluxo HTTP, veja [web-layer.md](web-layer.md).
-
-### 4. Infrastructure (`internal/infra`)
+### 3. Infrastructure (`internal/infra`)
 
 Ferramentas e serviços de suporte, organizados em sub-pacotes:
 

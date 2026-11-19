@@ -77,8 +77,7 @@ This data is generated using the `gofakeit` library via a central utility in `in
 
 - **Clean Architecture**: 
   - Business rules lie securely within `/internal/domain`.
-  - Services and repository implementations lie in `/internal/application`.
-  - HTTP handlers and DTOs lie in `/internal/web`.
+  - Services, repository implementations, HTTP handlers, and DTOs lie in `/internal/application` (`service/`, `repository/`, `web/`).
   - External adapters and connection establishments (`sqlx`, `echo`) reside in `/internal/infra`.
 
 - **Ent ORM**:

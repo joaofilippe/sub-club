@@ -39,7 +39,7 @@ go generate ./ent  # regenerate Ent ORM code after schema changes
 Quatro camadas — dependências sempre apontam para dentro:
 
 ```
-domain → application → web → infra
+domain → application (service / repository / web) → infra
 ```
 
 Para detalhes completos de cada camada e pacotes, consulte:

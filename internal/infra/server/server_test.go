@@ -13,7 +13,7 @@ import (
 	subsvc "github.com/joaofilippe/subclub/internal/application/service/subscription"
 	usersvc "github.com/joaofilippe/subclub/internal/application/service/user"
 	"github.com/joaofilippe/subclub/internal/infra/server"
-	"github.com/joaofilippe/subclub/internal/web"
+	"github.com/joaofilippe/subclub/internal/application/web"
 )
 
 func stubApp() *application.Application {

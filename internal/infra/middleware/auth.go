@@ -12,7 +12,7 @@ import (
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
 	"github.com/joaofilippe/subclub/internal/infra/database"
 	"github.com/joaofilippe/subclub/internal/infra/tenantctx"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 // AuthMiddleware validates the JWT from the Authorization header, resolves the

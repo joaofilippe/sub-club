@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/joaofilippe/subclub/internal/infra/authctx"
-	"github.com/joaofilippe/subclub/internal/web/common"
+	"github.com/joaofilippe/subclub/internal/application/web/common"
 )
 
 // RequireTenantAdminMiddleware must be chained after AuthMiddleware.
